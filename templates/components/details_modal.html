@@ -58,7 +58,8 @@
                     </div>
                     <div class="rounded-lg bg-gray-900/70">
                         <p class="mr-3 text-xs uppercase text-gray-400 flex flex-row items-center">Enjoyed by <img
-                                id="avgAppealIcon" src="/static/icon/earth.svg" alt="" class="ml-2 mr-1 w-3.5 h-3.5 invert">
+                                id="avgAppealIcon" src="/static/icon/earth.svg" alt=""
+                                class="ml-2 mr-1 w-3.5 h-3.5 invert">
                             <span class="text-white" id="avgAppealLabel">-</span>
                         </p>
                         <div class="mt-2 h-5 w-full rounded-full bg-gray-800 overflow-hidden">
@@ -72,7 +73,8 @@
                     </div>
                     <div class="rounded-lg bg-gray-900/70">
                         <p class="mr-3 text-xs uppercase text-gray-400 flex flex-row items-center">Gameplay is <img
-                                id="avgMoodIcon" src="/static/icon/house.svg" alt="" class="ml-2 mr-1 w-3.5 h-3.5 invert">
+                                id="avgMoodIcon" src="/static/icon/house.svg" alt=""
+                                class="ml-2 mr-1 w-3.5 h-3.5 invert">
                             <span class="text-white" id="avgMoodLabel">-</span>
                         </p>
                         <div class="mt-2 h-5 w-full rounded-full bg-gray-800 overflow-hidden">
@@ -85,7 +87,8 @@
                     </div>
                     <div class="rounded-lg bg-gray-900/70">
                         <p class="mr-3 text-xs uppercase text-gray-400 flex flex-row items-center">Best played <img
-                                id="avgFriendIcon" src="/static/icon/user.svg" alt="" class="ml-2 mr-1 w-3.5 h-3.5 invert">
+                                id="avgFriendIcon" src="/static/icon/user.svg" alt=""
+                                class="ml-2 mr-1 w-3.5 h-3.5 invert">
                             <span class="text-white" id="avgFriendLabel">-</span>
                         </p>
                         <div class="mt-2 h-5 w-full rounded-full bg-gray-800 overflow-hidden">
@@ -99,30 +102,30 @@
                     </div>
                 </div>
             </div>
-            </div>
-            <div class="px-6 pb-6" id="timePlayedStatsSection" style="display: none;">
-                <p class="text-xs uppercase tracking-widest text-gray-400 mb-4">Community Playtime</p>
-                <div class="grid grid-cols-3 gap-3 text-sm">
-                    <div class="rounded-lg bg-gray-800/70 p-3">
-                        <p class="text-xs uppercase text-gray-400">Total Players</p>
-                        <p class="text-lg font-semibold text-emerald-300" id="totalPlayersText">-</p>
-                    </div>
-                    <div class="rounded-lg bg-gray-800/70 p-3">
-                        <p class="text-xs uppercase text-gray-400">Total Time</p>
-                        <p class="text-lg font-semibold text-emerald-300" id="totalTimeText">-</p>
-                    </div>
-                    <div class="rounded-lg bg-gray-800/70 p-3">
-                        <p class="text-xs uppercase text-gray-400">Avg per Player</p>
-                        <p class="text-lg font-semibold text-emerald-300" id="avgTimePerPlayerText">-</p>
-                    </div>
+        </div>
+        <div class="px-6 pb-6" id="timePlayedStatsSection" style="display: none;">
+            <p class="text-xs uppercase tracking-widest text-gray-400 mb-4">Community Playtime</p>
+            <div class="grid grid-cols-3 gap-3 text-sm">
+                <div class="rounded-lg bg-gray-800/70 p-3">
+                    <p class="text-xs uppercase text-gray-400">Total Players</p>
+                    <p class="text-lg font-semibold text-emerald-300" id="totalPlayersText">-</p>
+                </div>
+                <div class="rounded-lg bg-gray-800/70 p-3">
+                    <p class="text-xs uppercase text-gray-400">Total Time</p>
+                    <p class="text-lg font-semibold text-emerald-300" id="totalTimeText">-</p>
+                </div>
+                <div class="rounded-lg bg-gray-800/70 p-3">
+                    <p class="text-xs uppercase text-gray-400">Avg per Player</p>
+                    <p class="text-lg font-semibold text-emerald-300" id="avgTimePerPlayerText">-</p>
                 </div>
             </div>
-            <div class="px-6 pb-6">
-                <p class="text-xs uppercase tracking-widest text-gray-400 mb-2">Synopsis</p>
-                <p class="text-sm text-gray-300" id="modalSynopsis"></p>
-            </div>
+        </div>
+        <div class="mt-6 px-6 pb-6">
+            <p class="text-xs uppercase tracking-widest text-gray-400 mb-2">Synopsis</p>
+            <p class="text-sm text-gray-300" id="modalSynopsis"></p>
         </div>
     </div>
+</div>
 </div>
 
 <script>
@@ -145,7 +148,7 @@
 
         async function loadAverages() {
             if (!currentGameId) return;
-            
+
             if (currentSource === "time_played") {
                 loadPlaytimeStats();
             } else {
@@ -411,5 +414,5 @@
             opacity: 1;
             transform: translate(-50%, -50%);
         }
-    }   
+    }
 </style>

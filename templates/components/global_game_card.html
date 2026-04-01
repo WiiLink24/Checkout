@@ -1,0 +1,107 @@
+<div class="relative rounded-2xl border border-gray-700 bg-gray-800/80 shadow-xl overflow-hidden">
+    {% if game.game_type == "DS" %}
+    {% set cover_url = "https://art.gametdb.com/ds/coverHQ/US/" ~ game.game_id ~ ".jpg" %}
+    {% set fallback_url = "" %}
+    {% elif game.game_type == "3DS" %}
+    {% set cover_url = "https://art.gametdb.com/3ds/coverHQ/EN/" ~ game.game_id ~ ".jpg" %}
+    {% set fallback_url = "" %}
+    {% else %}
+    {% set cover_region = game.region or "US" %}
+    {% set cover_url = "https://art.gametdb.com/wii/cover/" ~ cover_region ~ "/" ~ game.game_id ~ ".png" %}
+    {% set fallback_url = "https://art.gametdb.com/wii/cover/" ~ cover_region ~ "/" ~ game.game_id ~ "01.png" %}
+    {% endif %}
+    <div class="absolute inset-x-0 top-0 h-44 bg-center bg-cover blur-lg opacity-10"
+        style="background-image: url('{{ cover_url }}'); -webkit-mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0)); mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0));">
+    </div>
+    <div class="h-full flex flex-col justify-between relative p-6">
+        <span>
+            <div class="flex items-center justify-between gap-6">
+                <span class="flex items-center gap-4">
+                    <img src="{{ cover_url }}" alt="{{ game.title_en or game.title }} Cover"
+                        data-fallback="{{ fallback_url }}"
+                        onerror="if (!this.dataset.tried && this.dataset.fallback) { this.dataset.tried = '1'; this.src = this.dataset.fallback; } else { this.style.display = 'none'; }"
+                        class="w-24 object-cover rounded-lg flex-shrink-0">
+                    <span class="flex flex-col gap-3">
+                        <div>
+                            <h2 class="text-2xl font-bold text-white">{{ game.title_en or game.title }}</h2>
+                            <p class="text-sm text-gray-400 mt-1">{{ game.game_id }}{% if game.release_year %} • {{
+                                game.release_year }}{% endif %}</p>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2 text-xs text-gray-200">
+                            {% if game.rating_type and game.rating_value %}<img src="/static/ratings/{{
+                                game.rating_type }}-{{ game.rating_value }}.jpg" alt="Rating"
+                                class="h-8 object-contain">{% endif %}
+                            {% if game.genre %}
+                            {% set genres = game.genre.split(',') %}
+                            <span class="px-3 py-1 rounded-full bg-gray-900/60">
+                                {% for genre in genres %}
+                                {{ genre.strip().upper() }}{% if not loop.last %} | {% endif %}
+                                {% endfor %}
+                            </span>
+                            {% endif %}
+                            {% if game.publisher %}<span class="px-3 py-1 rounded-full bg-gray-900/60">{{ game.publisher
+                                }}</span>{% endif %}
+                        </div>
+                    </span>
+                </span>
+            </div>
+            {% if score_type == "best_games" %}
+            {% set score_percent = game.avg_recommendation or 0 %}
+            {% if score_percent >= 80 %}
+            {% set score_text_class = "text-emerald-800" %}
+            {% set score_bar_class = "from-emerald-400 via-emerald-300 to-emerald-500" %}
+            {% elif score_percent >= 50 %}
+            {% set score_text_class = "text-yellow-800" %}
+            {% set score_bar_class = "from-yellow-400 via-yellow-300 to-yellow-500" %}
+            {% else %}
+            {% set score_text_class = "text-red-800" %}
+            {% set score_bar_class = "from-red-400 via-red-300 to-red-500" %}
+            {% endif %}
+            <div class="mt-5">
+                <div class="h-6 w-full rounded-xl bg-gray-900/70 overflow-hidden">
+                    <div class="h-full rounded-full bg-gradient-to-r {{ score_bar_class }} flex items-center justify-end"
+                        style="width: {{ score_percent }}%;">
+                        <span class="pr-2 text-xs uppercase tracking-wider {{ score_text_class }}">{{ score_percent
+                            }}%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4 grid grid-cols-2 gap-3 text-sm">
+                <div class="rounded-xl bg-gray-900/70 p-3">
+                    <p class="text-xs uppercase text-gray-400">Avg Score</p>
+                    <p class="text-2xl font-bold text-green-400 mt-1">{{ "%.1f"|format(game.avg_recommendation) }}%</p>
+                </div>
+                <div class="rounded-xl bg-gray-900/70 p-3">
+                    <p class="text-xs uppercase text-gray-400">Reviewers</p>
+                    <p class="text-2xl font-bold text-blue-400 mt-1">{{ game.reviewer_count }}</p>
+                </div>
+            </div>
+            {% elif score_type == "most_played" %}
+            <div class="mt-5 grid grid-cols-3 gap-3 text-sm">
+                <div class="rounded-xl bg-gray-900/70 p-3">
+                    <p class="text-xs uppercase text-gray-400">Total Time</p>
+                    <p class="text-lg font-bold text-indigo-400 mt-1">{{ game.total_time_played|format_playtime }}</p>
+                </div>
+                <div class="rounded-xl bg-gray-900/70 p-3">
+                    <p class="text-xs uppercase text-gray-400">Players</p>
+                    <p class="text-2xl font-bold text-purple-400 mt-1">{{ game.player_count }}</p>
+                </div>
+                <div class="rounded-xl bg-gray-900/70 p-3">
+                    <p class="text-xs uppercase text-gray-400">Avg per Player</p>
+                    <p class="text-lg font-bold text-pink-400 mt-1">{{ game.avg_time_per_player|format_playtime }}</p>
+                </div>
+            </div>
+            {% endif %}
+        </span>
+        <div class="mt-5 flex items-center justify-end">
+            <button
+                class="px-3 py-2 text-xs uppercase tracking-wider bg-gray-900/70 text-white rounded-lg border border-gray-700 hover:border-indigo-500 hover:text-indigo-200 transition"
+                data-modal-open data-title="{{ game.title_en or game.title }}" data-game-id="{{ game.game_id }}"
+                data-cover-url="{{ cover_url }}" data-cover-fallback="{{ fallback_url }}"
+                data-release-year="{{ game.release_year or '' }}" data-genre="{{ game.genre or '' }}"
+                data-developer="{{ game.developer or '' }}" data-publisher="{{ game.publisher or '' }}"
+                data-rating-type="{{ game.rating_type or '' }}" data-rating-value="{{ game.rating_value or '' }}"
+                data-synopsis="{{ game.synopsis_en or '' }}">View details</button>
+        </div>
+    </div>
+</div>

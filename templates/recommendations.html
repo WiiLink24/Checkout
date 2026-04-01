@@ -1,27 +1,44 @@
 {% extends "generic/base.html" %}
 
 {% block title %}
-Recommendations for {{ user_info.username }}
+WiiLink Checkout | Recommendations for {{ viewed_user.username }}
 {% endblock %}
 
 {% block content %}
-<div class="absolute inset-x-0 top-0 h-[500px] bg-center bg-cover blur-lg opacity-30"
-    style="background-image: url('{{ user_info.profile_picture }}'); -webkit-mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0)); mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0));">
+{% if not is_unclaimed %}
+<div class="absolute inset-x-0 top-0 h-[500px] bg-center bg-cover blur-lg opacity-30 pointer-events-none"
+    style="background-image: url('{{ viewed_user.profile_picture }}'); -webkit-mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0)); mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0));">
 </div>
+{% endif %}
 <div class="min-h-screen px-4 sm:px-6 lg:px-8 py-12">
     <div class="max-w-6xl mx-auto">
+        {% if not is_unclaimed %}
         <div class="text-center mb-10">
             <div class="relative w-full mx-auto mb-4 flex items-center justify-center">
-                <img src="{{ user_info.profile_picture }}" alt="{{ user_info.username }}"
+                <img src="{{ viewed_user.profile_picture }}" alt="{{ viewed_user.username }}"
                     class="w-32 h-32 rounded-full mx-auto object-cover relative z-10">
             </div>
-            <h1 class="text-4xl font-bold text-white mt-2">{{ user_info.username }}<span class="font-light text-gray-500">'s Recommendations</span></h1>
+            <h1 class="text-4xl font-bold text-white mt-2">
+                {{ viewed_user.username }}
+                <a href="{% if base_url %}{{ base_url }}/time_played{% else %}/time_played{% endif %}"
+                    class="inline-block font-light text-gray-500 hover:text-gray-300 transition pr-1 py-1 border border-dashed border-gray-600/30 hover:border-gray-400 rounded-lg">
+                    's Recommendations
+                </a>
+            </h1>
             <span class="flex flex-row items-center justify-center gap-2 mt-3">
-            {% for linked_wii in user_info.linked_wii_no %}
-            <p class="px-3 py-1 bg-gray-700 rounded-md text-gray-300">{{ linked_wii|format_serial }}</p>
-            {% endfor %}
+                {% for linked_wii in viewed_user.linked_wii_no %}
+                <p class="px-3 py-1 bg-gray-700 rounded-md text-gray-300">{{ linked_wii|format_serial }}</p>
+                {% endfor %}
             </span>
         </div>
+        {% endif %}
+
+        {% if is_unclaimed %}
+        <h1 class="text-4xl font-bold text-white mb-4">Recommendations <span class="font-light text-gray-500">for {{
+                unclaimed_serial }}</span></h1>
+        {% include "components/unclaimed_banner.html" %}
+        {% endif %}
+
         {% if recommendations %}
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {% for rec in recommendations %}

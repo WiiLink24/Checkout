@@ -1,38 +1,59 @@
 {% extends "generic/base.html" %}
 
 {% block title %}
-Time Played for {{ user_info.username }}
+WiiLink Checkout | Time Played for {{ viewed_user.username }}
 {% endblock %}
 
 {% block content %}
+{% if not is_unclaimed %}
 <div class="absolute inset-x-0 top-0 h-[500px] bg-center bg-cover blur-lg opacity-30 pointer-events-none"
-    style="background-image: url('{{ user_info.profile_picture }}'); -webkit-mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0)); mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0));">
+    style="background-image: url('{{ viewed_user.profile_picture }}'); -webkit-mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0)); mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0));">
 </div>
+{% endif %}
 <div class="min-h-screen px-4 sm:px-6 lg:px-8 py-12">
     <div class="max-w-6xl mx-auto">
+        {% if not is_unclaimed %}
         <div class="text-center mb-10">
             <div class="relative w-full mx-auto mb-4 flex items-center justify-center">
-                <img src="{{ user_info.profile_picture }}" alt="{{ user_info.username }}"
+                <img src="{{ viewed_user.profile_picture }}" alt="{{ viewed_user.username }}"
                     class="w-32 h-32 rounded-full mx-auto object-cover relative z-10">
             </div>
-            <h1 class="text-4xl font-bold text-white mt-2">{{ user_info.username }}<span
-                    class="font-light text-gray-500">'s Time Played</span></h1>
+            <h1 class="text-4xl font-bold text-white mt-2">
+                {{ viewed_user.username }}
+                <a href="{% if base_url %}{{ base_url }}/recommendations{% else %}/recommendations{% endif %}"
+                    class="inline-block font-light text-gray-500 hover:text-gray-300 transition pr-1 py-1 border border-dashed border-gray-600/30 hover:border-gray-400 rounded-lg">
+                    's Time Played
+                </a>
+            </h1>
             <span class="flex flex-row items-center justify-center gap-2 mt-3">
-                {% for linked_wii in user_info.linked_wii_no %}
+                {% for linked_wii in viewed_user.linked_wii_no %}
                 <p class="px-3 py-1 bg-gray-700 rounded-md text-gray-300">{{ linked_wii|format_serial }}</p>
                 {% endfor %}
             </span>
-            <div class="fixed bottom-5 left-1/2 -translate-x-1/2 md:-translate-x-[calc(50%-140px)] p-3 rounded-xl bg-gray-800/70 backdrop-blur-lg flex flex-row items-center justify-center gap-2 mt-6 z-10">
-                <a href="/time_played?sort=time_played"
+            {% if not is_unclaimed %}
+            <div
+                class="fixed bottom-5 left-1/2 -translate-x-1/2 md:-translate-x-[calc(50%-140px)] p-3 rounded-xl bg-gray-800/70 backdrop-blur-lg flex flex-row items-center justify-center gap-2 mt-6 z-10">
+                {% set sort_base = base_url ~ '/time_played' if base_url else '/time_played' %}
+                <a href="{{ sort_base }}?sort=time_played"
                     class="px-4 py-2 rounded-lg border transition {% if sort_by == 'time_played' %}bg-indigo-600 border-indigo-500 text-white{% else %}bg-gray-800 border-gray-700 text-gray-300 hover:border-indigo-500{% endif %}">
                     <img src="/static/icon/clock.svg" alt="Minutes Played" class="invert"></a>
-                <a href="/time_played?sort=times_played"
+                <a href="{{ sort_base }}?sort=times_played"
                     class="px-4 py-2 rounded-lg border transition {% if sort_by == 'times_played' %}bg-indigo-600 border-indigo-500 text-white{% else %}bg-gray-800 border-gray-700 text-gray-300 hover:border-indigo-500{% endif %}">
                     <img src="/static/icon/hash.svg" alt="Times Played" class="invert"></a></a>
-                <a href="/time_played?sort=last_played"
-                    class="px-4 py-2 rounded-lg border transition {% if sort_by == 'last_played' %}bg-indigo-600 border-indigo-500 text-white{% else %}bg-gray-800 border-gray-700 text-gray-300 hover:border-indigo-500{% endif %}"><img src="/static/icon/calendar.svg" alt="Last Played" class="invert"></a></a>
+                <a href="{{ sort_base }}?sort=last_played"
+                    class="px-4 py-2 rounded-lg border transition {% if sort_by == 'last_played' %}bg-indigo-600 border-indigo-500 text-white{% else %}bg-gray-800 border-gray-700 text-gray-300 hover:border-indigo-500{% endif %}"><img
+                        src="/static/icon/calendar.svg" alt="Last Played" class="invert"></a></a>
             </div>
+            {% endif %}
         </div>
+        {% endif %}
+
+        {% if is_unclaimed %}
+        <h1 class="text-4xl font-bold text-white mb-4">Time Played <span class="font-light text-gray-500">for {{
+                unclaimed_serial }}</span></h1>
+        {% include "components/unclaimed_banner.html" %}
+        {% endif %}
+
         {% if time_played %}
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {% for rec in time_played %}
