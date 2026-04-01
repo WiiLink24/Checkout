@@ -81,23 +81,23 @@
                     {% endif %}
                     {% if not g.oidc_user.logged_in %}
                     <span class="mb-3">
-                    <div class="space-y-3 mt-8">
-                        <a href="{{ url_for('oidc_auth.login') }}"
-                            class="w-full px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition duration-200 flex items-center">
-                            <img src="/static/icon/key-round.svg" alt="Login" class="w-5 h-5 invert mr-2" />
-                            Sign In
-                        </a>
-                    </div>
-
-                    <div class="mt-6 p-4 bg-gray-700/40 rounded-lg border border-gray-700">
-                        <div class="flex items-center mb-2">
-                            <img src="/static/icon/info.svg" alt="Info" class="w-5 h-5 invert mr-2 opacity-70" />
-                            <h3 class="text-sm font-medium text-gray-300">Best Experience</h3>
+                        <div class="space-y-3 mt-8">
+                            <a href="{{ url_for('oidc_auth.login') }}"
+                                class="w-full px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition duration-200 flex items-center">
+                                <img src="/static/icon/key-round.svg" alt="Login" class="w-5 h-5 invert mr-2" />
+                                Sign In
+                            </a>
                         </div>
-                        <p class="text-sm text-gray-400">
-                            Sign in to access personalized recommendations, your gaming stats, and game discovery.
-                        </p>
-                    </div>
+
+                        <div class="mt-6 p-4 bg-gray-700/40 rounded-lg border border-gray-700">
+                            <div class="flex items-center mb-2">
+                                <img src="/static/icon/info.svg" alt="Info" class="w-5 h-5 invert mr-2 opacity-70" />
+                                <h3 class="text-sm font-medium text-gray-300">Best Experience</h3>
+                            </div>
+                            <p class="text-sm text-gray-400">
+                                Sign in to access personalized recommendations, your gaming stats, and game discovery.
+                            </p>
+                        </div>
                     </span>
                     {% endif %}
                 </span>
@@ -189,11 +189,11 @@
             navigator.clipboard.writeText(text).then(() => {
                 const originalText = element.textContent;
                 const originalClasses = element.className;
-                
+
                 element.textContent = "Copied!";
                 element.classList.add("bg-emerald-600");
                 element.classList.remove("bg-gray-700", "hover:bg-gray-600", "active:bg-indigo-600");
-                
+
                 setTimeout(() => {
                     element.textContent = originalText;
                     element.className = originalClasses;
