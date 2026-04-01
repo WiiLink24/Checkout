@@ -1,0 +1,70 @@
+<div class="relative rounded-2xl border border-gray-700 bg-gray-800/80 shadow-xl overflow-hidden">
+    {% if rec.game_type == "DS" %}
+    {% set cover_url = "https://art.gametdb.com/ds/coverHQ/US/" ~ rec.game_id ~ ".jpg" %}
+    {% set fallback_url = "" %}
+    {% elif rec.game_type == "3DS" %}
+    {% set cover_url = "https://art.gametdb.com/3ds/coverHQ/EN/" ~ rec.game_id ~ ".jpg" %}
+    {% set fallback_url = "" %}
+    {% else %}
+    {% set cover_region = rec.region or "US" %}
+    {% set cover_url = "https://art.gametdb.com/wii/cover/" ~ cover_region ~ "/" ~ rec.game_id ~ ".png" %}
+    {% set fallback_url = "https://art.gametdb.com/wii/cover/" ~ cover_region ~ "/" ~ rec.game_id ~ "01.png" %}
+    {% endif %}
+    <div class="absolute inset-x-0 top-0 h-44 bg-center bg-cover blur-lg opacity-10"
+        style="background-image: url('{{ cover_url }}'); -webkit-mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0)); mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0));">
+    </div>
+    <div class="h-full flex flex-col justify-between relative p-6">
+        <span>
+            <div class="flex items-center justify-between gap-6">
+                <span class="flex items-center gap-4">
+                    <img src="{{ cover_url }}" alt="{{ rec.title }} Cover" data-fallback="{{ fallback_url }}"
+                        onerror="if (!this.dataset.tried && this.dataset.fallback) { this.dataset.tried = '1'; this.src = this.dataset.fallback; } else { this.style.display = 'none'; }"
+                        class="w-24 object-cover rounded-lg flex-shrink-0">
+                    <span class="flex flex-col gap-3">
+                        <div>
+                            <h2 class="text-2xl font-bold text-white">{{ rec.title_en or rec.title }}</h2>
+                            <p class="text-sm text-gray-400 mt-1">{{ rec.game_id }}{% if rec.release_year %} • {{
+                                rec.release_year }}{% endif %}</p>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2 text-xs text-gray-200">
+                            {% if rec.rating_type and rec.rating_value %}<img src="/static/ratings/{{
+                                rec.rating_type }}-{{ rec.rating_value }}.jpg" alt="Rating"
+                                class="h-8 object-contain">{% endif %}
+                            {% if rec.genre %}
+                            {% set genres = rec.genre.split(',') %}
+                            <span class="px-3 py-1 rounded-full bg-gray-900/60">
+                                {% for genre in genres %}
+                                {{ genre.strip().upper() }}{% if not loop.last %} | {% endif %}
+                                {% endfor %}
+                            </span>
+                            {% endif %}
+                            {% if rec.publisher %}<span class="px-3 py-1 rounded-full bg-gray-900/60">{{ rec.publisher
+                                }}</span>{% endif %}
+                        </div>
+                    </span>
+                </span>
+                <div class="hidden"></div>
+            </div>
+            <span class="grid grid-cols-2 gap-4 mt-5">
+                <div class="rounded-xl bg-gray-900/70 p-3 flex flex-col gap-3">
+                    <p class="text-xs uppercase text-gray-400">Times Played</p>
+                    <p class="text-lg font-semibold text-emerald-300">{{ rec.times_played }}</p>
+                </div>
+                <div class="rounded-xl bg-gray-900/70 p-3 flex flex-col gap-3">
+                    <p class="text-xs uppercase text-gray-400">Time Played</p>
+                    <p class="text-lg font-semibold text-emerald-300">{{ rec.time_played|format_playtime }}</p>
+                </div>
+            </span>
+        </span>
+        <div class="mt-5 flex items-center justify-end gap-4">
+            <button
+                class="px-4 py-2 text-xs uppercase tracking-wider font-semibold bg-gray-900/70 text-white rounded-lg border border-gray-700 hover:border-indigo-500 hover:text-indigo-200 transition"
+                data-modal-open data-source="time_played" data-title="{{ rec.title_en or rec.title }}" data-game-id="{{ rec.game_id }}"
+                data-cover-url="{{ cover_url }}" data-cover-fallback="{{ fallback_url }}"
+                data-release-year="{{ rec.release_year or '' }}" data-genre="{{ rec.genre or '' }}"
+                data-developer="{{ rec.developer or '' }}" data-publisher="{{ rec.publisher or '' }}"
+                data-rating-type="{{ rec.rating_type or '' }}" data-rating-value="{{ rec.rating_value or '' }}"
+                data-synopsis="{{ rec.synopsis_en or '' }}">View details</button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,112 @@
+<div class="relative rounded-2xl border border-gray-700 bg-gray-800/80 shadow-xl overflow-hidden">
+    {% if rec.game_type == "DS" %}
+    {% set cover_url = "https://art.gametdb.com/ds/coverHQ/US/" ~ rec.game_id ~ ".jpg" %}
+    {% set fallback_url = "" %}
+    {% elif rec.game_type == "3DS" %}
+    {% set cover_url = "https://art.gametdb.com/3ds/coverHQ/EN/" ~ rec.game_id ~ ".jpg" %}
+    {% set fallback_url = "" %}
+    {% else %}
+    {% set cover_region = rec.region or "US" %}
+    {% set cover_url = "https://art.gametdb.com/wii/cover/" ~ cover_region ~ "/" ~ rec.game_id ~ ".png" %}
+    {% set fallback_url = "https://art.gametdb.com/wii/cover/" ~ cover_region ~ "/" ~ rec.game_id ~ "01.png" %}
+    {% endif %}
+    <div class="absolute inset-x-0 top-0 h-44 bg-center bg-cover blur-lg opacity-10"
+        style="background-image: url('{{ cover_url }}'); -webkit-mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0)); mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0));">
+    </div>
+    <div class="h-full flex flex-col justify-between relative p-6">
+        <span>
+            <div class="flex items-center justify-between gap-6">
+                <span class="flex items-center gap-4">
+                    <img src="{{ cover_url }}" alt="{{ rec.title }} Cover" data-fallback="{{ fallback_url }}"
+                        onerror="if (!this.dataset.tried && this.dataset.fallback) { this.dataset.tried = '1'; this.src = this.dataset.fallback; } else { this.style.display = 'none'; }"
+                        class="w-24 object-cover rounded-lg flex-shrink-0">
+                    <span class="flex flex-col gap-3">
+                        <div>
+                            <h2 class="text-2xl font-bold text-white">{{ rec.title_en }}</h2>
+                            <p class="text-sm text-gray-400 mt-1">{{ rec.game_id }}{% if rec.release_year %} • {{
+                                rec.release_year }}{% endif %}</p>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2 text-xs text-gray-200">
+                            {% if rec.rating_type and rec.rating_value %}<img src="/static/ratings/{{
+                                rec.rating_type }}-{{ rec.rating_value }}.jpg" alt="Rating"
+                                class="h-8 object-contain">{% endif %}
+                            {% if rec.genre %}
+                            {% set genres = rec.genre.split(',') %}
+                            <span class="px-3 py-1 rounded-full bg-gray-900/60">
+                                {% for genre in genres %}
+                                {{ genre.strip().upper() }}{% if not loop.last %} | {% endif %}
+                                {% endfor %}
+                            </span>
+                            {% endif %}
+                            {% if rec.publisher %}<span class="px-3 py-1 rounded-full bg-gray-900/60">{{ rec.publisher
+                                }}</span>{% endif %}
+                        </div>
+                    </span>
+                </span>
+                <div class="hidden"></div>
+            </div>
+            {% set score_percent = rec.recommendation_percent or 0 %}
+            {% if score_percent >= 80 %}
+            {% set score_text_class = "text-emerald-800" %}
+            {% set score_bar_class = "from-emerald-400 via-emerald-300 to-emerald-500" %}
+            {% elif score_percent >= 50 %}
+            {% set score_text_class = "text-yellow-800" %}
+            {% set score_bar_class = "from-yellow-400 via-yellow-300 to-yellow-500" %}
+            {% else %}
+            {% set score_text_class = "text-red-800" %}
+            {% set score_bar_class = "from-red-400 via-red-300 to-red-500" %}
+            {% endif %}
+            <div class="mt-5">
+                <div class="h-6 w-full rounded-xl bg-gray-900/70 overflow-hidden">
+                    <div class="h-full rounded-full bg-gradient-to-r {{ score_bar_class }} flex items-center justify-end"
+                        style="width: {{ score_percent }}%">
+                        <span class="pr-2 text-xs uppercase tracking-wider {{ score_text_class }}">{{ score_percent
+                            }}%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4 grid grid-cols-3 gap-3 text-sm">
+                <div class="rounded-xl bg-gray-900/70 p-3">
+                    <p class="text-xs uppercase text-gray-400">enjoyed by</p>
+                    {% set appeal_label = "everyone" if rec.appeal|int == 0 else "gamers" %}
+                    {% set appeal_icon = "/static/icon/earth.svg" if rec.appeal|int == 0 else "/static/icon/sword.svg"
+                    %}
+                    <p class="text-lg font-semibold text-white flex items-center gap-2">
+                        <img src="{{ appeal_icon }}" alt="" class="w-4 h-4 invert">
+                        <span>{{ appeal_label }}</span>
+                    </p>
+                </div>
+                <div class="rounded-xl bg-gray-900/70 p-3">
+                    <p class="text-xs uppercase text-gray-400">Gamplay is</p>
+                    {% set mood_label = "casual" if rec.gaming_mood|int == 0 else "hardcore" %}
+                    {% set mood_icon = "/static/icon/house.svg" if rec.gaming_mood|int == 0 else
+                    "/static/icon/gamepad.svg" %}
+                    <p class="text-lg font-semibold text-white flex items-center gap-2">
+                        <img src="{{ mood_icon }}" alt="" class="w-4 h-4 invert">
+                        <span>{{ mood_label }}</span>
+                    </p>
+                </div>
+                <div class="rounded-xl bg-gray-900/70 p-3">
+                    <p class="text-xs uppercase text-gray-400">best played</p>
+                    {% set friend_label = "solo" if rec.friend_or_alone|int == 0 else "with friends" %}
+                    {% set friend_icon = "/static/icon/user.svg" if rec.friend_or_alone|int == 0 else
+                    "/static/icon/users.svg" %}
+                    <p class="text-lg font-semibold text-white flex items-center gap-2">
+                        <img src="{{ friend_icon }}" alt="" class="w-4 h-4 invert">
+                        <span>{{ friend_label }}</span>
+                    </p>
+                </div>
+            </div>
+        </span>
+        <div class="mt-5 flex items-center justify-end">
+            <button
+                class="px-3 py-2 text-xs uppercase tracking-wider bg-gray-900/70 text-white rounded-lg border border-gray-700 hover:border-indigo-500 hover:text-indigo-200 transition"
+                data-modal-open data-title="{{ rec.title }}" data-game-id="{{ rec.game_id }}"
+                data-cover-url="{{ cover_url }}" data-cover-fallback="{{ fallback_url }}"
+                data-release-year="{{ rec.release_year or '' }}" data-genre="{{ rec.genre or '' }}"
+                data-developer="{{ rec.developer or '' }}" data-publisher="{{ rec.publisher or '' }}"
+                data-rating-type="{{ rec.rating_type or '' }}" data-rating-value="{{ rec.rating_value or '' }}"
+                data-synopsis="{{ rec.synopsis_en or '' }}">View details</button>
+        </div>
+    </div>
+</div>

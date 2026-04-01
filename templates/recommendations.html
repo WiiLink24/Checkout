@@ -1,0 +1,38 @@
+{% extends "generic/base.html" %}
+
+{% block title %}
+Recommendations for {{ user_info.username }}
+{% endblock %}
+
+{% block content %}
+<div class="absolute inset-x-0 top-0 h-[500px] bg-center bg-cover blur-lg opacity-30"
+    style="background-image: url('{{ user_info.profile_picture }}'); -webkit-mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0)); mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0));">
+</div>
+<div class="min-h-screen px-4 sm:px-6 lg:px-8 py-12">
+    <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-10">
+            <div class="relative w-full mx-auto mb-4 flex items-center justify-center">
+                <img src="{{ user_info.profile_picture }}" alt="{{ user_info.username }}"
+                    class="w-32 h-32 rounded-full mx-auto object-cover relative z-10">
+            </div>
+            <h1 class="text-4xl font-bold text-white mt-2">{{ user_info.username }}<span class="font-light text-gray-500">'s Recommendations</span></h1>
+            <span class="flex flex-row items-center justify-center gap-2 mt-3">
+            {% for linked_wii in user_info.linked_wii_no %}
+            <p class="px-3 py-1 bg-gray-700 rounded-md text-gray-300">{{ linked_wii|format_serial }}</p>
+            {% endfor %}
+            </span>
+        </div>
+        {% if recommendations %}
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {% for rec in recommendations %}
+            {% include "components/recommendation_card.html" %}
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center text-gray-300">Recommend titles on the Nintendo Channel to get started!</div>
+        {% endif %}
+    </div>
+</div>
+
+{% include "components/details_modal.html" %}
+{% endblock %}
