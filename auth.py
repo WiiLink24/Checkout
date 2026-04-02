@@ -1,5 +1,3 @@
-"""Authentication and user profile utilities."""
-
 from flask import session
 from utils import generate_gravatar_url
 

@@ -7,8 +7,8 @@ WiiLink Checkout | Search Users
 {% block content %}
 <div class="px-4 sm:px-6 lg:px-8 py-8">
     <div class="max-w-6xl mx-auto">
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold text-white mb-2">Search Users</h1>
+        <div class="mt-72 mb-8">
+            <h1 class="text-3xl font-bold text-white mb-2">Checkout Search</h1>
             <p class="text-gray-400">Find players and explore their recommendations</p>
         </div>
 
@@ -18,8 +18,8 @@ WiiLink Checkout | Search Users
                     value="{{ search_query }}"
                     class="flex-1 px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
                 <button type="submit"
-                    class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition duration-200">
-                    Search
+                    class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition duration-200">
+                    <img src="/static/icon/search.svg" alt="Search Icon" class="w-5 h-5 invert">
                 </button>
                 {% if search_query %}
                 <a href="/search"
@@ -36,7 +36,7 @@ WiiLink Checkout | Search Users
             {% set wii_value = user.attributes.wiis[0] if user.attributes.wiis is iterable and user.attributes.wiis is
             not string else user.attributes.wiis %}
             <a href="/{{ wii_value }}/"
-                class="w-[300px] flex flex-row items-center gap-3 p-3 bg-gray-800 border border-gray-700 rounded-xl overflow-hidden hover:border-gray-200 transition duration-200">
+                class="w-[300px] flex flex-row items-center gap-3 p-3 bg-gray-800 border border-gray-700 rounded-xl overflow-hidden hover:border-gray-500 transition duration-200">
                 <img src="{{ user.avatar }}" alt="{{ user.username }}"
                     class="w-16 h-16 rounded-full object-cover border border-gray-600">
                 <p class="flex flex-col gap-1">

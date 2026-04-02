@@ -3,6 +3,9 @@ import config
 import re
 import requests
 import hashlib
+import math
+import random
+from collections import defaultdict
 
 def get_serial_prefixes(user_info):
     serials = user_info.get("serial")
@@ -34,10 +37,17 @@ def _run_query(query, params):
     conn.close()
     return [dict(zip(columns, row)) for row in rows]
 
-def fetch_recommendations(serial_prefixes):
+def fetch_recommendations(serial_prefixes, sort_by="recommendation_percent"):
+    """ Fetch recommendations for a given serial number """
     where_clause, params = _build_serial_filter("serial_number", serial_prefixes)
     if not where_clause:
         return []
+
+    if sort_by == "last_recommended":
+        order_by = "r.id DESC, t.title_en NULLS LAST, r.game_id"
+    else:
+        order_by = "r.recommendation_percent DESC, t.title_en NULLS LAST, r.game_id"
+
     query = (
         "SELECT "
         "r.id, r.serial_number, r.game_id, r.gender, r.age, "
@@ -58,58 +68,60 @@ def fetch_recommendations(serial_prefixes):
         "    ORDER BY t.game_id "
         "    LIMIT 1"
         ") t ON true "
-        "ORDER BY r.recommendation_percent DESC, t.title_en NULLS LAST, r.game_id"
+        f"ORDER BY {order_by}"
     )
     return _run_query(query, params)
 
 def fetch_time_played(serial_prefixes, sort_by="time_played"):
+    """ Fetch time played data for a given serial number """
     where_clause, params = _build_serial_filter("tp.serial_number", serial_prefixes)
     if not where_clause:
         return []
-    
+
     if sort_by == "times_played":
-        sort_expr = "MAX(tp.times_played) DESC, MAX(tp.time_played) DESC"
+        sort_expr = "lp.times_played DESC, lp.time_played DESC, lp.id DESC"
     elif sort_by == "last_played":
-        sort_expr = "MAX(tp.id) DESC"
+        sort_expr = "lp.id DESC"
     else:
-        sort_expr = "MAX(tp.time_played) DESC, MAX(tp.times_played) DESC"
-    
+        sort_expr = "lp.time_played DESC, lp.times_played DESC, lp.id DESC"
+
     query = (
-        "WITH game_stats AS ("
-        "    SELECT "
-        "    tp.game_id,"
-        "    MAX(tp.times_played) as max_times_played,"
-        "    MAX(tp.time_played) as max_time_played,"
-        "    MAX(tp.id) as max_id,"
-        "    ROW_NUMBER() OVER (ORDER BY " + sort_expr + ") as sort_rank "
+        "WITH filtered AS ("
+        "    SELECT tp.* "
         "    FROM time_played tp "
         f"    WHERE {where_clause} "
-        "    GROUP BY tp.game_id"
-        "), "
-        "detailed_games AS ("
+        "), latest_per_game AS ("
+        "    SELECT DISTINCT ON (f.game_id) "
+        "    f.id, f.serial_number, f.game_id, f.times_played, f.time_played "
+        "    FROM filtered f "
+        "    ORDER BY f.game_id, f.id DESC"
+        "), ranked AS ("
         "    SELECT "
-        "    tp.id, tp.serial_number, tp.game_id, tp.times_played, tp.time_played, "
-        "    COALESCE(t.display_name, t.title_en, tp.game_id) AS title, "
+        "    lp.id, lp.serial_number, lp.game_id, lp.times_played, lp.time_played, "
+        "    ROW_NUMBER() OVER (ORDER BY " + sort_expr + ") AS sort_rank "
+        "    FROM latest_per_game lp"
+        "), detailed_games AS ("
+        "    SELECT "
+        "    r.id, r.serial_number, r.game_id, r.times_played, r.time_played, "
+        "    COALESCE(t.display_name, t.title_en, r.game_id) AS title, "
         "    t.title_en, t.display_name, t.synopsis_en, t.genre, t.developer, t.publisher, t.game_type, "
         "    t.release_year, t.rating_type, t.rating_value, t.region, "
-        "    gs.sort_rank, "
-        "    ROW_NUMBER() OVER (PARTITION BY tp.game_id ORDER BY tp.id DESC) as rn "
-        "    FROM game_stats gs "
-        "    JOIN time_played tp ON tp.game_id = gs.game_id "
+        "    r.sort_rank "
+        "    FROM ranked r "
         "    LEFT JOIN LATERAL ("
         "        SELECT * FROM titles t "
-        "        WHERE t.game_id LIKE tp.game_id || '%%' "
+        "        WHERE t.game_id LIKE r.game_id || '%%' "
         "        ORDER BY t.game_id "
         "        LIMIT 1"
         "    ) t ON true"
         ") "
         "SELECT * FROM detailed_games "
-        "WHERE rn = 1 "
         "ORDER BY sort_rank"
     )
     return _run_query(query, params)
 
 def fetch_recommendation_averages(game_id, gender=None, age_min=None, age_max=None):
+    """ Fetch average recommendation stats for a game, optionally filtered by demographics """
     conditions = ["game_id = %s"]
     params = [game_id]
     if gender in (1, 2):
@@ -136,6 +148,7 @@ def fetch_recommendation_averages(game_id, gender=None, age_min=None, age_max=No
     return rows[0] if rows else None
 
 def fetch_time_played_stats(game_id):
+    """ Fetch time played stats for a given game """
     query = (
         "SELECT "
         "COUNT(DISTINCT serial_number) AS total_players, "
@@ -174,24 +187,39 @@ def fetch_top_most_played(limit=30):
 
 
 def fetch_top_best_games(limit=30):
-    """Fetch top games by average recommendation percent across all users"""
+    """Fetch top games with confidence-weighted ranking by score and reviewer count."""
     query = (
+        "WITH global_stats AS ("
+        "    SELECT AVG(recommendation_percent)::numeric AS global_avg "
+        "    FROM recommendations"
+        "), per_game AS ("
+        "    SELECT "
+        "    r.game_id, "
+        "    ROUND(AVG(r.recommendation_percent)::numeric, 2) AS avg_recommendation, "
+        "    COUNT(DISTINCT r.serial_number) AS reviewer_count "
+        "    FROM recommendations r "
+        "    GROUP BY r.game_id"
+        ") "
         "SELECT "
-        "r.game_id, "
-        "COALESCE(t.display_name, t.title_en, r.game_id) AS title, "
+        "pg.game_id, "
+        "COALESCE(t.display_name, t.title_en, pg.game_id) AS title, "
         "t.title_en, t.display_name, t.synopsis_en, t.genre, t.developer, t.publisher, t.game_type, "
         "t.release_year, t.rating_type, t.rating_value, t.region, "
-        "ROUND(AVG(r.recommendation_percent)::numeric, 2) AS avg_recommendation, "
-        "COUNT(DISTINCT r.serial_number) AS reviewer_count "
-        "FROM recommendations r "
+        "pg.avg_recommendation, "
+        "pg.reviewer_count "
+        "FROM per_game pg "
+        "CROSS JOIN global_stats gs "
         "LEFT JOIN LATERAL ("
         "    SELECT * FROM titles t "
-        "    WHERE t.game_id LIKE r.game_id || '%%' "
+        "    WHERE t.game_id LIKE pg.game_id || '%%' "
         "    ORDER BY t.game_id "
         "    LIMIT 1"
         ") t ON true "
-        "GROUP BY r.game_id, t.display_name, t.title_en, t.synopsis_en, t.genre, t.developer, t.publisher, t.game_type, t.release_year, t.rating_type, t.rating_value, t.region "
-        "ORDER BY avg_recommendation DESC "
+        "ORDER BY "
+        "((pg.reviewer_count::numeric / (pg.reviewer_count + 20)::numeric) * pg.avg_recommendation) + "
+        "((20::numeric / (pg.reviewer_count + 20)::numeric) * gs.global_avg) DESC, "
+        "pg.reviewer_count DESC, "
+        "pg.avg_recommendation DESC "
         f"LIMIT {limit}"
     )
     return _run_query(query, [])
@@ -220,11 +248,10 @@ def fetch_authentik_user(uid):
 
 def fetch_authentik_users():
     """
-    Fetch all Authentik users that contain the 'serial' key
-    inside their attributes JSON.
+    Fetch all Authentik users that contain the 'serial' key inside their attributes JSON.
     """
     base_url = config.authentik_api_url.rstrip("/")
-    url = f"{base_url}/core/users/?page_size=100&attributes=%7B%22serial__isnull%22%3A+false%7D"
+    url = f"{base_url}/core/users/?page_size=30&attributes=%7B%22serial__isnull%22%3A+false%7D"
     headers = {
         "Accept": "application/json",
         "Authorization": f"Bearer {config.authentik_service_account_token}",
@@ -244,7 +271,6 @@ def fetch_authentik_users():
         print(f"Authentik API error: {e}")
         return []
 
-    print(f"Fetched {len(users)} users with 'serial' attribute")
     return users
 
 def find_user_by_serial(serial):
@@ -288,6 +314,32 @@ def find_user_by_wii_number(wii_number):
         if wii_number in wii_numbers:
             return user
     return None
+
+
+def find_user_by_serial(serial):
+    """Find an Authentik user by their console serial number"""
+    users = fetch_authentik_users()
+    
+    # Normalize the serial
+    serial = normalize_serial(serial) if serial else None
+    
+    if not serial:
+        return None
+    
+    # Search for user with matching serial
+    for user in users:
+        user_serials = user.get("attributes", {}).get("serial", [])
+        if isinstance(user_serials, str):
+            user_serials = [user_serials]
+        
+        # Check if the serial matches any of the user's serials
+        for user_serial in user_serials:
+            if normalize_serial(user_serial) == serial:
+                return user
+    
+    return None
+
+
 def normalize_serial(serial):
     """Normalize serial input by stripping quotes and brackets"""
     return serial.strip("[]'\" ")
@@ -336,16 +388,27 @@ def build_unclaimed_user_info(serial, logged_in_user_picture):
     }
 
 
-def find_game_recommendation(serial_prefixes):
-    """Find a game recommendation based on user's highly-rated games"""
-    if not serial_prefixes:
-        return None
-    
-    where_clause, params = _build_serial_filter("serial_number", serial_prefixes)
-    
-    # Get genres from user's top-rated games
+def _split_genres(genre_value):
+    """Split a comma-separated genre string into clean tokens."""
+    if not genre_value:
+        return []
+    return [g.strip() for g in genre_value.split(",") if g.strip()]
+
+
+def _normalize_scores(score_map):
+    """Normalize scores to 0..1 while preserving relative ordering."""
+    if not score_map:
+        return {}
+    max_value = max(score_map.values()) or 1.0
+    return {k: (v / max_value) for k, v in score_map.items()}
+
+
+def _build_discover_profile(where_clause, params):
+    """Build user taste profile from recommendation history."""
     query = (
-        "SELECT DISTINCT t.genre "
+        "SELECT "
+        "r.game_id, r.recommendation_percent, "
+        "t.genre, t.developer, t.publisher, t.game_type "
         "FROM recommendations r "
         "LEFT JOIN LATERAL ("
         "    SELECT * FROM titles t "
@@ -353,71 +416,168 @@ def find_game_recommendation(serial_prefixes):
         "    ORDER BY t.game_id "
         "    LIMIT 1"
         ") t ON true "
-        f"WHERE {where_clause} AND t.genre IS NOT NULL "
-        "LIMIT 5"
+        f"WHERE {where_clause}"
     )
-    
-    genre_results = _run_query(query, params)
-    if not genre_results:
+    rows = _run_query(query, params)
+    if not rows:
         return None
-    
-    # Get count of games the user has rated
-    count_query = f"SELECT COUNT(DISTINCT game_id) as total FROM recommendations WHERE {where_clause}"
-    count_result = _run_query(count_query, params)
-    total_rated = count_result[0]['total'] if count_result else 0
-    
-    # Get games the user HAS recommended
-    recommended_games = _run_query(
-        f"SELECT DISTINCT game_id FROM recommendations WHERE {where_clause}",
-        params
+
+    genre_scores = defaultdict(float)
+    developer_scores = defaultdict(float)
+    publisher_scores = defaultdict(float)
+    game_type_scores = defaultdict(float)
+    reviewed_ids = set()
+
+    for row in rows:
+        reviewed_ids.add(row.get("game_id"))
+
+        recommendation_percent = float(row.get("recommendation_percent") or 0)
+        # Map recommendation score into a positive preference weight (0..1).
+        preference_weight = max(0.0, min(1.0, (recommendation_percent - 40.0) / 60.0))
+        if preference_weight <= 0:
+            continue
+
+        for genre in _split_genres(row.get("genre"))[:3]:
+            genre_scores[genre] += preference_weight
+
+        developer = (row.get("developer") or "").strip()
+        if developer:
+            developer_scores[developer] += preference_weight * 0.65
+
+        publisher = (row.get("publisher") or "").strip()
+        if publisher:
+            publisher_scores[publisher] += preference_weight * 0.45
+
+        game_type = (row.get("game_type") or "").strip()
+        if game_type:
+            game_type_scores[game_type] += preference_weight * 0.35
+
+    top_genres = [g for g, _ in sorted(genre_scores.items(), key=lambda item: item[1], reverse=True)[:5]]
+    return {
+        "reviewed_ids": reviewed_ids,
+        "genre_scores": _normalize_scores(genre_scores),
+        "developer_scores": _normalize_scores(developer_scores),
+        "publisher_scores": _normalize_scores(publisher_scores),
+        "game_type_scores": _normalize_scores(game_type_scores),
+        "top_genres": top_genres,
+        "total_rated": len(reviewed_ids),
+    }
+
+def _is_already_seen(candidate_game_id, seen_game_ids):
+    """Exclude candidates already seen by the user (played or reviewed)."""
+    if candidate_game_id in seen_game_ids:
+        return True
+    for seen_id in seen_game_ids:
+        if not seen_id:
+            continue
+        if candidate_game_id.startswith(seen_id) or seen_id.startswith(candidate_game_id):
+            return True
+    return False
+
+
+def _score_discover_candidate(candidate, profile):
+    """Score a candidate game using weighted user affinity and community signal."""
+    genres = _split_genres(candidate.get("genre"))
+    genre_scores = profile["genre_scores"]
+
+    if genres:
+        genre_match_best = max((genre_scores.get(g, 0.0) for g in genres), default=0.0)
+        genre_match_sum = sum((genre_scores.get(g, 0.0) for g in genres))
+        genre_score = genre_match_best + (0.30 * genre_match_sum)
+    else:
+        genre_match_best = 0.0
+        genre_score = 0.0
+
+    developer_score = profile["developer_scores"].get((candidate.get("developer") or "").strip(), 0.0)
+    publisher_score = profile["publisher_scores"].get((candidate.get("publisher") or "").strip(), 0.0)
+    game_type_score = profile["game_type_scores"].get((candidate.get("game_type") or "").strip(), 0.0)
+
+    avg_recommendation = float(candidate.get("avg_recommendation") or 50.0)
+    rating_count = int(candidate.get("rating_count") or 0)
+    confidence = min(1.0, math.log1p(rating_count) / math.log(25)) if rating_count > 0 else 0.0
+    community_score = ((avg_recommendation - 50.0) / 50.0) * confidence
+
+    # Small jitter keeps discover results from feeling static while preserving quality.
+    exploration_jitter = random.uniform(0.0, 0.03)
+
+    total_score = (
+        (0.55 * genre_score)
+        + (0.18 * developer_score)
+        + (0.12 * publisher_score)
+        + (0.05 * game_type_score)
+        + (0.10 * community_score)
+        + exploration_jitter
     )
-    recommended_game_ids = [g["game_id"] for g in recommended_games]
-    
-    # Build genre list - extract first genre from comma-separated list
-    genres_to_search = []
-    for g in genre_results:
-        if g['genre']:
-            first_genre = g['genre'].split(',')[0].strip()
-            if first_genre:
-                genres_to_search.append(first_genre)
-    
-    if not genres_to_search:
+
+    matched_genre = "Unknown"
+    if genres:
+        matched_genre = max(genres, key=lambda g: genre_scores.get(g, 0.0))
+
+    return total_score, matched_genre
+
+
+def find_game_recommendation(serial_prefixes):
+    """Find a discover recommendation using weighted taste matching."""
+    if not serial_prefixes:
         return None
-    
-    # Build SQL with proper parameter handling
-    genre_placeholders = " OR ".join([f"t.genre ILIKE %s"] * len(genres_to_search))
-    genre_patterns = [f"%{g}%" for g in genres_to_search]
-    
-    exclude_clause = ""
-    if recommended_game_ids:
-        placeholders = ",".join(["%s"] * len(recommended_game_ids))
-        exclude_clause = f"AND t.game_id NOT IN ({placeholders})"
-        genre_patterns.extend(recommended_game_ids)
-    
-    query = (
-        "SELECT "
-        "t.game_id, t.display_name, t.title_en, t.synopsis_en, t.genre, t.developer, t.publisher, t.game_type "
-        "FROM titles t "
-        f"WHERE ({genre_placeholders}) {exclude_clause} "
-        "AND t.display_name IS NOT NULL "
-        "ORDER BY RANDOM() "
-        "LIMIT 1"
+
+    where_clause, params = _build_serial_filter("serial_number", serial_prefixes)
+
+    profile = _build_discover_profile(where_clause, params)
+    if not profile:
+        return None
+
+    played_rows = _run_query(
+        f"SELECT DISTINCT game_id FROM time_played WHERE {where_clause}",
+        params,
     )
-    
-    result = _run_query(query, genre_patterns)
-    if result:
-        game = result[0]
-        
-        # Add recommendation explanation
-        matched_genre = game.get('genre', '').split(',')[0].strip() if game.get('genre') else 'Unknown'
-        game["reason"] = {
-            "genres": ", ".join(genres_to_search[:2]),  # Show top 2 genres user likes
-            "matched_genre": matched_genre,
-            "total_rated": total_rated
-        }
-        
-        return game
-    
+    played_ids = {row.get("game_id") for row in played_rows if row.get("game_id")}
+    seen_game_ids = set(profile["reviewed_ids"]) | played_ids
+
+    candidates = _run_query(
+        (
+            "SELECT "
+            "t.game_id, t.display_name, t.title_en, t.synopsis_en, t.genre, t.developer, t.publisher, "
+            "t.game_type, t.release_year, t.rating_type, t.rating_value, t.region, "
+            "COALESCE(stats.avg_recommendation, 50) AS avg_recommendation, "
+            "COALESCE(stats.rating_count, 0) AS rating_count "
+            "FROM titles t "
+            "LEFT JOIN LATERAL ("
+            "    SELECT AVG(r.recommendation_percent) AS avg_recommendation, COUNT(*) AS rating_count "
+            "    FROM recommendations r "
+            "    WHERE t.game_id LIKE r.game_id || '%%'"
+            ") stats ON true "
+            "WHERE t.display_name IS NOT NULL "
+            "AND t.genre IS NOT NULL "
+            "ORDER BY COALESCE(stats.rating_count, 0) DESC, COALESCE(stats.avg_recommendation, 50) DESC "
+            "LIMIT 1200"
+        ),
+        [],
+    )
+
+    scored_candidates = []
+    for candidate in candidates:
+        candidate_game_id = candidate.get("game_id")
+        if not candidate_game_id or _is_already_seen(candidate_game_id, seen_game_ids):
+            continue
+
+        score, matched_genre = _score_discover_candidate(candidate, profile)
+        scored_candidates.append((score, matched_genre, candidate))
+
+    if not scored_candidates:
+        return None
+
+    scored_candidates.sort(key=lambda item: item[0], reverse=True)
+    best_score, matched_genre, best_game = scored_candidates[0]
+
+    best_game["reason"] = {
+        "genres": ", ".join(profile["top_genres"][:2]) if profile["top_genres"] else "your recent likes",
+        "matched_genre": matched_genre,
+        "total_rated": profile["total_rated"],
+        "score": round(best_score, 3),
+    }
+    return best_game
+
     return None
 
 
@@ -426,22 +586,28 @@ def fetch_user_latest_games(serial_prefixes, limit=5):
     where_clause, params = _build_serial_filter("tp.serial_number", serial_prefixes)
     if not where_clause:
         return []
-    
+
     query = (
-        "SELECT DISTINCT ON (tp.game_id) "
-        "tp.game_id, tp.serial_number, tp.time_played, "
-        "COALESCE(t.display_name, t.title_en, tp.game_id) AS title, "
+        "WITH latest_per_game AS ("
+        "    SELECT DISTINCT ON (tp.game_id) "
+        "    tp.id, tp.game_id, tp.serial_number, tp.time_played "
+        "    FROM time_played tp "
+        f"    WHERE {where_clause} "
+        "    ORDER BY tp.game_id, tp.id DESC"
+        ") "
+        "SELECT "
+        "lp.game_id, lp.serial_number, lp.time_played, "
+        "COALESCE(t.display_name, t.title_en, lp.game_id) AS title, "
         "t.title_en, t.display_name, t.synopsis_en, t.genre, t.developer, t.publisher, t.game_type, "
         "t.release_year, t.rating_type, t.rating_value, t.region "
-        "FROM time_played tp "
+        "FROM latest_per_game lp "
         "LEFT JOIN LATERAL ("
         "    SELECT * FROM titles t "
-        "    WHERE t.game_id LIKE tp.game_id || '%%' "
+        "    WHERE t.game_id LIKE lp.game_id || '%%' "
         "    ORDER BY t.game_id "
         "    LIMIT 1"
         ") t ON true "
-        f"WHERE {where_clause} "
-        "ORDER BY tp.game_id, tp.id DESC "
+        "ORDER BY lp.id DESC "
         f"LIMIT {limit}"
     )
     return _run_query(query, params)
@@ -452,22 +618,28 @@ def fetch_user_latest_reviews(serial_prefixes, limit=5):
     where_clause, params = _build_serial_filter("r.serial_number", serial_prefixes)
     if not where_clause:
         return []
-    
+
     query = (
-        "SELECT DISTINCT ON (r.game_id) "
-        "r.game_id, r.serial_number, r.recommendation_percent, "
-        "COALESCE(t.display_name, t.title_en, r.game_id) AS title, "
+        "WITH latest_per_game AS ("
+        "    SELECT DISTINCT ON (r.game_id) "
+        "    r.id, r.game_id, r.serial_number, r.recommendation_percent "
+        "    FROM recommendations r "
+        f"    WHERE {where_clause} "
+        "    ORDER BY r.game_id, r.id DESC"
+        ") "
+        "SELECT "
+        "lp.game_id, lp.serial_number, lp.recommendation_percent, "
+        "COALESCE(t.display_name, t.title_en, lp.game_id) AS title, "
         "t.title_en, t.display_name, t.synopsis_en, t.genre, t.developer, t.publisher, t.game_type, "
         "t.release_year, t.rating_type, t.rating_value, t.region "
-        "FROM recommendations r "
+        "FROM latest_per_game lp "
         "LEFT JOIN LATERAL ("
         "    SELECT * FROM titles t "
-        "    WHERE t.game_id LIKE r.game_id || '%%' "
+        "    WHERE t.game_id LIKE lp.game_id || '%%' "
         "    ORDER BY t.game_id "
         "    LIMIT 1"
         ") t ON true "
-        f"WHERE {where_clause} "
-        "ORDER BY r.game_id, r.id DESC "
+        "ORDER BY lp.id DESC "
         f"LIMIT {limit}"
     )
     return _run_query(query, params)

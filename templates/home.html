@@ -12,9 +12,14 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
     <div class="max-w-6xl mx-auto">
         <span class="flex flex-row items-center justify-between gap-6">
             <div class="flex flex-row items-center gap-6 mb-10">
-                <div class="relative w-full mx-auto mb-4 flex items-center justify-center">
+                <div class="relative w-32 h-32 mx-auto flex items-center justify-center group">
                     <img src="{{ viewed_user.profile_picture }}" alt="{{ viewed_user.username }}"
-                        class="w-32 h-32 rounded-full mx-auto object-cover relative z-10">
+                        class="w-32 h-32 rounded-full object-cover relative z-10">
+                    <a
+                        href="{% if viewed_user.linked_wii_no %}/{{ viewed_user.linked_wii_no[0] }}.png{% else %}#{% endif %}"
+                        class="absolute inset-0 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center z-20">
+                        <img src="/static/icon/tag.svg" alt="Copy Icon" class="w-10 h-10 invert">
+                    </a>
                 </div>
                 <span class="flex flex-col items-start gap-3">
                     <h1 class="text-5xl font-bold text-white mt-2 !mb-0">
@@ -32,7 +37,7 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                 </span>
             </div>
             <div class="flex flex-col gap-6 mb-12">
-                <a href="{% if base_url %}{{ base_url }}/recommendations{% else %}/recommendations{% endif %}"
+                <a href="{% if base_url %}{{ base_url }}/time_played{% else %}/time_played{% endif %}"
                     class="bg-gray-300/5 rounded-2xl p-6">
                     <div class="flex items-center justify-end">
                         <div>
@@ -45,7 +50,7 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                         </div>
                     </div>
                 </a>
-                <a href="{% if base_url %}{{ base_url }}/time_played{% else %}/time_played{% endif %}"
+                <a href="{% if base_url %}{{ base_url }}/recommendations{% else %}/recommendations{% endif %}"
                     class="bg-gray-300/5 rounded-2xl p-6">
                     <div class="flex items-center justify-end">
                         <div>
@@ -64,44 +69,35 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                 {% if latest_games %}
                 <div class="grid gap-4" style="grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));">
                     {% for game in latest_games %}
-                    {% if game.game_type == "DS" %}
-                    {% set cover_url = "https://art.gametdb.com/ds/coverHQ/US/" ~ game.game_id ~ ".jpg" %}
-                    {% set fallback_url = "" %}
-                    {% elif game.game_type == "3DS" %}
-                    {% set cover_url = "https://art.gametdb.com/3ds/coverHQ/EN/" ~ game.game_id ~ ".jpg" %}
-                    {% set fallback_url = "" %}
-                    {% else %}
-                    {% set cover_region = game.region or "US" %}
-                    {% set cover_url = "https://art.gametdb.com/wii/cover/" ~ cover_region ~ "/" ~ game.game_id ~ ".png"
-                    %}
-                    {% set fallback_url = "https://art.gametdb.com/wii/cover/" ~ cover_region ~ "/" ~ game.game_id ~
-                    "01.png" %}
-                    {% endif %}
+                    {% set cover = namespace(url='', fallback='') %}
+                    {% set cover_game = game %}
+                    {% include "components/game_cover_vars.html" %}
                     <button
                         class="flex flex-col items-end justify-end rounded-xl hover:scale-110 transition duration-200 relative w-full text-left bg-transparent border-0 cursor-pointer"
                         data-modal-open data-title="{{ game.title_en or game.title }}" data-game-id="{{ game.game_id }}"
-                        data-cover-url="{{ cover_url }}" data-cover-fallback="{{ fallback_url }}"
+                        data-cover-url="{{ cover.url }}" data-cover-fallback="{{ cover.fallback }}"
                         data-release-year="{{ game.release_year or '' }}" data-genre="{{ game.genre or '' }}"
                         data-developer="{{ game.developer or '' }}" data-publisher="{{ game.publisher or '' }}"
                         data-rating-type="{{ game.rating_type or '' }}"
                         data-rating-value="{{ game.rating_value or '' }}" data-synopsis="{{ game.synopsis_en or '' }}">
-                        <div class="flex items-center gap-4">
-                            <img src="{{ cover_url }}" alt="{{ game.title }} Cover" data-fallback="{{ fallback_url }}"
-                                onerror="if (!this.dataset.tried && this.dataset.fallback) { this.dataset.tried = '1'; this.src = this.dataset.fallback; } else { this.style.display = 'none'; }"
-                                class="w-64 object-cover rounded flex-shrink-0">
+                        <div class="w-full flex items-center gap-4">
+                            <img src="{{ cover.url }}" alt="{{ game.title }} Cover" data-fallback="{{ cover.fallback }}"
+                                onerror="if (!this.dataset.tried && this.dataset.fallback) { this.dataset.tried = '1'; this.src = this.dataset.fallback; } else { var placeholder = document.createElement('div'); placeholder.className = 'w-full h-auto bg-gray-700 rounded flex-shrink-0'; this.parentNode.replaceChild(placeholder, this); }"
+                                class="w-full object-cover rounded">
                             <div class="bottom-0 p-3 z-10 absolute">
-                                <p class="text-white font-semibold truncate">{{ game.title_en or game.title }}</p>
+                                <p class="text-white font-semibold break-words">{{ game.title_en or game.title }}</p>
                                 <p class="text-sm text-gray-300">{{
                                     game.time_played|format_playtime }} played</p>
                             </div>
-                            <div class="bottom-0 absolute bg-gradient-to-t from-black/70 to-transparent w-full h-40">
+                            <div
+                                class="bottom-0 absolute bg-gradient-to-t from-black/70 to-transparent w-full h-40 rounded">
                             </div>
                         </div>
                     </button>
                     {% endfor %}
                 </div>
                 <span class="mt-3 flex flex-row items-center justify-between">
-                    <h2 class="text-2xl font-bold text-white/60 mb-4">Latest Games Played</h2>
+                    <h2 class="text-2xl font-bold text-white/30 mb-4">Latest Games Played</h2>
                     <a href="{% if base_url %}{{ base_url }}/time_played{% else %}/time_played{% endif %}"
                         class="flex flex-row items-center gap-1 text-gray-300 hover:text-white transition duration-200">
                         View All <img src="/static/icon/chevron-right.svg" alt="Chevron Right"
@@ -115,38 +111,28 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                 {% endif %}
             </div>
 
-            <hr class="border-gray-300/30">
+            <hr class="border-gray-300/10">
 
             <div class="mt-8">
                 {% if latest_reviews %}
                 <div class="grid gap-4" style="grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));">
                     {% for game in latest_reviews %}
-                    {% if game.game_type == "DS" %}
-                    {% set cover_url = "https://art.gametdb.com/ds/coverHQ/US/" ~ game.game_id ~ ".jpg" %}
-                    {% set fallback_url = "" %}
-                    {% elif game.game_type == "3DS" %}
-                    {% set cover_url = "https://art.gametdb.com/3ds/coverHQ/EN/" ~ game.game_id ~ ".jpg" %}
-                    {% set fallback_url = "" %}
-                    {% else %}
-                    {% set cover_region = game.region or "US" %}
-                    {% set cover_url = "https://art.gametdb.com/wii/cover/" ~ cover_region ~ "/" ~ game.game_id ~ ".png"
-                    %}
-                    {% set fallback_url = "https://art.gametdb.com/wii/cover/" ~ cover_region ~ "/" ~ game.game_id ~
-                    "01.png" %}
-                    {% endif %}
+                    {% set cover = namespace(url='', fallback='') %}
+                    {% set cover_game = game %}
+                    {% include "components/game_cover_vars.html" %}
                     <button
                         class="flex flex-col items-end justify-end block rounded-xl hover:scale-110 transition duration-200 relative w-full text-left bg-transparent border-0 cursor-pointer"
                         data-modal-open data-title="{{ game.title_en or game.title }}" data-game-id="{{ game.game_id }}"
-                        data-cover-url="{{ cover_url }}" data-cover-fallback="{{ fallback_url }}"
+                        data-cover-url="{{ cover.url }}" data-cover-fallback="{{ cover.fallback }}"
                         data-release-year="{{ game.release_year or '' }}" data-genre="{{ game.genre or '' }}"
                         data-developer="{{ game.developer or '' }}" data-publisher="{{ game.publisher or '' }}"
                         data-rating-type="{{ game.rating_type or '' }}"
                         data-rating-value="{{ game.rating_value or '' }}" data-synopsis="{{ game.synopsis_en or '' }}">
-                        <img src="{{ cover_url }}" alt="{{ game.title }} Cover" data-fallback="{{ fallback_url }}"
+                        <img src="{{ cover.url }}" alt="{{ game.title }} Cover" data-fallback="{{ cover.fallback }}"
                             onerror="if (!this.dataset.tried && this.dataset.fallback) { this.dataset.tried = '1'; this.src = this.dataset.fallback; } else { this.style.display = 'none'; }"
                             class="w-full object-cover rounded">
                         <div class="bottom-0 p-3 z-10 absolute w-full">
-                            <p class="text-white font-semibold truncate">{{ game.title_en or game.title }}</p>
+                            <p class="text-white font-semibold break-words">{{ game.title_en or game.title }}</p>
                             {% set score_percent = game.recommendation_percent or 0 %}
                             {% if score_percent >= 80 %}
                             {% set score_color = "bg-emerald-400" %}
@@ -167,13 +153,14 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                                 </div>
                             </div>
                         </div>
-                        <div class="bottom-0 absolute bg-gradient-to-t from-black/70 to-transparent w-full h-40 z-1">
+                        <div
+                            class="bottom-0 absolute bg-gradient-to-t from-black/70 to-transparent w-full h-40 rounded">
                         </div>
                     </button>
                     {% endfor %}
                 </div>
                 <span class="mt-3 flex flex-row items-center justify-between">
-                    <h2 class="text-2xl font-bold text-white/60 mb-4">Latest Reviews</h2>
+                    <h2 class="text-2xl font-bold text-white/30 mb-4">Latest Reviews</h2>
                     <a href="{% if base_url %}{{ base_url }}/recommendations{% else %}/recommendations{% endif %}"
                         class="flex flex-row items-center gap-1 text-gray-300 hover:text-white transition duration-200">
                         View All <img src="/static/icon/chevron-right.svg" alt="Chevron Right"
@@ -183,10 +170,6 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                 {% else %}
                 <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-8 text-center">
                     <p class="text-gray-400 mb-4">No reviews yet</p>
-                    <a href="/recommendations"
-                        class="inline-block px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition duration-200">
-                        Review Games
-                    </a>
                 </div>
                 {% endif %}
             </div>

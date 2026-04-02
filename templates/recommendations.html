@@ -40,6 +40,20 @@ WiiLink Checkout | Recommendations for {{ viewed_user.username }}
         {% endif %}
 
         {% if recommendations %}
+        {% set sort_base = base_url ~ '/recommendations' if base_url else '/recommendations' %}
+        {% if not is_unclaimed %}
+        <div
+            class="fixed bottom-5 left-1/2 -translate-x-1/2 md:-translate-x-[calc(50%-140px)] p-3 rounded-xl bg-gray-800/70 backdrop-blur-lg flex flex-row items-center justify-center gap-2 mt-6 z-10">
+            <a href="{{ sort_base }}?sort=recommendation_percent" title="Best Rated"
+                class="px-4 py-2 rounded-lg border transition {% if sort_by == 'recommendation_percent' %}bg-indigo-600 border-indigo-500 text-white{% else %}bg-gray-800 border-gray-700 text-gray-300 hover:border-indigo-500{% endif %}">
+                <img src="/static/icon/trending-up.svg" alt="Best Rated" class="invert">
+            </a>
+            <a href="{{ sort_base }}?sort=last_recommended" title="Last Recommended"
+                class="px-4 py-2 rounded-lg border transition {% if sort_by == 'last_recommended' %}bg-indigo-600 border-indigo-500 text-white{% else %}bg-gray-800 border-gray-700 text-gray-300 hover:border-indigo-500{% endif %}">
+                <img src="/static/icon/calendar.svg" alt="Last Recommended" class="invert">
+            </a>
+        </div>
+        {% endif %}
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {% for rec in recommendations %}
             {% include "components/recommendation_card.html" %}
