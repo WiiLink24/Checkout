@@ -120,6 +120,60 @@ def fetch_time_played(serial_prefixes, sort_by="time_played"):
     )
     return _run_query(query, params)
 
+
+def fetch_favorites(serial_prefixes, limit=30):
+    """Fetch user's bookmarked favorite games from the bookmarks table."""
+    where_clause, params = _build_serial_filter("b.serial_number", serial_prefixes)
+    if not where_clause:
+        return []
+
+    query = (
+        "WITH latest_bookmarks AS ("
+        "    SELECT DISTINCT ON (b.game_id) "
+        "    b.id, b.serial_number, b.game_id "
+        "    FROM bookmarks b "
+        f"    WHERE {where_clause} "
+        "    ORDER BY b.game_id, b.id DESC"
+        ") "
+        "SELECT "
+        "lb.id AS bookmark_id, lb.serial_number, lb.game_id AS bookmarked_game_id, "
+        "COALESCE(stats.favorite_count, 0) AS favorite_count, "
+        "COALESCE(stats.user_count, 0) AS user_count, "
+        "t.* "
+        "FROM latest_bookmarks lb "
+        "LEFT JOIN LATERAL ("
+        "    SELECT "
+        "    COUNT(*) AS favorite_count, "
+        "    COUNT(DISTINCT b2.serial_number) AS user_count "
+        "    FROM bookmarks b2 "
+        "    WHERE b2.game_id = lb.game_id OR b2.game_id LIKE lb.game_id || '%%'"
+        ") stats ON true "
+        "LEFT JOIN LATERAL ("
+        "    SELECT * FROM titles t "
+        "    WHERE t.game_id = lb.game_id OR t.game_id LIKE lb.game_id || '%%' "
+        "    ORDER BY CASE WHEN t.game_id = lb.game_id THEN 0 ELSE 1 END, t.game_id "
+        "    LIMIT 1"
+        ") t ON true "
+        "ORDER BY lb.id DESC "
+        f"LIMIT {limit}"
+    )
+    rows = _run_query(query, params)
+
+    favorites = []
+    for row in rows:
+        game_id = row.get("bookmarked_game_id") or row.get("game_id")
+        title_value = row.get("display_name") or row.get("title") or row.get("title_en") or game_id
+        synopsis_value = row.get("synopsis") or row.get("synopsis_en")
+
+        normalized = dict(row)
+        normalized["game_id"] = game_id
+        normalized["title"] = title_value
+        normalized["title_en"] = row.get("title_en") or row.get("title")
+        normalized["synopsis_en"] = row.get("synopsis_en") or synopsis_value
+        favorites.append(normalized)
+
+    return favorites
+
 def fetch_recommendation_averages(game_id, gender=None, age_min=None, age_max=None):
     """ Fetch average recommendation stats for a game, optionally filtered by demographics """
     conditions = ["game_id = %s"]
@@ -220,6 +274,30 @@ def fetch_top_best_games(limit=30):
         "((20::numeric / (pg.reviewer_count + 20)::numeric) * gs.global_avg) DESC, "
         "pg.reviewer_count DESC, "
         "pg.avg_recommendation DESC "
+        f"LIMIT {limit}"
+    )
+    return _run_query(query, [])
+
+
+def fetch_top_favorites(limit=30):
+    """Fetch top games by total bookmark count across all users."""
+    query = (
+        "SELECT "
+        "b.game_id, "
+        "COALESCE(t.display_name, t.title_en, b.game_id) AS title, "
+        "t.title_en, t.display_name, t.synopsis_en, t.genre, t.developer, t.publisher, t.game_type, "
+        "t.release_year, t.rating_type, t.rating_value, t.region, "
+        "COUNT(*) AS favorite_count, "
+        "COUNT(DISTINCT b.serial_number) AS user_count "
+        "FROM bookmarks b "
+        "LEFT JOIN LATERAL ("
+        "    SELECT * FROM titles t "
+        "    WHERE t.game_id LIKE b.game_id || '%%' "
+        "    ORDER BY t.game_id "
+        "    LIMIT 1"
+        ") t ON true "
+        "GROUP BY b.game_id, t.display_name, t.title_en, t.synopsis_en, t.genre, t.developer, t.publisher, t.game_type, t.release_year, t.rating_type, t.rating_value, t.region "
+        "ORDER BY favorite_count DESC, user_count DESC "
         f"LIMIT {limit}"
     )
     return _run_query(query, [])

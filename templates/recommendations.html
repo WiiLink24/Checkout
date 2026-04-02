@@ -20,10 +20,22 @@ WiiLink Checkout | Recommendations for {{ viewed_user.username }}
             </div>
             <h1 class="text-4xl font-bold text-white mt-2">
                 {{ viewed_user.username }}
-                <a href="{% if base_url %}{{ base_url }}/time_played{% else %}/time_played{% endif %}"
-                    class="inline-block font-light text-gray-500 hover:text-gray-300 transition pr-1 py-1 border border-dashed border-gray-600/30 hover:border-gray-400 rounded-lg">
-                    's Recommendations
-                </a>
+                <details class="relative inline-block ml-2 text-left group">
+                    <summary
+                        class="inline-flex items-center gap-2 px-3 py-1 border border-dashed border-gray-600/30 text-gray-500 hover:text-gray-300 transition rounded-lg text-base font-light cursor-pointer select-none">
+                        's Recommendations
+                        <img src="/static/icon/chevron-down.svg" alt="Open"
+                            class="w-4 h-4 invert opacity-70 transition-transform group-open:rotate-180">
+                    </summary>
+                    <div
+                        class="absolute left-1/2 -translate-x-1/2 mt-2 w-44 rounded-lg border border-gray-700 bg-gray-900/95 shadow-xl z-20 overflow-hidden">
+                        <span class="block px-3 py-2 text-sm text-indigo-300 bg-indigo-500/10">Recommendations</span>
+                        <a href="{% if base_url %}{{ base_url }}/time_played{% else %}/time_played{% endif %}"
+                            class="block px-3 py-2 text-sm text-gray-300 hover:bg-gray-800 transition">Time Played</a>
+                        <a href="{% if base_url %}{{ base_url }}/favorites{% else %}/favorites{% endif %}"
+                            class="block px-3 py-2 text-sm text-gray-300 hover:bg-gray-800 transition">Favorites</a>
+                    </div>
+                </details>
             </h1>
             <span class="flex flex-row items-center justify-center gap-2 mt-3">
                 {% for linked_wii in viewed_user.linked_wii_no %}

@@ -9,11 +9,12 @@ from tag_generator import generate_user_tag
 from utils import (
     get_serial_prefixes, fetch_recommendations, fetch_time_played,
     fetch_recommendation_averages, fetch_time_played_stats,
-    fetch_top_most_played, fetch_top_best_games,
+    fetch_top_most_played, fetch_top_best_games, fetch_top_favorites,
     fetch_authentik_users, find_user_by_wii_number, find_user_by_serial,
     normalize_serial, extract_serial_prefix,
     build_viewed_user_info, build_unclaimed_user_info, find_game_recommendation,
-    fetch_user_latest_games, fetch_user_latest_reviews, fetch_user_stats
+    fetch_user_latest_games, fetch_user_latest_reviews, fetch_user_stats,
+    fetch_favorites
 )
 
 app = Flask(__name__)
@@ -136,6 +137,13 @@ def top_best_games():
     games = fetch_top_best_games(30)
     return render_template("top_best_games.html", games=games, user_info=user_info)
 
+
+@app.route("/top/favorites")
+def top_favorites():
+    user_info = get_logged_in_user_info()
+    games = fetch_top_favorites(30)
+    return render_template("top_favorites.html", games=games, user_info=user_info)
+
 @app.route("/discover")
 def discover():
     if not oidc.user_loggedin:
@@ -149,6 +157,75 @@ def discover():
     
     game = find_game_recommendation(serial_prefixes)
     return render_template("discover.html", user_info=user_info, game=game)
+
+
+@app.route("/favorites")
+def favorites():
+    if not oidc.user_loggedin:
+        return redirect(url_for('index'))
+    profile = get_user_profile()
+    user_info = get_logged_in_user_info()
+    serial_prefixes = get_serial_prefixes(profile)
+    
+    if not serial_prefixes:
+        return render_template("errors/not_linked.html", user_info=user_info), 400
+
+    games = fetch_favorites(serial_prefixes, 30)
+    return render_template(
+        "favorites.html",
+        games=games,
+        user_info=user_info,
+        viewed_user=user_info,
+        is_unclaimed=False,
+        base_url=None,
+    )
+
+
+@app.route("/<serial_or_code>/favorites")
+def favorites_by_serial(serial_or_code):
+    """Display favorites - works for linked friend codes and unlinked serials"""
+    serial_or_code = normalize_serial(serial_or_code)
+
+    user_info = get_logged_in_user_info()
+
+    # Check if it's a linked friend code
+    authentik_user = find_user_by_wii_number(serial_or_code)
+    if authentik_user:
+        user_serial = authentik_user.get("attributes", {}).get("serial")
+        if isinstance(user_serial, list):
+            user_serial = user_serial[0] if user_serial else serial_or_code
+        serial_prefixes = extract_serial_prefix(user_serial)
+
+        games = fetch_favorites(serial_prefixes, 30)
+        viewed_user = build_viewed_user_info(authentik_user)
+        return render_template(
+            "favorites.html",
+            games=games,
+            user_info=user_info,
+            viewed_user=viewed_user,
+            is_unclaimed=False,
+            base_url=f"/{serial_or_code}",
+        )
+
+    # Check if it's a linked serial
+    authentik_user_by_serial = find_user_by_serial(serial_or_code)
+    if authentik_user_by_serial:
+        abort(404)
+
+    # Serial is unlinked - show unclaimed context
+    serial_prefixes = extract_serial_prefix(serial_or_code)
+    games = fetch_favorites(serial_prefixes, 30)
+    logged_in_user_picture = user_info.get("profile_picture") if user_info else None
+    viewed_user = build_unclaimed_user_info(serial_or_code, logged_in_user_picture)
+    return render_template(
+        "favorites.html",
+        games=games,
+        user_info=user_info,
+        viewed_user=viewed_user,
+        unclaimed_serial=serial_or_code,
+        is_unclaimed=True,
+        base_url=f"/{serial_or_code}",
+    )
 
 @app.route("/<friend_code>.png")
 def friend_code_tag(friend_code):
@@ -237,6 +314,7 @@ def friend_code_home(friend_code):
     
     # Fetch data from database
     latest_games = fetch_user_latest_games(serial_prefixes, 5) if serial_prefixes else []
+    latest_favorites = fetch_favorites(serial_prefixes, 5) if serial_prefixes else []
     latest_reviews = fetch_user_latest_reviews(serial_prefixes, 5) if serial_prefixes else []
     user_stats = fetch_user_stats(serial_prefixes) if serial_prefixes else {'total_minutes': 0, 'total_reviews': 0}
     
@@ -247,6 +325,7 @@ def friend_code_home(friend_code):
                          user_info=user_info,
                          viewed_user=viewed_user,
                          latest_games=latest_games,
+                         latest_favorites=latest_favorites,
                          latest_reviews=latest_reviews,
                          user_stats=user_stats,
                          is_unclaimed=False,
@@ -263,6 +342,7 @@ def index():
             return render_template("errors/not_linked.html", user_info=user_info), 400
         
         latest_games = fetch_user_latest_games(serial_prefixes, 5)
+        latest_favorites = fetch_favorites(serial_prefixes, 5)
         latest_reviews = fetch_user_latest_reviews(serial_prefixes, 5)
         user_stats = fetch_user_stats(serial_prefixes)
         
@@ -270,6 +350,7 @@ def index():
                              user_info=user_info,
                              viewed_user=user_info,
                              latest_games=latest_games,
+                             latest_favorites=latest_favorites,
                              latest_reviews=latest_reviews,
                              user_stats=user_stats)
     else:

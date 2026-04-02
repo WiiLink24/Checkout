@@ -71,12 +71,14 @@
                         {{ menu_section('TRENDING') }}
                         {{ menu_item('Top Most Played', 'top_most_played', 'trending-up') }}
                         {{ menu_item('Top Best Games', 'top_best_games', 'star') }}
+                        {{ menu_item('Top Favorites', 'top_favorites', 'heart') }}
                     </div>
                     {% if g.oidc_user.logged_in %}
                     <div class="mt-8">
                         {{ menu_item('Discover', 'discover', 'lightbulb') }}
                         {{ menu_item('Your Recommendations', 'recommendations', 'gamepad') }}
                         {{ menu_item('Your Time Played', 'time_played', 'clock') }}
+                        {{ menu_item('Your Favorites', 'favorites', 'star') }}
                     </div>
                     {% endif %}
                     {% if not g.oidc_user.logged_in %}

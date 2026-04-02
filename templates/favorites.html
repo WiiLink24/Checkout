@@ -1,7 +1,7 @@
 {% extends "generic/base.html" %}
 
 {% block title %}
-WiiLink Checkout | Time Played for {{ viewed_user.username }}
+WiiLink Checkout | Favorites for {{ viewed_user.username }}
 {% endblock %}
 
 {% block content %}
@@ -23,7 +23,7 @@ WiiLink Checkout | Time Played for {{ viewed_user.username }}
                 <details class="relative inline-block ml-2 text-left group">
                     <summary
                         class="inline-flex items-center gap-2 px-3 py-1 border border-dashed border-gray-600/30 text-gray-500 hover:text-gray-300 transition rounded-lg text-base font-light cursor-pointer select-none">
-                        's Time Played
+                        's Favorites
                         <img src="/static/icon/chevron-down.svg" alt="Open"
                             class="w-4 h-4 invert opacity-70 transition-transform group-open:rotate-180">
                     </summary>
@@ -31,9 +31,9 @@ WiiLink Checkout | Time Played for {{ viewed_user.username }}
                         class="absolute left-1/2 -translate-x-1/2 mt-2 w-44 rounded-lg border border-gray-700 bg-gray-900/95 shadow-xl z-20 overflow-hidden">
                         <a href="{% if base_url %}{{ base_url }}/recommendations{% else %}/recommendations{% endif %}"
                             class="block px-3 py-2 text-sm text-gray-300 hover:bg-gray-800 transition">Recommendations</a>
-                        <span class="block px-3 py-2 text-sm text-indigo-300 bg-indigo-500/10">Time Played</span>
-                        <a href="{% if base_url %}{{ base_url }}/favorites{% else %}/favorites{% endif %}"
-                            class="block px-3 py-2 text-sm text-gray-300 hover:bg-gray-800 transition">Favorites</a>
+                        <a href="{% if base_url %}{{ base_url }}/time_played{% else %}/time_played{% endif %}"
+                            class="block px-3 py-2 text-sm text-gray-300 hover:bg-gray-800 transition">Time Played</a>
+                        <span class="block px-3 py-2 text-sm text-indigo-300 bg-indigo-500/10">Favorites</span>
                     </div>
                 </details>
             </h1>
@@ -42,38 +42,25 @@ WiiLink Checkout | Time Played for {{ viewed_user.username }}
                 <p class="px-3 py-1 bg-gray-700 rounded-md text-gray-300">{{ linked_wii|format_serial }}</p>
                 {% endfor %}
             </span>
-            {% if not is_unclaimed %}
-            <div
-                class="fixed bottom-5 left-1/2 -translate-x-1/2 md:-translate-x-[calc(50%-140px)] p-3 rounded-xl bg-gray-800/70 backdrop-blur-lg flex flex-row items-center justify-center gap-2 mt-6 z-10">
-                {% set sort_base = base_url ~ '/time_played' if base_url else '/time_played' %}
-                <a href="{{ sort_base }}?sort=time_played"
-                    class="px-4 py-2 rounded-lg border transition {% if sort_by == 'time_played' %}bg-indigo-600 border-indigo-500 text-white{% else %}bg-gray-800 border-gray-700 text-gray-300 hover:border-indigo-500{% endif %}">
-                    <img src="/static/icon/clock.svg" alt="Minutes Played" class="invert"></a>
-                <a href="{{ sort_base }}?sort=times_played"
-                    class="px-4 py-2 rounded-lg border transition {% if sort_by == 'times_played' %}bg-indigo-600 border-indigo-500 text-white{% else %}bg-gray-800 border-gray-700 text-gray-300 hover:border-indigo-500{% endif %}">
-                    <img src="/static/icon/hash.svg" alt="Times Played" class="invert"></a></a>
-                <a href="{{ sort_base }}?sort=last_played"
-                    class="px-4 py-2 rounded-lg border transition {% if sort_by == 'last_played' %}bg-indigo-600 border-indigo-500 text-white{% else %}bg-gray-800 border-gray-700 text-gray-300 hover:border-indigo-500{% endif %}"><img
-                        src="/static/icon/calendar.svg" alt="Last Played" class="invert"></a></a>
-            </div>
-            {% endif %}
         </div>
         {% endif %}
 
         {% if is_unclaimed %}
-        <h1 class="text-4xl font-bold text-white mb-4">Time Played <span class="font-light text-gray-500">for {{
+        <h1 class="text-4xl font-bold text-white mb-4">Favorites <span class="font-light text-gray-500">for {{
                 unclaimed_serial }}</span></h1>
         {% include "components/unclaimed_banner.html" %}
         {% endif %}
 
-        {% if time_played %}
+        {% if games %}
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {% for rec in time_played %}
-            {% include "components/time_played_card.html" %}
+            {% for game in games %}
+            {% set rec = game %}
+            {% include "components/favorites_card.html" %}
             {% endfor %}
         </div>
         {% else %}
-        <div class="text-center text-gray-300">No time played data found for this serial prefix.</div>
+        <div class="text-center text-gray-300">You haven't added any favorites yet! Find a title you like on the
+            Nintendo Channel, then select "Add to Favorites".</div>
         {% endif %}
     </div>
 </div>

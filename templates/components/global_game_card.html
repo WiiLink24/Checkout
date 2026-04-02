@@ -6,6 +6,12 @@
         style="background-image: url('{{ cover.url }}'); -webkit-mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0)); mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0));">
     </div>
     <div class="h-full flex flex-col justify-between relative p-6">
+        {% set modal_source = "recommendations" %}
+        {% if score_type == "most_played" %}
+        {% set modal_source = "time_played" %}
+        {% elif score_type == "most_favorited" %}
+        {% set modal_source = "favorites" %}
+        {% endif %}
         <span>
             <div class="flex items-center justify-between gap-6">
                 <span class="flex items-center gap-4">
@@ -83,17 +89,30 @@
                     <p class="text-lg font-bold text-pink-400 mt-1">{{ game.avg_time_per_player|format_playtime }}</p>
                 </div>
             </div>
+            {% elif score_type == "most_favorited" %}
+            <div class="mt-5 grid grid-cols-2 gap-3 text-sm">
+                <div class="rounded-xl bg-gray-900/70 p-3">
+                    <p class="text-xs uppercase text-gray-400">Favorites</p>
+                    <p class="text-2xl font-bold text-rose-400 mt-1">{{ game.favorite_count }}</p>
+                </div>
+                <div class="rounded-xl bg-gray-900/70 p-3">
+                    <p class="text-xs uppercase text-gray-400">Users</p>
+                    <p class="text-2xl font-bold text-amber-300 mt-1">{{ game.user_count }}</p>
+                </div>
+            </div>
             {% endif %}
         </span>
         <div class="mt-5 flex items-center justify-end">
             <button
                 class="px-3 py-2 text-xs uppercase tracking-wider bg-gray-900/70 text-white rounded-lg border border-gray-700 hover:border-gray-500 transition"
-                data-modal-open data-title="{{ game.title_en or game.title }}" data-game-id="{{ game.game_id }}"
-                data-cover-url="{{ cover.url }}" data-cover-fallback="{{ cover.fallback }}"
-                data-release-year="{{ game.release_year or '' }}" data-genre="{{ game.genre or '' }}"
-                data-developer="{{ game.developer or '' }}" data-publisher="{{ game.publisher or '' }}"
-                data-rating-type="{{ game.rating_type or '' }}" data-rating-value="{{ game.rating_value or '' }}"
-                data-synopsis="{{ game.synopsis_en or '' }}">View details</button>
+                data-modal-open data-source="{{ modal_source }}" data-title="{{ game.title_en or game.title }}"
+                data-game-id="{{ game.game_id }}" data-cover-url="{{ cover.url }}"
+                data-cover-fallback="{{ cover.fallback }}" data-release-year="{{ game.release_year or '' }}"
+                data-genre="{{ game.genre or '' }}" data-developer="{{ game.developer or '' }}"
+                data-publisher="{{ game.publisher or '' }}" data-rating-type="{{ game.rating_type or '' }}"
+                data-rating-value="{{ game.rating_value or '' }}" data-synopsis="{{ game.synopsis_en or '' }}"
+                data-favorite-count="{{ game.favorite_count or 0 }}"
+                data-favorite-user-count="{{ game.user_count or 0 }}">View details</button>
         </div>
     </div>
 </div>
