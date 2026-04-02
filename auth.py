@@ -15,5 +15,5 @@ def build_user_info(profile):
         "username": username,
         "full_name": profile.get("name") or "",
         "profile_picture": generate_gravatar_url(email),
-        "linked_wii_no": profile.get("wiis") or []
+        "linked_wii_no": profile.get("wiis") or [],
     }

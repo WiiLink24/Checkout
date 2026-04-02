@@ -7,6 +7,7 @@ import math
 import random
 from collections import defaultdict
 
+
 def get_serial_prefixes(user_info):
     serials = user_info.get("serial")
     if isinstance(serials, str):
@@ -20,12 +21,14 @@ def get_serial_prefixes(user_info):
             prefixes.append(match.group(1))
     return prefixes
 
+
 def _build_serial_filter(column_name, serial_prefixes):
     if not serial_prefixes:
         return "", []
     clauses = " OR ".join([f"{column_name} LIKE %s" for _ in serial_prefixes])
     params = [f"{prefix}%" for prefix in serial_prefixes]
     return clauses, params
+
 
 def _run_query(query, params):
     conn = psycopg2.connect(config.db_url)
@@ -37,8 +40,9 @@ def _run_query(query, params):
     conn.close()
     return [dict(zip(columns, row)) for row in rows]
 
+
 def fetch_recommendations(serial_prefixes, sort_by="recommendation_percent"):
-    """ Fetch recommendations for a given serial number """
+    """Fetch recommendations for a given serial number"""
     where_clause, params = _build_serial_filter("serial_number", serial_prefixes)
     if not where_clause:
         return []
@@ -72,8 +76,9 @@ def fetch_recommendations(serial_prefixes, sort_by="recommendation_percent"):
     )
     return _run_query(query, params)
 
+
 def fetch_time_played(serial_prefixes, sort_by="time_played"):
-    """ Fetch time played data for a given serial number """
+    """Fetch time played data for a given serial number"""
     where_clause, params = _build_serial_filter("tp.serial_number", serial_prefixes)
     if not where_clause:
         return []
@@ -162,7 +167,12 @@ def fetch_favorites(serial_prefixes, limit=30):
     favorites = []
     for row in rows:
         game_id = row.get("bookmarked_game_id") or row.get("game_id")
-        title_value = row.get("display_name") or row.get("title") or row.get("title_en") or game_id
+        title_value = (
+            row.get("display_name")
+            or row.get("title")
+            or row.get("title_en")
+            or game_id
+        )
         synopsis_value = row.get("synopsis") or row.get("synopsis_en")
 
         normalized = dict(row)
@@ -174,8 +184,9 @@ def fetch_favorites(serial_prefixes, limit=30):
 
     return favorites
 
+
 def fetch_recommendation_averages(game_id, gender=None, age_min=None, age_max=None):
-    """ Fetch average recommendation stats for a game, optionally filtered by demographics """
+    """Fetch average recommendation stats for a game, optionally filtered by demographics"""
     conditions = ["game_id = %s"]
     params = [game_id]
     if gender in (1, 2):
@@ -201,8 +212,9 @@ def fetch_recommendation_averages(game_id, gender=None, age_min=None, age_max=No
     rows = _run_query(query, params)
     return rows[0] if rows else None
 
+
 def fetch_time_played_stats(game_id):
-    """ Fetch time played stats for a given game """
+    """Fetch time played stats for a given game"""
     query = (
         "SELECT "
         "COUNT(DISTINCT serial_number) AS total_players, "
@@ -307,13 +319,13 @@ def fetch_authentik_user(uid):
     """Fetch user details from Authentik API"""
     import requests
     import config
-    
+
     url = f"{config.authentik_api_url}/core/users/{uid}/"
     headers = {
         "Accept": "application/json",
-        "Authorization": f"Bearer {config.authentik_service_account_token}"
+        "Authorization": f"Bearer {config.authentik_service_account_token}",
     }
-    
+
     try:
         response = requests.get(url, headers=headers, timeout=10)
         if response.status_code == 200:
@@ -323,6 +335,7 @@ def fetch_authentik_user(uid):
     except Exception as e:
         print(f"Error fetching user {uid}: {e}")
         return None
+
 
 def fetch_authentik_users():
     """
@@ -351,44 +364,45 @@ def fetch_authentik_users():
 
     return users
 
+
 def find_user_by_serial(serial):
     """Find an Authentik user by their serial number"""
     users = fetch_authentik_users()
-    
+
     # Normalize the search serial (handle if it's a list)
     if isinstance(serial, list):
         serial = serial[0] if serial else None
-    
+
     if not serial:
         return None
-    
+
     # Search for user with matching serial
     for user in users:
         user_serials = user.get("attributes", {}).get("serial", [])
         if isinstance(user_serials, str):
             user_serials = [user_serials]
-        
+
         if serial in user_serials:
             return user
-    
+
 
 def find_user_by_wii_number(wii_number):
     """Find an Authentik user by their Wii number (friend code)"""
     users = fetch_authentik_users()
-    
+
     # Normalize the Wii number (handle if it's a list)
     if isinstance(wii_number, list):
         wii_number = wii_number[0] if wii_number else None
-    
+
     if not wii_number:
         return None
-    
+
     # Search for user with matching Wii number
     for user in users:
         wii_numbers = user.get("attributes", {}).get("wiis", [])
         if isinstance(wii_numbers, str):
             wii_numbers = [wii_numbers]
-        
+
         if wii_number in wii_numbers:
             return user
     return None
@@ -397,24 +411,24 @@ def find_user_by_wii_number(wii_number):
 def find_user_by_serial(serial):
     """Find an Authentik user by their console serial number"""
     users = fetch_authentik_users()
-    
+
     # Normalize the serial
     serial = normalize_serial(serial) if serial else None
-    
+
     if not serial:
         return None
-    
+
     # Search for user with matching serial
     for user in users:
         user_serials = user.get("attributes", {}).get("serial", [])
         if isinstance(user_serials, str):
             user_serials = [user_serials]
-        
+
         # Check if the serial matches any of the user's serials
         for user_serial in user_serials:
             if normalize_serial(user_serial) == serial:
                 return user
-    
+
     return None
 
 
@@ -442,12 +456,12 @@ def build_viewed_user_info(authentik_user):
     username = authentik_user.get("username")
     email = authentik_user.get("email", "")
     picture_url = generate_gravatar_url(email)
-    
+
     # Get Wii numbers from Authentik attributes
     wii_numbers = authentik_user.get("attributes", {}).get("wiis", [])
     if isinstance(wii_numbers, str):
         wii_numbers = [wii_numbers]
-    
+
     return {
         "username": username,
         "profile_picture": picture_url,
@@ -530,7 +544,12 @@ def _build_discover_profile(where_clause, params):
         if game_type:
             game_type_scores[game_type] += preference_weight * 0.35
 
-    top_genres = [g for g, _ in sorted(genre_scores.items(), key=lambda item: item[1], reverse=True)[:5]]
+    top_genres = [
+        g
+        for g, _ in sorted(
+            genre_scores.items(), key=lambda item: item[1], reverse=True
+        )[:5]
+    ]
     return {
         "reviewed_ids": reviewed_ids,
         "genre_scores": _normalize_scores(genre_scores),
@@ -541,6 +560,7 @@ def _build_discover_profile(where_clause, params):
         "total_rated": len(reviewed_ids),
     }
 
+
 def _is_already_seen(candidate_game_id, seen_game_ids):
     """Exclude candidates already seen by the user (played or reviewed)."""
     if candidate_game_id in seen_game_ids:
@@ -548,7 +568,9 @@ def _is_already_seen(candidate_game_id, seen_game_ids):
     for seen_id in seen_game_ids:
         if not seen_id:
             continue
-        if candidate_game_id.startswith(seen_id) or seen_id.startswith(candidate_game_id):
+        if candidate_game_id.startswith(seen_id) or seen_id.startswith(
+            candidate_game_id
+        ):
             return True
     return False
 
@@ -566,13 +588,21 @@ def _score_discover_candidate(candidate, profile):
         genre_match_best = 0.0
         genre_score = 0.0
 
-    developer_score = profile["developer_scores"].get((candidate.get("developer") or "").strip(), 0.0)
-    publisher_score = profile["publisher_scores"].get((candidate.get("publisher") or "").strip(), 0.0)
-    game_type_score = profile["game_type_scores"].get((candidate.get("game_type") or "").strip(), 0.0)
+    developer_score = profile["developer_scores"].get(
+        (candidate.get("developer") or "").strip(), 0.0
+    )
+    publisher_score = profile["publisher_scores"].get(
+        (candidate.get("publisher") or "").strip(), 0.0
+    )
+    game_type_score = profile["game_type_scores"].get(
+        (candidate.get("game_type") or "").strip(), 0.0
+    )
 
     avg_recommendation = float(candidate.get("avg_recommendation") or 50.0)
     rating_count = int(candidate.get("rating_count") or 0)
-    confidence = min(1.0, math.log1p(rating_count) / math.log(25)) if rating_count > 0 else 0.0
+    confidence = (
+        min(1.0, math.log1p(rating_count) / math.log(25)) if rating_count > 0 else 0.0
+    )
     community_score = ((avg_recommendation - 50.0) / 50.0) * confidence
 
     # Small jitter keeps discover results from feeling static while preserving quality.
@@ -649,7 +679,11 @@ def find_game_recommendation(serial_prefixes):
     best_score, matched_genre, best_game = scored_candidates[0]
 
     best_game["reason"] = {
-        "genres": ", ".join(profile["top_genres"][:2]) if profile["top_genres"] else "your recent likes",
+        "genres": (
+            ", ".join(profile["top_genres"][:2])
+            if profile["top_genres"]
+            else "your recent likes"
+        ),
         "matched_genre": matched_genre,
         "total_rated": profile["total_rated"],
         "score": round(best_score, 3),
@@ -725,41 +759,36 @@ def fetch_user_latest_reviews(serial_prefixes, limit=5):
 
 def fetch_global_stats():
     """Fetch global statistics: total time played and total reviews"""
-    query_time = "SELECT COALESCE(SUM(time_played), 0) AS total_minutes FROM time_played"
+    query_time = (
+        "SELECT COALESCE(SUM(time_played), 0) AS total_minutes FROM time_played"
+    )
     query_reviews = "SELECT COUNT(*) AS total_reviews FROM recommendations"
-    
+
     time_result = _run_query(query_time, [])
     reviews_result = _run_query(query_reviews, [])
-    
-    total_minutes = time_result[0]['total_minutes'] if time_result else 0
-    total_reviews = reviews_result[0]['total_reviews'] if reviews_result else 0
-    
-    return {
-        'total_minutes': int(total_minutes),
-        'total_reviews': int(total_reviews)
-    }
+
+    total_minutes = time_result[0]["total_minutes"] if time_result else 0
+    total_reviews = reviews_result[0]["total_reviews"] if reviews_result else 0
+
+    return {"total_minutes": int(total_minutes), "total_reviews": int(total_reviews)}
 
 
 def fetch_user_stats(serial_prefixes):
     """Fetch user-specific statistics: total time played and total reviews"""
     where_clause, params = _build_serial_filter("serial_number", serial_prefixes)
     if not where_clause:
-        return {
-            'total_minutes': 0,
-            'total_reviews': 0
-        }
-    
+        return {"total_minutes": 0, "total_reviews": 0}
+
     # Get total time played
     time_query = f"SELECT COALESCE(SUM(time_played), 0) AS total_minutes FROM time_played WHERE {where_clause}"
     time_result = _run_query(time_query, params)
-    total_minutes = int(time_result[0]['total_minutes']) if time_result else 0
-    
+    total_minutes = int(time_result[0]["total_minutes"]) if time_result else 0
+
     # Get total reviews
-    reviews_query = f"SELECT COUNT(*) AS total_reviews FROM recommendations WHERE {where_clause}"
+    reviews_query = (
+        f"SELECT COUNT(*) AS total_reviews FROM recommendations WHERE {where_clause}"
+    )
     reviews_result = _run_query(reviews_query, params)
-    total_reviews = int(reviews_result[0]['total_reviews']) if reviews_result else 0
-    
-    return {
-        'total_minutes': total_minutes,
-        'total_reviews': total_reviews
-    }
+    total_reviews = int(reviews_result[0]["total_reviews"]) if reviews_result else 0
+
+    return {"total_minutes": total_minutes, "total_reviews": total_reviews}

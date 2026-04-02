@@ -1,7 +1,7 @@
 def format_serial(s):
     """Format serial number with dashes every 4 characters"""
     s = str(s)
-    return "-".join([s[i:i+4] for i in range(0, len(s), 4)])
+    return "-".join([s[i : i + 4] for i in range(0, len(s), 4)])
 
 
 def format_playtime(minutes):
@@ -13,7 +13,7 @@ def format_playtime(minutes):
     remaining = minutes % (24 * 60)
     hours = remaining // 60
     mins = remaining % 60
-    
+
     parts = []
     if days > 0:
         parts.append(f"{days}d")
