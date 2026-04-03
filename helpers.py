@@ -1,8 +1,7 @@
 from flask import request, abort
 from flask_oidc import OpenIDConnect
+from nc import fetch_recommendations, fetch_time_played
 from utils import (
-    fetch_recommendations,
-    fetch_time_played,
     extract_serial_prefix,
     find_user_by_wii_number,
     build_viewed_user_info,

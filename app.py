@@ -19,8 +19,7 @@ from helpers import (
     create_unclaimed_serial_context,
 )
 from tag_generator import generate_user_tag
-from utils import (
-    get_serial_prefixes,
+from nc import (
     fetch_recommendations,
     fetch_time_played,
     fetch_recommendation_averages,
@@ -28,6 +27,13 @@ from utils import (
     fetch_top_most_played,
     fetch_top_best_games,
     fetch_top_favorites,
+    fetch_user_latest_games,
+    fetch_user_latest_reviews,
+    fetch_user_stats,
+    fetch_favorites,
+)
+from utils import (
+    get_serial_prefixes,
     fetch_authentik_users,
     find_user_by_wii_number,
     find_user_by_serial,
@@ -35,12 +41,8 @@ from utils import (
     extract_serial_prefix,
     build_viewed_user_info,
     build_unclaimed_user_info,
-    find_game_recommendation,
-    fetch_user_latest_games,
-    fetch_user_latest_reviews,
-    fetch_user_stats,
-    fetch_favorites,
 )
+from discover import find_game_recommendation
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = config.db_url
