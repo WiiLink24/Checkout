@@ -32,7 +32,7 @@
                             Checkout
                         </h1>
                         <p class="text-gray-400 text-sm italic">
-                            View player recommendations and playtime data from users all over the world!
+                            All your WiiLink Data in one place!
                         </p>
                     </div>
 
@@ -51,12 +51,12 @@
 
                 {% macro menu_item(name, redirect_func, icon_name) %}
                 <a href="{{ url_for(redirect_func) }}"
-                    class="block w-full px-4 py-2 {% if url_for(request.endpoint, **request.view_args).startswith(url_for(redirect_func)) %}bg-indigo-600 {% else %}bg-gray-700/40 hover:bg-gray-700/60{% endif %} text-white rounded-xl transition duration-200 flex items-center">
+                    class="block w-full px-4 py-2 {% if request.view_args and url_for(request.endpoint, **request.view_args).startswith(url_for(redirect_func)) %}bg-indigo-600 {% else %}bg-gray-700/40 hover:bg-gray-700/60{% endif %} text-white rounded-xl transition duration-200 flex items-center">
                     <img src="/static/icon/{{ icon_name }}.svg" alt="{{ name }}" class="w-5 h-5 invert mr-2" />{{ name
                     }}
                 </a>
 
-                {% if url_for(request.endpoint, **request.view_args).startswith(url_for(redirect_func)) %}
+                {% if request.view_args and url_for(request.endpoint, **request.view_args).startswith(url_for(redirect_func)) %}
                 {% if sidebar_menu %}
                 <div class="ml-4 mt-1 mb-3">
                     {{ sidebar_menu }}
@@ -156,7 +156,8 @@
                         'id': 'mii',
                         'name': 'Check Mii Out Channel',
                         'items': [
-                        {'name': 'Your Miis', 'route': 'https://miicontest.wiilink.ca/artisans/' + artisan_id|string if artisan_id else '#', 'icon': 'users', 'external': True}
+                        {'name': 'Your Miis', 'route': 'https://miicontest.wiilink.ca/artisans/' + artisan_id|string if
+                        artisan_id else '#', 'icon': 'users', 'external': True}
                         ]
                         }
                         ] %}

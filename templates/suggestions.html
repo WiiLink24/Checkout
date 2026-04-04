@@ -5,43 +5,19 @@ WiiLink Checkout | Suggestions
 {% endblock %}
 
 {% block content %}
-<div class="absolute inset-x-0 top-0 h-[500px] bg-center bg-cover blur-lg opacity-30 pointer-events-none"
-    style="background-image: url('{{ viewed_user.profile_picture }}'); -webkit-mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0)); mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0));">
-</div>
+{% set page_title = "Suggestions" %}
+{% set nav_items = [
+{'name': 'Recommendations', 'path': '/recommendations', 'active': False},
+{'name': 'Time Played', 'path': '/time_played', 'active': False},
+{'name': 'Favorites', 'path': '/favorites', 'active': False},
+{'name': 'Polls', 'path': '/polls', 'active': False},
+{'name': 'Suggestions', 'path': '/suggestions', 'active': True}
+] %}
+
+{% include "components/page_header.html" %}
+
 <div class="min-h-screen px-4 sm:px-6 lg:px-8 py-12">
     <div class="max-w-6xl mx-auto">
-        <div class="text-center mb-10">
-            <div class="relative w-full mx-auto mb-4 flex items-center justify-center">
-                <img src="{{ viewed_user.profile_picture }}" alt="{{ viewed_user.username }}"
-                    class="w-32 h-32 rounded-full mx-auto object-cover relative z-10">
-            </div>
-            <h1 class="text-4xl font-bold text-white mt-2">
-                {{ viewed_user.username }}
-                <details class="relative inline-block ml-2 text-left group">
-                    <summary
-                        class="!text-4xl inline-flex items-center gap-2 px-3 py-1 border border-dashed border-gray-600/30 text-gray-500 hover:text-gray-300 transition rounded-lg text-base font-light cursor-pointer select-none">
-                        's Suggestions
-                    </summary>
-                    <div
-                        class="absolute left-1/2 -translate-x-1/2 mt-2 w-44 rounded-lg border border-gray-700 bg-gray-900/95 shadow-xl z-20 overflow-hidden">
-                        <a href="/recommendations"
-                            class="block px-3 py-2 text-sm text-gray-300 hover:bg-gray-800 transition">Recommendations</a>
-                        <a href="/time_played"
-                            class="block px-3 py-2 text-sm text-gray-300 hover:bg-gray-800 transition">Time Played</a>
-                        <a href="/favorites"
-                            class="block px-3 py-2 text-sm text-gray-300 hover:bg-gray-800 transition">Favorites</a>
-                        <a href="/polls"
-                            class="block px-3 py-2 text-sm text-gray-300 hover:bg-gray-800 transition">Polls</a>
-                        <span class="block px-3 py-2 text-sm text-indigo-300 bg-indigo-500/10">Suggestions</span>
-                    </div>
-                </details>
-            </h1>
-            <span class="flex flex-row items-center justify-center gap-2 mt-3">
-                {% for linked_wii in viewed_user.linked_wii_no %}
-                <p class="px-3 py-1 bg-gray-700 rounded-md text-gray-300">{{ linked_wii|format_serial }}</p>
-                {% endfor %}
-            </span>
-        </div>
 
         {% if suggestions %}
         <div class="grid lg:grid-cols-2 gap-6">
@@ -52,7 +28,6 @@ WiiLink Checkout | Suggestions
                 <div class="pt-1 suggestion-card relative w-full h-full bg-gray-200 rounded-[20px]">
                     <div class="suggestion-card-inner relative w-full h-full" style="transform-style: preserve-3d;">
 
-                        <!-- Question -->
                         <div class="w-full h-full bg-gray-200 rounded-[20px]"
                             style="backface-visibility: hidden; transform: rotateY(0deg);">
                             <div
@@ -63,7 +38,6 @@ WiiLink Checkout | Suggestions
                                 </h3>
 
                                 <div class="mt-2 w-full flex-1 grid grid-cols-2 gap-3">
-                                    <!-- Choice 1 -->
                                     <div
                                         class="bg-pink-500 rounded-lg p-4 flex items-center justify-center text-center">
                                         <div>
@@ -71,7 +45,6 @@ WiiLink Checkout | Suggestions
                                         </div>
                                     </div>
 
-                                    <!-- Choice 2 -->
                                     <div
                                         class="bg-green-500 rounded-lg p-4 flex items-center justify-center text-center">
                                         <div>
@@ -88,8 +61,7 @@ WiiLink Checkout | Suggestions
         </div>
         {% else %}
         <div class="text-center text-gray-300">
-            <p>You haven't received any suggestions yet.</p>
-            <p class="mt-2 text-sm text-gray-500">Suggestions appear here once you receive them!</p>
+            <p>You haven't suggested any polls just yet...</p>
         </div>
         {% endif %}
     </div>

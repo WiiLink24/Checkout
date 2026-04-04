@@ -360,6 +360,132 @@ def time_played_by_serial(serial_or_code):
     return render_template("time_played.html", **context)
 
 
+@app.route("/<serial_or_code>/polls")
+def polls_by_serial(serial_or_code):
+    """Display polls - works for linked friend codes and unlinked serials"""
+    serial_or_code = normalize_serial(serial_or_code)
+
+    # Get logged-in user info if available
+    user_info = get_logged_in_user_info()
+
+    # Check if it's a linked friend code
+    authentik_user = find_user_by_wii_number(serial_or_code)
+    if authentik_user:
+        # It's a linked friend code - show linked account data
+        # Build context for polls
+        viewed_user = build_viewed_user_info(authentik_user)
+        polls_data = fetch_user_polls([serial_or_code], 30)
+
+        # Build nav items with serial_or_code prefix
+        nav_items = [
+            {
+                "name": "Recommendations",
+                "path": f"/{serial_or_code}/recommendations",
+                "active": False,
+            },
+            {
+                "name": "Time Played",
+                "path": f"/{serial_or_code}/time_played",
+                "active": False,
+            },
+            {
+                "name": "Favorites",
+                "path": f"/{serial_or_code}/favorites",
+                "active": False,
+            },
+            {"name": "Polls", "path": f"/{serial_or_code}/polls", "active": True},
+            {
+                "name": "Suggestions",
+                "path": f"/{serial_or_code}/suggestions",
+                "active": False,
+            },
+        ]
+
+        context = {
+            "polls": polls_data,
+            "user_info": user_info,
+            "viewed_user": viewed_user,
+            "page_title": "Polls",
+            "nav_items": nav_items,
+            "is_unclaimed": False,
+            "base_url": f"/{serial_or_code}",
+        }
+        return render_template("polls.html", **context)
+
+    # Check if it's a linked serial
+    authentik_user_by_serial = find_user_by_serial(serial_or_code)
+    if authentik_user_by_serial:
+        # It's a linked serial - return 404
+        abort(404)
+
+    # Serial is unclaimed - cannot show polls/suggestions without wii_number
+    # Return 404 for unclaimed serials
+    abort(404)
+
+
+@app.route("/<serial_or_code>/suggestions")
+def suggestions_by_serial(serial_or_code):
+    """Display suggestions - works for linked friend codes and unlinked serials"""
+    serial_or_code = normalize_serial(serial_or_code)
+
+    # Get logged-in user info if available
+    user_info = get_logged_in_user_info()
+
+    # Check if it's a linked friend code
+    authentik_user = find_user_by_wii_number(serial_or_code)
+    if authentik_user:
+        # It's a linked friend code - show linked account data
+        # Build context for suggestions
+        viewed_user = build_viewed_user_info(authentik_user)
+        suggestions_data = fetch_user_suggestions([serial_or_code], 30)
+
+        # Build nav items with serial_or_code prefix
+        nav_items = [
+            {
+                "name": "Recommendations",
+                "path": f"/{serial_or_code}/recommendations",
+                "active": False,
+            },
+            {
+                "name": "Time Played",
+                "path": f"/{serial_or_code}/time_played",
+                "active": False,
+            },
+            {
+                "name": "Favorites",
+                "path": f"/{serial_or_code}/favorites",
+                "active": False,
+            },
+            {"name": "Polls", "path": f"/{serial_or_code}/polls", "active": False},
+            {
+                "name": "Suggestions",
+                "path": f"/{serial_or_code}/suggestions",
+                "active": True,
+            },
+        ]
+
+        context = {
+            "suggestions": suggestions_data,
+            "user_info": user_info,
+            "viewed_user": viewed_user,
+            "page_title": "Suggestions",
+            "nav_items": nav_items,
+            "is_unclaimed": False,
+            "base_url": f"/{serial_or_code}",
+        }
+        return render_template("suggestions.html", **context)
+
+    # Check if it's a linked serial
+    authentik_user_by_serial = find_user_by_serial(serial_or_code)
+    if authentik_user_by_serial:
+        # It's a linked serial - return 404
+        abort(404)
+
+    # Serial is unclaimed - cannot show polls/suggestions without wii_number
+    # Return 404 for unclaimed serials
+    abort(404)
+
+
 @app.route("/<friend_code>/")
 def friend_code_home(friend_code):
     """Display a user's home page by friend code"""
@@ -442,15 +568,15 @@ def polls():
         return redirect(url_for("index"))
     profile = get_user_profile()
     user_info = get_logged_in_user_info()
-    
+
     # Get Wii numbers from user info
     wii_numbers = user_info.get("linked_wii_no", [])
     if isinstance(wii_numbers, str):
         wii_numbers = [wii_numbers]
-    
+
     if not wii_numbers:
         return render_template("errors/not_linked.html", user_info=user_info), 400
-    
+
     polls_data = fetch_user_polls(wii_numbers, 30)
     return render_template(
         "polls.html",
@@ -459,20 +585,21 @@ def polls():
         viewed_user=user_info,
     )
 
+
 @app.route("/suggestions")
 def suggestions():
     if not oidc.user_loggedin:
         return redirect(url_for("index"))
     user_info = get_logged_in_user_info()
-    
+
     # Get Wii numbers from user info
     wii_numbers = user_info.get("linked_wii_no", [])
     if isinstance(wii_numbers, str):
         wii_numbers = [wii_numbers]
-    
+
     if not wii_numbers:
         return render_template("errors/not_linked.html", user_info=user_info), 400
-    
+
     suggestions_data = fetch_user_suggestions(wii_numbers, 30)
     return render_template(
         "suggestions.html",
