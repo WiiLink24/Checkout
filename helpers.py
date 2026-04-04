@@ -1,6 +1,11 @@
 from flask import request, abort
 from flask_oidc import OpenIDConnect
-from nc import fetch_recommendations, fetch_time_played
+from nc import (
+    fetch_recommendations,
+    fetch_time_played,
+    count_recommendations,
+    count_time_played,
+)
 from utils import (
     extract_serial_prefix,
     find_user_by_wii_number,
@@ -47,17 +52,32 @@ def create_serial_page_context(friend_code, template_name):
         user_serial = user_serial[0] if user_serial else friend_code
     serial_prefixes = extract_serial_prefix(user_serial)
 
+    # Pagination
+    page = int(request.args.get("page", "1"))
+    if page < 1:
+        page = 1
+    per_page = 30
+    offset = (page - 1) * per_page
+
     # Fetch data from database
     if template_name == "recommendations.html":
         sort_by = request.args.get("sort", "recommendation_percent")
         if sort_by not in ("recommendation_percent", "last_recommended"):
             sort_by = "recommendation_percent"
-        results = fetch_recommendations(serial_prefixes, sort_by=sort_by)
+        total_count = count_recommendations(serial_prefixes)
+        total_pages = (total_count + per_page - 1) // per_page
+        results = fetch_recommendations(
+            serial_prefixes, sort_by=sort_by, limit=per_page, offset=offset
+        )
     else:  # time_played.html
         sort_by = request.args.get("sort", "time_played")
         if sort_by not in ("time_played", "times_played", "last_played"):
             sort_by = "time_played"
-        results = fetch_time_played(serial_prefixes, sort_by=sort_by)
+        total_count = count_time_played(serial_prefixes)
+        total_pages = (total_count + per_page - 1) // per_page
+        results = fetch_time_played(
+            serial_prefixes, sort_by=sort_by, limit=per_page, offset=offset
+        )
 
     viewed_user = build_viewed_user_info(authentik_user)
 
@@ -71,6 +91,9 @@ def create_serial_page_context(friend_code, template_name):
         "viewed_user": viewed_user,
         "is_unclaimed": False,
         "base_url": f"/{friend_code}",
+        "page": page,
+        "total_pages": total_pages,
+        "total_count": total_count,
     }
 
     if template_name in ("time_played.html", "recommendations.html"):
@@ -100,17 +123,32 @@ def create_unclaimed_serial_context(serial, template_name):
     # Serial is unclaimed - use it directly
     serial_prefixes = extract_serial_prefix(serial)
 
+    # Pagination
+    page = int(request.args.get("page", "1"))
+    if page < 1:
+        page = 1
+    per_page = 30
+    offset = (page - 1) * per_page
+
     # Fetch data from database
     if template_name == "recommendations.html":
         sort_by = request.args.get("sort", "recommendation_percent")
         if sort_by not in ("recommendation_percent", "last_recommended"):
             sort_by = "recommendation_percent"
-        results = fetch_recommendations(serial_prefixes, sort_by=sort_by)
+        total_count = count_recommendations(serial_prefixes)
+        total_pages = (total_count + per_page - 1) // per_page
+        results = fetch_recommendations(
+            serial_prefixes, sort_by=sort_by, limit=per_page, offset=offset
+        )
     else:  # time_played.html
         sort_by = request.args.get("sort", "time_played")
         if sort_by not in ("time_played", "times_played", "last_played"):
             sort_by = "time_played"
-        results = fetch_time_played(serial_prefixes, sort_by=sort_by)
+        total_count = count_time_played(serial_prefixes)
+        total_pages = (total_count + per_page - 1) // per_page
+        results = fetch_time_played(
+            serial_prefixes, sort_by=sort_by, limit=per_page, offset=offset
+        )
 
     # Build unclaimed user info
     viewed_user = build_unclaimed_user_info(serial, logged_in_user_picture)
@@ -126,6 +164,9 @@ def create_unclaimed_serial_context(serial, template_name):
         "unclaimed_serial": serial,
         "is_unclaimed": True,
         "base_url": f"/{serial}",
+        "page": page,
+        "total_pages": total_pages,
+        "total_count": total_count,
     }
 
     if template_name in ("time_played.html", "recommendations.html"):

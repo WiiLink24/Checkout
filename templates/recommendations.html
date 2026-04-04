@@ -35,6 +35,7 @@ WiiLink Checkout | Recommendations for {{ viewed_user.username }}
     {% include "components/recommendation_card.html" %}
     {% endfor %}
 </div>
+{% include "components/pagination.html" %}
 {% else %}
 <div class="text-center text-gray-300">Recommend titles on the Nintendo Channel to get started!</div>
 {% endif %}

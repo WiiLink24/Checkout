@@ -18,7 +18,38 @@ def format_ans_cnt(ans_cnt):
     return uint_array
 
 
-def fetch_user_polls(wii_numbers, limit=30, db_url=None):
+# Count functions for pagination
+
+
+def count_user_polls(wii_numbers, db_url=None):
+    """Count total polls for given Wii numbers."""
+    if db_url is None:
+        db_url = getattr(config, "evc_db_url", None)
+    if not db_url or not wii_numbers:
+        return 0
+
+    placeholders = ",".join(["%s"] * len(wii_numbers))
+    query = f"SELECT COUNT(DISTINCT question_id) AS count FROM votes WHERE wii_no IN ({placeholders}) AND type_cd = 0"
+    result = _run_query(query, wii_numbers, db_url)
+    return result[0].get("count", 0) if result else 0
+
+
+def count_user_suggestions(wii_numbers, db_url=None):
+    """Count total suggestions for given Wii numbers."""
+    if db_url is None:
+        db_url = getattr(config, "evc_db_url", None)
+    if not db_url or not wii_numbers:
+        return 0
+
+    placeholders = ",".join(["%s"] * len(wii_numbers))
+    query = (
+        f"SELECT COUNT(*) AS count FROM suggestions WHERE wii_no IN ({placeholders})"
+    )
+    result = _run_query(query, wii_numbers, db_url)
+    return result[0].get("count", 0) if result else 0
+
+
+def fetch_user_polls(wii_numbers, limit=30, offset=0, db_url=None):
     """Fetch user's poll votes with question details from evc database."""
     if db_url is None:
         db_url = getattr(config, "evc_db_url", None)
@@ -41,7 +72,7 @@ def fetch_user_polls(wii_numbers, limit=30, db_url=None):
         "LEFT JOIN questions q ON v.question_id = q.question_id "
         f"WHERE {where_clause} "
         "ORDER BY v.id DESC "
-        f"LIMIT {limit}"
+        f"LIMIT {limit} OFFSET {offset}"
     )
     polls = _run_query(query, wii_numbers, db_url)
 
@@ -112,7 +143,7 @@ def aggregate_ans_cnt(ans_cnt_array_list):
     return result
 
 
-def fetch_user_suggestions(wii_numbers, limit=30, db_url=None):
+def fetch_user_suggestions(wii_numbers, limit=30, offset=0, db_url=None):
     """Fetch user's suggestions from evc database."""
     if db_url is None:
         db_url = getattr(config, "evc_db_url", None)
@@ -133,7 +164,7 @@ def fetch_user_suggestions(wii_numbers, limit=30, db_url=None):
         "FROM suggestions "
         f"WHERE {where_clause} "
         "ORDER BY id DESC "
-        f"LIMIT {limit}"
+        f"LIMIT {limit} OFFSET {offset}"
     )
     suggestions = _run_query(query, wii_numbers, db_url)
     return suggestions

@@ -37,6 +37,7 @@ WiiLink Checkout | Time Played for {{ viewed_user.username }}
     {% include "components/time_played_card.html" %}
     {% endfor %}
 </div>
+{% include "components/pagination.html" %}
 {% else %}
 <div class="text-center text-gray-300">No time played data found for this serial prefix.</div>
 {% endif %}

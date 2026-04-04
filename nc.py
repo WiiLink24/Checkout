@@ -9,7 +9,7 @@ def serial_has_bookmarks(serial_prefixes):
     where_clause, params = _build_serial_filter("serial_number", serial_prefixes)
     if not where_clause:
         return False
-    
+
     query = f"SELECT 1 FROM bookmarks WHERE {where_clause} LIMIT 1"
     result = _run_query(query, params, config.db_url)
     return bool(result)
@@ -20,7 +20,7 @@ def serial_has_recommendations(serial_prefixes):
     where_clause, params = _build_serial_filter("serial_number", serial_prefixes)
     if not where_clause:
         return False
-    
+
     query = f"SELECT 1 FROM recommendations WHERE {where_clause} LIMIT 1"
     result = _run_query(query, params, config.db_url)
     return bool(result)
@@ -31,15 +31,54 @@ def serial_has_time_played(serial_prefixes):
     where_clause, params = _build_serial_filter("serial_number", serial_prefixes)
     if not where_clause:
         return False
-    
+
     query = f"SELECT 1 FROM time_played WHERE {where_clause} LIMIT 1"
     result = _run_query(query, params, config.db_url)
     return bool(result)
 
+
+# Count functions for pagination
+
+
+def count_bookmarks(serial_prefixes):
+    """Count total bookmarked games for given serial prefixes."""
+    where_clause, params = _build_serial_filter("b.serial_number", serial_prefixes)
+    if not where_clause:
+        return 0
+
+    query = f"SELECT COUNT(DISTINCT b.game_id) AS count FROM bookmarks b WHERE {where_clause}"
+    result = _run_query(query, params, config.db_url)
+    return result[0].get("count", 0) if result else 0
+
+
+def count_recommendations(serial_prefixes):
+    """Count total recommendations for given serial prefixes."""
+    where_clause, params = _build_serial_filter("serial_number", serial_prefixes)
+    if not where_clause:
+        return 0
+
+    query = f"SELECT COUNT(DISTINCT game_id) AS count FROM recommendations WHERE {where_clause}"
+    result = _run_query(query, params, config.db_url)
+    return result[0].get("count", 0) if result else 0
+
+
+def count_time_played(serial_prefixes):
+    """Count total time played entries for given serial prefixes."""
+    where_clause, params = _build_serial_filter("serial_number", serial_prefixes)
+    if not where_clause:
+        return 0
+
+    query = (
+        f"SELECT COUNT(DISTINCT game_id) AS count FROM time_played WHERE {where_clause}"
+    )
+    result = _run_query(query, params, config.db_url)
+    return result[0].get("count", 0) if result else 0
+
+
 # Bookmarks
 
 
-def fetch_favorites(serial_prefixes, limit=30):
+def fetch_favorites(serial_prefixes, limit=30, offset=0):
     """Fetch user's bookmarked favorite games from the bookmarks table."""
     where_clause, params = _build_serial_filter("b.serial_number", serial_prefixes)
     if not where_clause:
@@ -73,7 +112,7 @@ def fetch_favorites(serial_prefixes, limit=30):
         "    LIMIT 1"
         ") t ON true "
         "ORDER BY lb.id DESC "
-        f"LIMIT {limit}"
+        f"LIMIT {limit} OFFSET {offset}"
     )
     rows = _run_query(query, params, config.db_url)
 
@@ -125,7 +164,9 @@ def fetch_top_favorites(limit=30):
 # Recommendations
 
 
-def fetch_recommendations(serial_prefixes, sort_by="recommendation_percent"):
+def fetch_recommendations(
+    serial_prefixes, sort_by="recommendation_percent", limit=30, offset=0
+):
     """Fetch recommendations for a given serial number"""
     where_clause, params = _build_serial_filter("serial_number", serial_prefixes)
     if not where_clause:
@@ -156,7 +197,8 @@ def fetch_recommendations(serial_prefixes, sort_by="recommendation_percent"):
         "    ORDER BY t.game_id "
         "    LIMIT 1"
         ") t ON true "
-        f"ORDER BY {order_by}"
+        f"ORDER BY {order_by} "
+        f"LIMIT {limit} OFFSET {offset}"
     )
     return _run_query(query, params, config.db_url)
 
@@ -231,7 +273,7 @@ def fetch_top_best_games(limit=30):
 # Time Played
 
 
-def fetch_time_played(serial_prefixes, sort_by="time_played"):
+def fetch_time_played(serial_prefixes, sort_by="time_played", limit=30, offset=0):
     """Fetch time played data for a given serial number"""
     where_clause, params = _build_serial_filter("tp.serial_number", serial_prefixes)
     if not where_clause:
@@ -275,7 +317,8 @@ def fetch_time_played(serial_prefixes, sort_by="time_played"):
         "    ) t ON true"
         ") "
         "SELECT * FROM detailed_games "
-        "ORDER BY sort_rank"
+        "ORDER BY sort_rank "
+        f"LIMIT {limit} OFFSET {offset}"
     )
     return _run_query(query, params, config.db_url)
 

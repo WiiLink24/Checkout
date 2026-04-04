@@ -34,6 +34,9 @@ from nc import (
     serial_has_bookmarks,
     serial_has_recommendations,
     serial_has_time_played,
+    count_bookmarks,
+    count_recommendations,
+    count_time_played,
 )
 from utils import (
     get_serial_prefixes,
@@ -45,7 +48,12 @@ from utils import (
     build_unclaimed_user_info,
 )
 from discover import find_game_recommendation
-from evc import fetch_user_polls, fetch_user_suggestions
+from evc import (
+    fetch_user_polls,
+    fetch_user_suggestions,
+    count_user_polls,
+    count_user_suggestions,
+)
 from cmoc import get_artisan_id_from_wii_number, get_artisan_ids_from_wii_number
 
 app = Flask(__name__)
@@ -94,16 +102,32 @@ def recommendations():
         return render_template("errors/not_linked.html", user_info=user_info), 400
     if not serial_has_recommendations(serial_prefixes):
         return render_template("errors/not_linked.html", user_info=user_info), 400
+
     sort_by = request.args.get("sort", "recommendation_percent")
     if sort_by not in ("recommendation_percent", "last_recommended"):
         sort_by = "recommendation_percent"
-    results = fetch_recommendations(serial_prefixes, sort_by=sort_by)
+
+    page = parse_int(request.args.get("page", "1"))
+    if page < 1:
+        page = 1
+    per_page = 30
+    offset = (page - 1) * per_page
+
+    total_count = count_recommendations(serial_prefixes)
+    total_pages = (total_count + per_page - 1) // per_page
+
+    results = fetch_recommendations(
+        serial_prefixes, sort_by=sort_by, limit=per_page, offset=offset
+    )
     return render_template(
         "recommendations.html",
         recommendations=results,
         user_info=user_info,
         viewed_user=user_info,
         sort_by=sort_by,
+        page=page,
+        total_pages=total_pages,
+        total_count=total_count,
     )
 
 
@@ -159,7 +183,18 @@ def time_played():
     if sort_by not in ("time_played", "times_played", "last_played"):
         sort_by = "time_played"
 
-    results = fetch_time_played(serial_prefixes, sort_by=sort_by)
+    page = parse_int(request.args.get("page", "1"))
+    if page < 1:
+        page = 1
+    per_page = 30
+    offset = (page - 1) * per_page
+
+    total_count = count_time_played(serial_prefixes)
+    total_pages = (total_count + per_page - 1) // per_page
+
+    results = fetch_time_played(
+        serial_prefixes, sort_by=sort_by, limit=per_page, offset=offset
+    )
     return render_template(
         "time_played.html",
         time_played=results,
@@ -168,6 +203,9 @@ def time_played():
         viewed_user=user_info,
         sort_by=sort_by,
         base_url=None,
+        page=page,
+        total_pages=total_pages,
+        total_count=total_count,
     )
 
 
@@ -240,11 +278,20 @@ def favorites():
 
     if not serial_prefixes:
         return render_template("errors/not_linked.html", user_info=user_info), 400
-    
+
     if not serial_has_bookmarks(serial_prefixes):
         return render_template("errors/not_linked.html", user_info=user_info), 400
 
-    games = fetch_favorites(serial_prefixes, 30)
+    page = parse_int(request.args.get("page", "1"))
+    if page < 1:
+        page = 1
+    per_page = 30
+    offset = (page - 1) * per_page
+
+    total_count = count_bookmarks(serial_prefixes)
+    total_pages = (total_count + per_page - 1) // per_page
+
+    games = fetch_favorites(serial_prefixes, limit=per_page, offset=offset)
     return render_template(
         "favorites.html",
         games=games,
@@ -252,9 +299,14 @@ def favorites():
         viewed_user=user_info,
         is_unclaimed=False,
         base_url=None,
+        page=page,
+        total_pages=total_pages,
+        total_count=total_count,
     )
 
+
 # User search routes
+
 
 @app.route("/<wii_no>/favorites")
 def favorites_by_serial(wii_no):
@@ -265,15 +317,26 @@ def favorites_by_serial(wii_no):
 
     # Check if it's a linked friend code
     authentik_user = find_user_by_wii_number(wii_no)
-    user_serial = authentik_user.get("attributes", {}).get("serial") if authentik_user else None
-    
+    user_serial = (
+        authentik_user.get("attributes", {}).get("serial") if authentik_user else None
+    )
+
     # We need the serial to check for this info
     if authentik_user and user_serial:
         if isinstance(user_serial, list):
             user_serial = user_serial[0] if user_serial else wii_no
         serial_prefixes = extract_serial_prefix(user_serial)
 
-        games = fetch_favorites(serial_prefixes, 30)
+        page = parse_int(request.args.get("page", "1"))
+        if page < 1:
+            page = 1
+        per_page = 30
+        offset = (page - 1) * per_page
+
+        total_count = count_bookmarks(serial_prefixes)
+        total_pages = (total_count + per_page - 1) // per_page
+
+        games = fetch_favorites(serial_prefixes, limit=per_page, offset=offset)
         viewed_user = build_viewed_user_info(authentik_user)
         return render_template(
             "favorites.html",
@@ -282,18 +345,33 @@ def favorites_by_serial(wii_no):
             viewed_user=viewed_user,
             is_unclaimed=False,
             base_url=f"/{wii_no}",
+            page=page,
+            total_pages=total_pages,
+            total_count=total_count,
         )
-    
+
     if authentik_user:
         # It's a linked friend code but no serial, cannot show favorites without serial
-        return render_template("errors/not_linked_external.html", user_info=user_info), 400
+        return (
+            render_template("errors/not_linked_external.html", user_info=user_info),
+            400,
+        )
 
     # Serial is unlinked, check if it exists in the bookmarks database
     serial_prefixes = extract_serial_prefix(wii_no)
     if not serial_has_bookmarks(serial_prefixes):
         abort(404)
-    
-    games = fetch_favorites(serial_prefixes, 30)
+
+    page = parse_int(request.args.get("page", "1"))
+    if page < 1:
+        page = 1
+    per_page = 30
+    offset = (page - 1) * per_page
+
+    total_count = count_bookmarks(serial_prefixes)
+    total_pages = (total_count + per_page - 1) // per_page
+
+    games = fetch_favorites(serial_prefixes, limit=per_page, offset=offset)
     logged_in_user_picture = user_info.get("profile_picture") if user_info else None
     viewed_user = build_unclaimed_user_info(wii_no, logged_in_user_picture)
     return render_template(
@@ -304,6 +382,9 @@ def favorites_by_serial(wii_no):
         unclaimed_serial=wii_no,
         is_unclaimed=True,
         base_url=f"/{wii_no}",
+        page=page,
+        total_pages=total_pages,
+        total_count=total_count,
     )
 
 
@@ -328,22 +409,27 @@ def recommendations_by_serial(wii_no):
 
     # Check if it's a linked friend code and serial
     authentik_user = find_user_by_wii_number(wii_no)
-    user_serial = authentik_user.get("attributes", {}).get("serial") if authentik_user else None
-    
+    user_serial = (
+        authentik_user.get("attributes", {}).get("serial") if authentik_user else None
+    )
+
     if authentik_user and user_serial:
         context = create_serial_page_context(wii_no, "recommendations.html")
         context["user_info"] = user_info  # Ensure logged-in user info is included
         return render_template("recommendations.html", **context)
-    
+
     if authentik_user:
         # It's a linked friend code but no serial, cannot show recommendations without serial
-        return render_template("errors/not_linked_external.html", user_info=user_info), 400
+        return (
+            render_template("errors/not_linked_external.html", user_info=user_info),
+            400,
+        )
 
     # Serial is unlinked, check if it exists in the recommendations database
     serial_prefixes = extract_serial_prefix(wii_no)
     if not serial_has_recommendations(serial_prefixes):
         abort(404)
-    
+
     context = create_unclaimed_serial_context(wii_no, "recommendations.html")
     context["user_info"] = user_info  # Ensure logged-in user info is included
     return render_template("recommendations.html", **context)
@@ -359,21 +445,26 @@ def time_played_by_serial(wii_no):
 
     # Check if it's a linked friend code and serial
     authentik_user = find_user_by_wii_number(wii_no)
-    user_serial = authentik_user.get("attributes", {}).get("serial") if authentik_user else None
+    user_serial = (
+        authentik_user.get("attributes", {}).get("serial") if authentik_user else None
+    )
     if authentik_user and user_serial:
         context = create_serial_page_context(wii_no, "time_played.html")
         context["user_info"] = user_info  # Ensure logged-in user info is included
         return render_template("time_played.html", **context)
-    
+
     if authentik_user:
         # It's a linked friend code but no serial, cannot show time played without serial
-        return render_template("errors/not_linked_external.html", user_info=user_info), 400
+        return (
+            render_template("errors/not_linked_external.html", user_info=user_info),
+            400,
+        )
 
     # Serial is unlinked, check if it exists in the time_played database
     serial_prefixes = extract_serial_prefix(wii_no)
     if not serial_has_time_played(serial_prefixes):
         abort(404)
-    
+
     context = create_unclaimed_serial_context(wii_no, "time_played.html")
     context["user_info"] = user_info  # Ensure logged-in user info is included
     return render_template("time_played.html", **context)
@@ -447,14 +538,19 @@ def friend_code_home(friend_code):
     # Look up user by Wii number (friend code)
     friend_code_normalized = normalize_serial(friend_code)
     authentik_user = find_user_by_wii_number(friend_code_normalized)
-    user_serial = authentik_user.get("attributes", {}).get("serial") if authentik_user else None
+    user_serial = (
+        authentik_user.get("attributes", {}).get("serial") if authentik_user else None
+    )
 
     # Return 404 if user not found
     if not authentik_user:
         abort(404)
-        
+
     if authentik_user and not user_serial:
-        return render_template("errors/not_linked_external.html", user_info=user_info), 400
+        return (
+            render_template("errors/not_linked_external.html", user_info=user_info),
+            400,
+        )
 
     user_serial = authentik_user.get("attributes", {}).get("serial")
     if isinstance(user_serial, list):
@@ -534,12 +630,26 @@ def polls():
     if not wii_numbers:
         return render_template("errors/not_linked.html", user_info=user_info), 400
 
-    polls_data = fetch_user_polls(wii_numbers, 30)
+    page = parse_int(request.args.get("page", "1"))
+    if page < 1:
+        page = 1
+    per_page = 30
+    offset = (page - 1) * per_page
+
+    total_count = count_user_polls(wii_numbers, db_url=config.evc_db_url)
+    total_pages = (total_count + per_page - 1) // per_page
+
+    polls_data = fetch_user_polls(
+        wii_numbers, limit=per_page, offset=offset, db_url=config.evc_db_url
+    )
     return render_template(
         "polls.html",
         polls=polls_data,
         user_info=user_info,
         viewed_user=user_info,
+        page=page,
+        total_pages=total_pages,
+        total_count=total_count,
     )
 
 
@@ -557,15 +667,31 @@ def suggestions():
     if not wii_numbers:
         return render_template("errors/not_linked.html", user_info=user_info), 400
 
-    suggestions_data = fetch_user_suggestions(wii_numbers, 30)
+    page = parse_int(request.args.get("page", "1"))
+    if page < 1:
+        page = 1
+    per_page = 30
+    offset = (page - 1) * per_page
+
+    total_count = count_user_suggestions(wii_numbers, db_url=config.evc_db_url)
+    total_pages = (total_count + per_page - 1) // per_page
+
+    suggestions_data = fetch_user_suggestions(
+        wii_numbers, limit=per_page, offset=offset, db_url=config.evc_db_url
+    )
     return render_template(
         "suggestions.html",
         suggestions=suggestions_data,
         user_info=user_info,
         viewed_user=user_info,
+        page=page,
+        total_pages=total_pages,
+        total_count=total_count,
     )
 
-# Template routes
+
+# Template routes
+
 
 @app.route("/logout")
 def logout():

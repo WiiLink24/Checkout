@@ -22,6 +22,7 @@ WiiLink Checkout | Favorites for {{ viewed_user.username }}
     {% include "components/favorites_card.html" %}
     {% endfor %}
 </div>
+{% include "components/pagination.html" %}
 {% else %}
 <div class="text-center text-gray-300">You haven't added any favorites yet! Find a title you like on the
     Nintendo Channel, then select "Add to Favorites".</div>

@@ -62,13 +62,14 @@ def fetch_authentik_user(uid):
         print(f"Error fetching user {uid}: {e}")
         return None
 
+
 def find_user_by_wii_number(wii_number):
     """
     Find an Authentik user by their Wii number (friend code).
     Returns the first matching user or None (there can only be one).
     """
     base_url = config.authentik_api_url.rstrip("/")
-    url = f"{base_url}/core/users/?page_size=30&attributes=%7B%22wiis__contains%22%3A+\"{wii_number}\"%7D"
+    url = f'{base_url}/core/users/?page_size=30&attributes=%7B%22wiis__contains%22%3A+"{wii_number}"%7D'
     headers = {
         "Accept": "application/json",
         "Authorization": f"Bearer {config.authentik_service_account_token}",
@@ -84,6 +85,7 @@ def find_user_by_wii_number(wii_number):
     except requests.RequestException as e:
         print(f"Authentik API error: {e}")
         return None
+
 
 def fetch_authentik_users():
     """
@@ -119,7 +121,7 @@ def find_user_by_serial(serial):
     Returns the first matching user or None (there can only be one).
     """
     base_url = config.authentik_api_url.rstrip("/")
-    url = f"{base_url}/core/users/?page_size=30&attributes=%7B%22serial__icontains%22%3A+\"{serial}\"%7D"
+    url = f'{base_url}/core/users/?page_size=30&attributes=%7B%22serial__icontains%22%3A+"{serial}"%7D'
     headers = {
         "Accept": "application/json",
         "Authorization": f"Bearer {config.authentik_service_account_token}",
@@ -135,6 +137,7 @@ def find_user_by_serial(serial):
     except requests.RequestException as e:
         print(f"Authentik API error: {e}")
         return None
+
 
 def normalize_serial(serial):
     return serial.strip("[]'\" ").replace("-", "") if serial else serial
@@ -159,7 +162,7 @@ def build_viewed_user_info(authentik_user):
     # Handle case where authentik_user is unexpectedly a list
     if isinstance(authentik_user, list):
         authentik_user = authentik_user[0] if authentik_user else {}
-    
+
     username = authentik_user.get("username")
     email = authentik_user.get("email", "")
     picture_url = generate_gravatar_url(email)
