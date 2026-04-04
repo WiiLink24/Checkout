@@ -24,7 +24,7 @@
     <div class="flex">
         <div id="sidebar"
             class="w-full max-w-[300px] h-screen bg-gray-800/80 backdrop-blur-xl border-r border-gray-700 p-6 fixed top-0 left-0 flex flex-col justify-between transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-40">
-            <div class="overflow-y-auto h-full">
+            <div class="overflow-visible h-full">
                 <div class="mb-6 flex justify-between items-start">
                     <div>
                         <img src="/static/img/logo.png" alt="Logo" class="h-10 mb-6" />
@@ -51,7 +51,7 @@
 
                 {% macro menu_item(name, redirect_func, icon_name) %}
                 <a href="{{ url_for(redirect_func) }}"
-                    class="block w-full px-4 py-2 {% if url_for(request.endpoint, **request.view_args).startswith(url_for(redirect_func)) %}bg-indigo-600 {% else %}bg-gray-700/40 hover:bg-gray-700/60{% endif %} text-white rounded-xl transition duration-200 flex items-center mb-2">
+                    class="block w-full px-4 py-2 {% if url_for(request.endpoint, **request.view_args).startswith(url_for(redirect_func)) %}bg-indigo-600 {% else %}bg-gray-700/40 hover:bg-gray-700/60{% endif %} text-white rounded-xl transition duration-200 flex items-center">
                     <img src="/static/icon/{{ icon_name }}.svg" alt="{{ name }}" class="w-5 h-5 invert mr-2" />{{ name
                     }}
                 </a>
@@ -65,20 +65,102 @@
                 {% endif %}
                 {% endmacro %}
 
+                {% macro menu_item_external(name, redirect_func, icon_name) %}
+                <a href="{{ redirect_func }}" target="_blank"
+                    class="block w-full px-4 py-2 bg-gray-700/40 hover:bg-gray-700/60 text-white rounded-xl transition duration-200 flex items-center justify-between">
+                    <span class="flex items-center">
+                        <img src="/static/icon/{{ icon_name }}.svg" alt="{{ name }}" class="w-5 h-5 invert mr-2" />{{
+                        name
+                        }}
+                    </span>
+                    <img src="/static/icon/external-link.svg" alt="External Link" class="w-4 h-4 invert" />
+                </a>
+                {% endmacro %}
+
+                {% macro channel_menu(channel_id, channel_name, items) %}
+                <div class="relative" onmouseenter="openChannel('{{ channel_id }}')"
+                    onmouseleave="closeChannel('{{ channel_id }}')">
+                    <button
+                        class="flex items-center justify-between gap-2 w-full text-left px-3 py-2 text-gray-300 text-sm font-semibold hover:text-white hover:bg-gray-700/40 rounded transition"
+                        id="{{ channel_id }}Btn">
+                        {{ channel_name }}
+                        <span id="{{ channel_id }}Arrow" class="inline-block mr-1 transform"><img
+                                src="/static/icon/chevron-right.svg" alt="Arrow Down" class="w-4 h-4 invert" /></span>
+                    </button>
+                    <div id="{{ channel_id }}Items"
+                        class="absolute left-full top-0 -ml-4 w-48 bg-gray-700/95 backdrop-blur-md border border-gray-600 rounded-xl shadow-2xl py-2 z-50 pointer-events-none opacity-0 transition-opacity duration-200"
+                        style="visibility: hidden;">
+                        {% for item in items %}
+                        {% if item.get('external') %}
+                        {{ menu_item_external(item['name'], item['route'], item['icon']) }}
+                        {% else %}
+                        {{ menu_item(item['name'], item['route'], item['icon']) }}
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endmacro %}
+
+                {% macro you_menu(channels) %}
+                <div class="relative" onmouseenter="openYouMenu()" onmouseleave="closeYouMenu()">
+                    <button id="youMenuBtn"
+                        class="w-full px-4 py-2 bg-gray-700/40 hover:bg-gray-700/60 text-white rounded-xl transition duration-200 flex items-center justify-between mb-2">
+                        <span class="flex items-center">
+                            <img src="/static/icon/user.svg" alt="You" class="w-5 h-5 invert mr-2" />
+                            You
+                        </span>
+                        <span id="youMenuArrow" class="transform"><img src="/static/icon/chevron-right.svg"
+                                alt="Arrow Down" class="w-4 h-4 invert" /></span>
+                    </button>
+
+                    <div id="youMenu"
+                        class="absolute left-full top-0 -ml-4 bg-gray-700/90 backdrop-blur-md border border-gray-600 rounded-xl shadow-xl py-2 z-40 pointer-events-none opacity-0 transition-opacity duration-200 min-w-max"
+                        style="visibility: hidden;">
+                        {% for channel in channels %}
+                        {{ channel_menu(channel.id, channel.name, channel['items']) }}
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endmacro %}
+
                 <span class="h-[calc(100%-180px)] flex flex-col justify-between">
-                    <div>
+                    <div class="flex flex-col gap-2">
                         {{ menu_item('Search', 'search', 'search') }}
                         {{ menu_section('TRENDING') }}
-                        {{ menu_item('Top Most Played', 'top_most_played', 'trending-up') }}
-                        {{ menu_item('Top Best Games', 'top_best_games', 'star') }}
+                        {{ menu_item('Most Played', 'top_most_played', 'trending-up') }}
+                        {{ menu_item('Best Games', 'top_best_games', 'star') }}
                         {{ menu_item('Top Favorites', 'top_favorites', 'heart') }}
                     </div>
                     {% if g.oidc_user.logged_in %}
                     <div class="mt-8">
-                        {{ menu_item('Discover', 'discover', 'lightbulb') }}
-                        {{ menu_item('Your Recommendations', 'recommendations', 'gamepad') }}
-                        {{ menu_item('Your Time Played', 'time_played', 'clock') }}
-                        {{ menu_item('Your Favorites', 'favorites', 'star') }}
+                        {% set channels = [
+                        {
+                        'id': 'nintendo',
+                        'name': 'Nintendo Channel',
+                        'items': [
+                        {'name': 'Discover', 'route': 'discover', 'icon': 'lightbulb'},
+                        {'name': 'Recommendations', 'route': 'recommendations', 'icon': 'gamepad'},
+                        {'name': 'Time Played', 'route': 'time_played', 'icon': 'clock'},
+                        {'name': 'Favorites', 'route': 'favorites', 'icon': 'star'}
+                        ]
+                        },
+                        {
+                        'id': 'votes',
+                        'name': 'Everybody Votes Channel',
+                        'items': [
+                        {'name': 'Polls', 'route': 'polls', 'icon': 'chart-line'},
+                        {'name': 'Suggestions', 'route': 'suggestions', 'icon': 'circle-question-mark'}
+                        ]
+                        },
+                        {
+                        'id': 'mii',
+                        'name': 'Check Mii Out Channel',
+                        'items': [
+                        {'name': 'Your Miis', 'route': 'https://miicontest.wiilink.ca/artisans/' + artisan_id|string if artisan_id else '#', 'icon': 'users', 'external': True}
+                        ]
+                        }
+                        ] %}
+                        {{ you_menu(channels) }}
                     </div>
                     {% endif %}
                     {% if not g.oidc_user.logged_in %}
@@ -203,6 +285,61 @@
             }).catch(err => {
                 console.error("Failed to copy:", err);
             });
+        }
+
+        // Menu toggling functions
+        let activeChannel = null;
+
+        function openYouMenu() {
+            const youMenu = document.getElementById('youMenu');
+            youMenu.style.visibility = 'visible';
+            youMenu.style.opacity = '1';
+            youMenu.style.pointerEvents = 'auto';
+        }
+
+        function closeYouMenu() {
+            const youMenu = document.getElementById('youMenu');
+            youMenu.style.visibility = 'hidden';
+            youMenu.style.opacity = '0';
+            youMenu.style.pointerEvents = 'none';
+            // Close all channels when closing you menu
+            closeAllChannels();
+        }
+
+        function openChannel(channel) {
+            // Close previously open channel
+            if (activeChannel && activeChannel !== channel) {
+                closeChannel(activeChannel);
+            }
+
+            const items = document.getElementById(channel + 'Items');
+            items.style.visibility = 'visible';
+            items.style.opacity = '1';
+            items.style.pointerEvents = 'auto';
+            activeChannel = channel;
+        }
+
+        function closeChannel(channel) {
+            const items = document.getElementById(channel + 'Items');
+            items.style.visibility = 'hidden';
+            items.style.opacity = '0';
+            items.style.pointerEvents = 'none';
+            if (activeChannel === channel) {
+                activeChannel = null;
+            }
+        }
+
+        function closeAllChannels() {
+            const channels = ['nintendo', 'votes', 'mii'];
+            channels.forEach(channel => {
+                const items = document.getElementById(channel + 'Items');
+                if (items) {
+                    items.style.visibility = 'hidden';
+                    items.style.opacity = '0';
+                    items.style.pointerEvents = 'none';
+                }
+            });
+            activeChannel = null;
         }
     </script>
 </body>

@@ -43,6 +43,8 @@ from utils import (
     build_unclaimed_user_info,
 )
 from discover import find_game_recommendation
+from evc import fetch_user_polls, fetch_user_suggestions
+from cmoc import get_artisan_id_from_wii_number
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = config.db_url
@@ -57,6 +59,18 @@ oidc = OpenIDConnect(app)
 # Register template filters
 app.jinja_env.filters["format_serial"] = format_serial
 app.jinja_env.filters["format_playtime"] = format_playtime
+
+
+@app.context_processor
+def inject_artisan_id():
+    """Inject artisan ID for logged-in user into template context."""
+    artisan_id = None
+    if oidc.user_loggedin:
+        user_info = get_logged_in_user_info()
+        if user_info and user_info.get("linked_wii_no"):
+            wii_number = user_info["linked_wii_no"][0]
+            artisan_id = get_artisan_id_from_wii_number(wii_number)
+    return dict(artisan_id=artisan_id)
 
 
 def get_logged_in_user_info():
@@ -420,6 +434,52 @@ def index():
         )
     else:
         return render_template("login.html", user_info=None)
+
+
+@app.route("/polls")
+def polls():
+    if not oidc.user_loggedin:
+        return redirect(url_for("index"))
+    profile = get_user_profile()
+    user_info = get_logged_in_user_info()
+    
+    # Get Wii numbers from user info
+    wii_numbers = user_info.get("linked_wii_no", [])
+    if isinstance(wii_numbers, str):
+        wii_numbers = [wii_numbers]
+    
+    if not wii_numbers:
+        return render_template("errors/not_linked.html", user_info=user_info), 400
+    
+    polls_data = fetch_user_polls(wii_numbers, 30)
+    return render_template(
+        "polls.html",
+        polls=polls_data,
+        user_info=user_info,
+        viewed_user=user_info,
+    )
+
+@app.route("/suggestions")
+def suggestions():
+    if not oidc.user_loggedin:
+        return redirect(url_for("index"))
+    user_info = get_logged_in_user_info()
+    
+    # Get Wii numbers from user info
+    wii_numbers = user_info.get("linked_wii_no", [])
+    if isinstance(wii_numbers, str):
+        wii_numbers = [wii_numbers]
+    
+    if not wii_numbers:
+        return render_template("errors/not_linked.html", user_info=user_info), 400
+    
+    suggestions_data = fetch_user_suggestions(wii_numbers, 30)
+    return render_template(
+        "suggestions.html",
+        suggestions=suggestions_data,
+        user_info=user_info,
+        viewed_user=user_info,
+    )
 
 
 @app.route("/logout")
