@@ -16,3 +16,15 @@ def get_artisan_id_from_wii_number(wii_number, db_url=None):
     if result:
         return result[0].get("artisan_id")
     return None
+
+
+def get_artisan_ids_from_wii_number(wii_number, db_url=None):
+    """Get all artisan IDs, names, and stats from a Wii number in the cmoc database."""
+    if db_url is None:
+        db_url = getattr(config, "cmoc_db_url", None)
+    if not db_url or not wii_number:
+        return []
+
+    query = "SELECT artisan_id, name, number_of_posts, total_likes FROM artisans WHERE wii_number = %s ORDER BY name"
+    result = _run_query(query, [wii_number], db_url)
+    return result if result else []

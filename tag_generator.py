@@ -10,7 +10,7 @@ from utils import (
     extract_serial_prefix,
     fetch_user_latest_games,
     fetch_user_stats,
-    find_user_by_wii_number,
+    find_user_by_serial,
     generate_gravatar_url,
     normalize_serial,
 )
@@ -38,7 +38,7 @@ def generate_user_tag(friend_code):
         )
 
     friend_code_normalized = normalize_serial(friend_code)
-    authentik_user = find_user_by_wii_number(friend_code_normalized)
+    authentik_user = find_user_by_serial(friend_code_normalized)
 
     if not authentik_user:
         return None

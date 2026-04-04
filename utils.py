@@ -62,6 +62,28 @@ def fetch_authentik_user(uid):
         print(f"Error fetching user {uid}: {e}")
         return None
 
+def find_user_by_wii_number(wii_number):
+    """
+    Find an Authentik user by their Wii number (friend code).
+    Returns the first matching user or None (there can only be one).
+    """
+    base_url = config.authentik_api_url.rstrip("/")
+    url = f"{base_url}/core/users/?page_size=30&attributes=%7B%22wiis__contains%22%3A+\"{wii_number}\"%7D"
+    headers = {
+        "Accept": "application/json",
+        "Authorization": f"Bearer {config.authentik_service_account_token}",
+    }
+
+    try:
+        response = requests.get(url, headers=headers, timeout=15)
+        response.raise_for_status()
+        data = response.json()
+        results = data.get("results", [])
+        return results[0] if results else None
+
+    except requests.RequestException as e:
+        print(f"Authentik API error: {e}")
+        return None
 
 def fetch_authentik_users():
     """
@@ -92,51 +114,30 @@ def fetch_authentik_users():
 
 
 def find_user_by_serial(serial):
-    """Find an Authentik user by their serial number"""
-    users = fetch_authentik_users()
+    """
+    Find an Authentik user by their serial number.
+    Returns the first matching user or None (there can only be one).
+    """
+    base_url = config.authentik_api_url.rstrip("/")
+    url = f"{base_url}/core/users/?page_size=30&attributes=%7B%22serial__icontains%22%3A+\"{serial}\"%7D"
+    headers = {
+        "Accept": "application/json",
+        "Authorization": f"Bearer {config.authentik_service_account_token}",
+    }
 
-    # Normalize the search serial (handle if it's a list)
-    if isinstance(serial, list):
-        serial = serial[0] if serial else None
+    try:
+        response = requests.get(url, headers=headers, timeout=15)
+        response.raise_for_status()
+        data = response.json()
+        results = data.get("results", [])
+        return results[0] if results else None
 
-    if not serial:
+    except requests.RequestException as e:
+        print(f"Authentik API error: {e}")
         return None
-
-    # Search for user with matching serial
-    for user in users:
-        user_serials = user.get("attributes", {}).get("serial", [])
-        if isinstance(user_serials, str):
-            user_serials = [user_serials]
-
-        if serial in user_serials:
-            return user
-
-
-def find_user_by_wii_number(wii_number):
-    """Find an Authentik user by their Wii number (friend code)"""
-    users = fetch_authentik_users()
-
-    # Normalize the Wii number (handle if it's a list)
-    if isinstance(wii_number, list):
-        wii_number = wii_number[0] if wii_number else None
-
-    if not wii_number:
-        return None
-
-    # Search for user with matching Wii number
-    for user in users:
-        wii_numbers = user.get("attributes", {}).get("wiis", [])
-        if isinstance(wii_numbers, str):
-            wii_numbers = [wii_numbers]
-
-        if wii_number in wii_numbers:
-            return user
-    return None
-
 
 def normalize_serial(serial):
-    """Normalize serial input by stripping quotes and brackets"""
-    return serial.strip("[]'\" ")
+    return serial.strip("[]'\" ").replace("-", "") if serial else serial
 
 
 def extract_serial_prefix(serial):
@@ -155,6 +156,10 @@ def generate_gravatar_url(email):
 
 def build_viewed_user_info(authentik_user):
     """Build viewed_user info dict from an Authentik user object"""
+    # Handle case where authentik_user is unexpectedly a list
+    if isinstance(authentik_user, list):
+        authentik_user = authentik_user[0] if authentik_user else {}
+    
     username = authentik_user.get("username")
     email = authentik_user.get("email", "")
     picture_url = generate_gravatar_url(email)
