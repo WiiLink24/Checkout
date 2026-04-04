@@ -442,15 +442,15 @@ def polls():
         return redirect(url_for("index"))
     profile = get_user_profile()
     user_info = get_logged_in_user_info()
-    
+
     # Get Wii numbers from user info
     wii_numbers = user_info.get("linked_wii_no", [])
     if isinstance(wii_numbers, str):
         wii_numbers = [wii_numbers]
-    
+
     if not wii_numbers:
         return render_template("errors/not_linked.html", user_info=user_info), 400
-    
+
     polls_data = fetch_user_polls(wii_numbers, 30)
     return render_template(
         "polls.html",
@@ -459,20 +459,21 @@ def polls():
         viewed_user=user_info,
     )
 
+
 @app.route("/suggestions")
 def suggestions():
     if not oidc.user_loggedin:
         return redirect(url_for("index"))
     user_info = get_logged_in_user_info()
-    
+
     # Get Wii numbers from user info
     wii_numbers = user_info.get("linked_wii_no", [])
     if isinstance(wii_numbers, str):
         wii_numbers = [wii_numbers]
-    
+
     if not wii_numbers:
         return render_template("errors/not_linked.html", user_info=user_info), 400
-    
+
     suggestions_data = fetch_user_suggestions(wii_numbers, 30)
     return render_template(
         "suggestions.html",

@@ -41,7 +41,6 @@ def _run_query(query, params, db_url=None):
     return [dict(zip(columns, row)) for row in rows]
 
 
-
 def fetch_authentik_user(uid):
     """Fetch user details from Authentik API"""
     import requests
@@ -193,6 +192,7 @@ def _split_genres(genre_value):
 def fetch_user_latest_games(serial_prefixes, limit=5):
     """Fetch user's most recently played games."""
     from nc import fetch_time_played
+
     games = fetch_time_played(serial_prefixes, sort_by="last_played")
     return games[:limit]
 
@@ -200,6 +200,7 @@ def fetch_user_latest_games(serial_prefixes, limit=5):
 def fetch_user_latest_reviews(serial_prefixes, limit=5):
     """Fetch user's most recent game recommendations/reviews."""
     from nc import fetch_recommendations
+
     reviews = fetch_recommendations(serial_prefixes, sort_by="last_recommended")
     return reviews[:limit]
 

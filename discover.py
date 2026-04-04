@@ -163,7 +163,7 @@ def find_game_recommendation(serial_prefixes):
     played_rows = _run_query(
         f"SELECT DISTINCT game_id FROM time_played WHERE {where_clause}",
         params,
-        config.db_url
+        config.db_url,
     )
     played_ids = {row.get("game_id") for row in played_rows if row.get("game_id")}
     seen_game_ids = set(profile["reviewed_ids"]) | played_ids
@@ -187,7 +187,7 @@ def find_game_recommendation(serial_prefixes):
             "LIMIT 1200"
         ),
         [],
-        config.db_url
+        config.db_url,
     )
 
     scored_candidates = []

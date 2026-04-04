@@ -1,8 +1,8 @@
 import config
 from utils import _build_serial_filter, _run_query
 
-
 # Bookmarks
+
 
 def fetch_favorites(serial_prefixes, limit=30):
     """Fetch user's bookmarked favorite games from the bookmarks table."""
@@ -61,6 +61,7 @@ def fetch_favorites(serial_prefixes, limit=30):
         favorites.append(normalized)
 
     return favorites
+
 
 def fetch_top_favorites(limit=30):
     """Fetch top games by total bookmark count across all users."""
@@ -194,6 +195,7 @@ def fetch_top_best_games(limit=30):
 
 # Time Played
 
+
 def fetch_time_played(serial_prefixes, sort_by="time_played"):
     """Fetch time played data for a given serial number"""
     where_clause, params = _build_serial_filter("tp.serial_number", serial_prefixes)
@@ -242,6 +244,7 @@ def fetch_time_played(serial_prefixes, sort_by="time_played"):
     )
     return _run_query(query, params, config.db_url)
 
+
 def fetch_time_played_stats(game_id):
     """Fetch time played stats for a given game"""
     query = (
@@ -283,6 +286,7 @@ def fetch_top_most_played(limit=30):
 
 # User Latest Activity
 
+
 def fetch_user_latest_games(serial_prefixes, limit=5):
     """Fetch user's most recently played games."""
     games = fetch_time_played(serial_prefixes, sort_by="last_played")
@@ -299,9 +303,9 @@ def fetch_user_stats(serial_prefixes):
     """Fetch user's aggregate statistics (total playtime and review count)."""
     if not serial_prefixes:
         return {"total_minutes": 0, "total_reviews": 0}
-    
+
     where_clause, params = _build_serial_filter("tp.serial_number", serial_prefixes)
-    
+
     # Total playtime
     playtime_query = (
         f"SELECT COALESCE(SUM(tp.time_played), 0) AS total_minutes "
@@ -310,9 +314,11 @@ def fetch_user_stats(serial_prefixes):
     )
     playtime_result = _run_query(playtime_query, params, config.db_url)
     total_minutes = playtime_result[0]["total_minutes"] if playtime_result else 0
-    
+
     # Total reviews/recommendations
-    reviews_where_clause, reviews_params = _build_serial_filter("r.serial_number", serial_prefixes)
+    reviews_where_clause, reviews_params = _build_serial_filter(
+        "r.serial_number", serial_prefixes
+    )
     reviews_query = (
         f"SELECT COUNT(*) AS total_reviews "
         f"FROM recommendations r "
@@ -320,5 +326,5 @@ def fetch_user_stats(serial_prefixes):
     )
     reviews_result = _run_query(reviews_query, reviews_params, config.db_url)
     total_reviews = reviews_result[0]["total_reviews"] if reviews_result else 0
-    
+
     return {"total_minutes": total_minutes, "total_reviews": total_reviews}
