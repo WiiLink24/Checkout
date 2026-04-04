@@ -6,13 +6,6 @@ WiiLink Checkout | Favorites for {{ viewed_user.username }}
 
 {% block content %}
 {% set page_title = "Favorites" %}
-{% set nav_items = [
-{'name': 'Recommendations', 'path': '/recommendations', 'active': False},
-{'name': 'Time Played', 'path': '/time_played', 'active': False},
-{'name': 'Favorites', 'path': '/favorites', 'active': True},
-{'name': 'Polls', 'path': '/polls', 'active': False},
-{'name': 'Suggestions', 'path': '/suggestions', 'active': False}
-] %}
 {% include "components/page_header.html" %}
 
 {% if games %}

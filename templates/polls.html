@@ -5,6 +5,8 @@ WiiLink Checkout | Polls
 {% endblock %}
 
 {% block content %}
+{% set page_title = "Polls" %}
+{% include "components/page_header.html" %}
 <style>
     .flip-card {
         background-color: transparent;
@@ -42,15 +44,6 @@ WiiLink Checkout | Polls
         transform: rotateY(180deg);
     }
 </style>
-{% set page_title = "Polls" %}
-{% set nav_items = [
-{'name': 'Recommendations', 'path': '/recommendations', 'active': False},
-{'name': 'Time Played', 'path': '/time_played', 'active': False},
-{'name': 'Favorites', 'path': '/favorites', 'active': False},
-{'name': 'Polls', 'path': '/polls', 'active': True},
-{'name': 'Suggestions', 'path': '/suggestions', 'active': False}
-] %}
-{% include "components/page_header.html" %}
 
 {% if polls %}
 <div class="grid lg:grid-cols-2 gap-6">

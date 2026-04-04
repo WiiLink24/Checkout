@@ -3,6 +3,14 @@
     style="background-image: url('{{ viewed_user.profile_picture }}'); -webkit-mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0)); mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0));">
 </div>
 {% endif %}
+{% set nav_items = [
+{'name': 'Recommendations', 'path': '/recommendations', 'active': page_title == 'Recommendations'},
+{'name': 'Time Played', 'path': '/time_played', 'active': page_title == 'Time Played'},
+{'name': 'Favorites', 'path': '/favorites', 'active': page_title == 'Favorites'},
+{'name': 'Polls', 'path': '/polls', 'active': page_title == 'Polls'},
+{'name': 'Suggestions', 'path': '/suggestions', 'active': page_title == 'Suggestions'},
+{'name': 'Contest Submissions', 'path': '/contest_submissions', 'active': page_title == 'Contest Submissions'}
+] %}
 <div class="min-h-screen px-4 sm:px-6 lg:px-8 py-12">
     <div class="max-w-6xl mx-auto">
         {% if not is_unclaimed %}
@@ -19,10 +27,10 @@
                         's {{ page_title }}
                     </summary>
                     <div
-                        class="absolute left-1/2 -translate-x-1/2 mt-2 w-44 rounded-lg border border-gray-700 bg-gray-900/95 shadow-xl z-20 overflow-hidden">
+                        class="absolute left-1/2 -translate-x-1/2 mt-2 w-44 rounded-xl border border-gray-700 bg-gray-800/95 shadow-xl z-20 overflow-hidden">
                         {% for item in nav_items %}
                         {% if item.active %}
-                        <span class="block px-3 py-2 text-sm text-indigo-300 bg-indigo-500/10">{{ item.name }}</span>
+                        <span class="block px-3 py-2 text-sm text-white-300 bg-gray-500/10">{{ item.name }}</span>
                         {% else %}
                         <a href="{% if base_url %}{{ base_url }}{{ item.path }}{% else %}{{ item.path }}{% endif %}"
                             class="block px-3 py-2 text-sm text-gray-300 hover:bg-gray-800 transition">{{ item.name

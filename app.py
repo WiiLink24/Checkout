@@ -54,7 +54,13 @@ from evc import (
     count_user_polls,
     count_user_suggestions,
 )
-from cmoc import get_artisan_id_from_wii_number, get_artisan_ids_from_wii_number
+from cmoc import (
+    get_artisan_id_from_wii_number,
+    get_artisan_ids_from_wii_number,
+    fetch_contest_submissions,
+    count_contest_submissions,
+    render_mii_to_url,
+)
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = config.db_url
@@ -530,6 +536,53 @@ def suggestions_by_serial(wii_no):
     abort(404)
 
 
+@app.route("/<wii_no>/contest_submissions")
+def contest_submissions_by_serial(wii_no):
+    wii_no = normalize_serial(wii_no)
+
+    user_info = get_logged_in_user_info()
+
+    # Check if it's a linked friend code
+    authentik_user = find_user_by_wii_number(wii_no)
+    if authentik_user:
+        viewed_user = build_viewed_user_info(authentik_user)
+
+        page = parse_int(request.args.get("page", "1"))
+        if page < 1:
+            page = 1
+        per_page = 30
+        offset = (page - 1) * per_page
+
+        total_count = count_contest_submissions([wii_no])
+        total_pages = (total_count + per_page - 1) // per_page
+
+        submissions_data = fetch_contest_submissions(
+            [wii_no], limit=per_page, offset=offset
+        )
+
+        for submission in submissions_data:
+            if submission.get("mii_data"):
+                submission["mii_image_url"] = render_mii_to_url(submission["mii_data"])
+            else:
+                submission["mii_image_url"] = None
+
+        context = {
+            "submissions": submissions_data,
+            "user_info": user_info,
+            "viewed_user": viewed_user,
+            "page_title": "Contest Submissions",
+            "is_unclaimed": False,
+            "base_url": f"/{wii_no}",
+            "page": page,
+            "total_pages": total_pages,
+            "total_count": total_count,
+        }
+        return render_template("contest_submissions.html", **context)
+
+    # Return 404 for unclaimed serials
+    abort(404)
+
+
 @app.route("/<friend_code>/")
 def friend_code_home(friend_code):
     """Display a user's home page by friend code"""
@@ -682,6 +735,50 @@ def suggestions():
     return render_template(
         "suggestions.html",
         suggestions=suggestions_data,
+        user_info=user_info,
+        viewed_user=user_info,
+        page=page,
+        total_pages=total_pages,
+        total_count=total_count,
+    )
+
+
+@app.route("/contest_submissions")
+def contest_submissions():
+    if not oidc.user_loggedin:
+        return redirect(url_for("index"))
+    user_info = get_logged_in_user_info()
+
+    # Get Wii numbers from user info
+    wii_numbers = user_info.get("linked_wii_no", [])
+    if isinstance(wii_numbers, str):
+        wii_numbers = [wii_numbers]
+
+    if not wii_numbers:
+        return render_template("errors/not_linked.html", user_info=user_info), 400
+
+    page = parse_int(request.args.get("page", "1"))
+    if page < 1:
+        page = 1
+    per_page = 30
+    offset = (page - 1) * per_page
+
+    total_count = count_contest_submissions(wii_numbers)
+    total_pages = (total_count + per_page - 1) // per_page
+
+    submissions_data = fetch_contest_submissions(
+        wii_numbers, limit=per_page, offset=offset
+    )
+
+    for submission in submissions_data:
+        if submission.get("mii_data"):
+            submission["mii_image_url"] = render_mii_to_url(submission["mii_data"])
+        else:
+            submission["mii_image_url"] = None
+
+    return render_template(
+        "contest_submissions.html",
+        submissions=submissions_data,
         user_info=user_info,
         viewed_user=user_info,
         page=page,
