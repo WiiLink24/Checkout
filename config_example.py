@@ -1,4 +1,6 @@
 db_url = "postgresql://username:password@localhost/nc"
+cmoc_db_url = "postgresql://username:password@localhost/cmoc"
+evc_db_url = "postgresql://username:password@localhost/evc"
 
 # Used to secure the web panel.
 secret_key = "please_change_thank_you"
