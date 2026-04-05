@@ -204,7 +204,7 @@
         const hasFullRating = Boolean(data.ratingType && data.ratingValue);
         if (hasFullRating) {
             const ratingText = `${data.ratingType}-${data.ratingValue}`;
-            ratingImgEl.src = `/static/ratings/${ratingText}.jpg`;
+            ratingImgEl.src = `/static/img/${ratingText}.jpg`;
             ratingImgEl.classList.remove("hidden");
         } else {
             ratingImgEl.src = "";
