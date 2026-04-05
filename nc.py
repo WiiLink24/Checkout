@@ -3,6 +3,7 @@ from utils import _build_serial_filter, _run_query
 
 # Validation functions
 
+
 def serial_has_time_played(serial_prefixes):
     """Check if a serial has any time played entries in the database."""
     where_clause, params = _build_serial_filter("serial_number", serial_prefixes)

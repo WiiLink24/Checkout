@@ -4,6 +4,11 @@
 WiiLink Checkout | {{ viewed_user.username }}'s Home
 {% endblock %}
 
+{% block og_image %}
+    <meta property="og:image" content="{% if viewed_user.linked_wii_no %}/{{ viewed_user.linked_wii_no[0] }}.png{% else %}{{ url_for('static', filename='img/og-image.png') }}{% endif %}" />
+{% endblock %}
+
+
 {% block content %}
 <div class="absolute inset-x-0 top-0 h-[500px] bg-center bg-cover blur-lg opacity-30 pointer-events-none"
     style="background-image: url('{{ viewed_user.profile_picture }}'); -webkit-mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0)); mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0));">

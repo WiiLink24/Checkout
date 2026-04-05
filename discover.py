@@ -89,17 +89,30 @@ def find_game_recommendation(serial_prefixes):
         rating_score = (rating - 50) / 50
 
         # Add randomness
-        score = (genre_match * 0.6) + (dev_match * 0.2) + (rating_score * 0.2) + random.uniform(0, 0.1)
+        score = (
+            (genre_match * 0.6)
+            + (dev_match * 0.2)
+            + (rating_score * 0.2)
+            + random.uniform(0, 0.1)
+        )
 
         # If better than current best, update
         if score > best_score:
             best_score = score
             best_game = candidate
-            top_genre = max(genres, key=lambda g: genre_count.get(g, 0)) if genres else "Unknown"
+            top_genre = (
+                max(genres, key=lambda g: genre_count.get(g, 0))
+                if genres
+                else "Unknown"
+            )
 
     if best_game:
         best_game["reason"] = {
-            "genres": [g for g in (best_game.get("genre") or "").split(",") if genre_count.get(g.strip(), 0) > 0][:3],
+            "genres": [
+                g
+                for g in (best_game.get("genre") or "").split(",")
+                if genre_count.get(g.strip(), 0) > 0
+            ][:3],
             "matched_genre": top_genre,
             "score": round(best_score, 2),
         }
