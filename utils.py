@@ -138,10 +138,9 @@ def search_authentik_users_by_name(search_query):
             response.raise_for_status()
             data = response.json()
             results = data.get("results", [])
-            users.extend([
-                user for user in results
-                if user.get("attributes", {}).get("wiis")
-            ])
+            users.extend(
+                [user for user in results if user.get("attributes", {}).get("wiis")]
+            )
             url = data.get("pagination", {}).get("next")
 
     except requests.RequestException as e:
