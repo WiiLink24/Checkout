@@ -115,6 +115,42 @@ def fetch_authentik_users():
     return users
 
 
+def search_authentik_users_by_name(search_query):
+    """
+    Search Authentik users by username.
+    Returns all matching users that contain the search query in their username and have wiis linked.
+    """
+    if not search_query or not search_query.strip():
+        return []
+
+    base_url = config.authentik_api_url.rstrip("/")
+    # Use search parameter for username search
+    url = f"{base_url}/core/users/?page_size=50&search={search_query}"
+    headers = {
+        "Accept": "application/json",
+        "Authorization": f"Bearer {config.authentik_service_account_token}",
+    }
+
+    users = []
+    try:
+        while url:
+            response = requests.get(url, headers=headers, timeout=15)
+            response.raise_for_status()
+            data = response.json()
+            results = data.get("results", [])
+            users.extend([
+                user for user in results
+                if user.get("attributes", {}).get("wiis")
+            ])
+            url = data.get("pagination", {}).get("next")
+
+    except requests.RequestException as e:
+        print(f"Authentik API error searching for '{search_query}': {e}")
+        return []
+
+    return users
+
+
 def find_user_by_serial(serial):
     """
     Find an Authentik user by their serial number.

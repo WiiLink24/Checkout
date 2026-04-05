@@ -46,6 +46,7 @@ from utils import (
     extract_serial_prefix,
     build_viewed_user_info,
     build_unclaimed_user_info,
+    search_authentik_users_by_name,
 )
 from discover import find_game_recommendation
 from evc import (
@@ -55,7 +56,6 @@ from evc import (
     count_user_suggestions,
 )
 from cmoc import (
-    get_artisan_id_from_wii_number,
     get_artisan_ids_from_wii_number,
     fetch_contest_submissions,
     count_contest_submissions,
@@ -238,11 +238,10 @@ def time_played():
 @app.route("/search")
 def search():
     user_info = get_logged_in_user_info()
-    users = fetch_authentik_users()
     search_query = request.args.get("search", "").strip().lower()
 
-    # Filter users based on search query
     if search_query:
+        users = search_authentik_users_by_name(search_query)
         users = [
             user
             for user in users
@@ -251,6 +250,12 @@ def search():
                 search_query in wii.lower()
                 for wii in user.get("attributes", {}).get("wiis", [])
             )
+        ]
+    else:
+        users = fetch_authentik_users()
+        users = [
+            user for user in users
+            if user.get("attributes", {}).get("wiis")
         ]
 
     return render_template(
@@ -676,9 +681,10 @@ def friend_code_home(friend_code):
     if not authentik_user:
         abort(404)
 
+    print(user_info)
     if authentik_user and not user_serial:
         return (
-            render_template("errors/not_linked_external.html", user_info=user_info),
+            render_template("errors/not_linked_external.html", user_info=user_info, friend_code=friend_code_normalized),
             400,
         )
 
