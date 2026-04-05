@@ -14,9 +14,9 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
             <div class="flex flex-row items-center gap-6 mb-10">
                 <div class="relative w-32 h-32 mx-auto flex items-center justify-center group">
                     <img src="{{ viewed_user.profile_picture }}" alt="{{ viewed_user.username }}"
-                        class="w-32 h-32 rounded-full object-cover relative z-10">
+                        class="w-32 h-32 rounded-2xl object-cover relative z-10">
                     <a href="{% if viewed_user.linked_wii_no %}/{{ viewed_user.linked_wii_no[0] }}.png{% else %}#{% endif %}"
-                        class="absolute inset-0 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center z-20">
+                        class="absolute inset-0 rounded-2xl bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center z-20">
                         <img src="/static/icon/tag.svg" alt="Copy Icon" class="w-10 h-10 invert">
                     </a>
                 </div>

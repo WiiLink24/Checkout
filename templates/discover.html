@@ -22,7 +22,7 @@ WiiLink Checkout | Discover
                     {% if game.reason %}
                     <div class="mb-2 inline-block bg-gray-600/20 border border-gray-500/50 rounded-xl px-6 py-3">
                         <p class="text-gray-300 text-sm">
-                            Based on your appreciation for <strong>{{ game.reason.genres }}</strong> games,
+                            Based on your appreciation for <strong>{% for g in game.reason.genres %}{{ g }}{% if not loop.last %}, {% endif %}{% endfor %}</strong> games,
                             we found a <strong>{{ game.reason.matched_genre }}</strong> game that might interest you
                         </p>
                     </div>
@@ -53,7 +53,7 @@ WiiLink Checkout | Discover
             <div class="mt-8">
                 <a href="/discover"
                     class="w-full px-6 py-2 bg-gray-800 border border-gray-700 text-gray-300 hover:text-white hover:border-gray-500 rounded-lg transition duration-200">
-                    Not quite your style? Discover another game
+                    Not quite your style? Keep playing so we can better understand your tastes!
                 </a>
             </div>
         </div>
