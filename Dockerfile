@@ -1,7 +1,6 @@
-FROM python:3.14
+FROM mcr.microsoft.com/playwright/python:v1.58.0-noble
 
-RUN addgroup --gid 1000 server && adduser --uid 1000 --gid 1000 --system server
-WORKDIR /home/server
+WORKDIR /home/ubuntu
 
 # Copy requirements first as to not disturb cache for other changes.
 COPY requirements.txt .
@@ -9,7 +8,9 @@ COPY requirements.txt .
 RUN pip3 install -r requirements.txt && \
   pip3 install gunicorn
 
-USER server
+RUN playwright install
+
+USER ubuntu
 
 # Finally, copy the entire source.
 COPY . .
