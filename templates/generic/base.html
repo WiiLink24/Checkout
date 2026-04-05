@@ -23,8 +23,8 @@
 
     <div class="flex">
         <div id="sidebar"
-            class="w-full max-w-[300px] h-screen bg-gray-800/80 backdrop-blur-xl border-r border-gray-700 p-6 fixed top-0 left-0 flex flex-col justify-between transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-40">
-            <div class="overflow-visible h-full">
+            class="w-full max-w-[300px] h-screen bg-gray-800/80 backdrop-blur-xl border-r border-gray-700 p-6 fixed top-0 left-0 flex flex-col justify-between transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-40 overflow-scroll">
+            <div class="overflow-scroll h-full">
                 <div class="mb-3 flex justify-between items-start">
                     <img src="/static/img/logo.png" alt="Logo" class="h-10 mb-6" />
 
@@ -36,7 +36,7 @@
                 {# Variable 'sidebar_menu' is used to add custom items to this page's sidebar menu. #}
 
                 {% macro menu_section(title) %}
-                <p class="menu-label text-gray-400 text-sm font-medium mt-6 mb-2">
+                <p class="menu-label text-gray-400 text-sm font-medium mt-6 mb-2 uppercase">
                     {{ title }}
                 </p>
                 {% endmacro %}
@@ -124,7 +124,47 @@
                 {% endmacro %}
 
                 {% macro you_menu(channels) %}
-                <div class="relative" onmouseenter="openYouMenu()" onmouseleave="closeYouMenu()">
+                <div class="md:hidden flex flex-col gap-4">
+                    {% for channel in channels %}
+                    <div class="flex flex-col gap-2">
+                        {{ menu_section(channel['name']) }}
+                        {% for item in channel['items'] %}
+                        {% if item['name'] == 'Your Miis' and artisan_ids|length == 0 %}
+                        <button onclick="openArtisanModal()"
+                            class="block w-full px-4 py-2 bg-gray-700/40 hover:bg-gray-700/60 text-white rounded-xl transition duration-200 flex items-center justify-between text-left">
+                            <span class="flex items-center">
+                                <img src="/static/icon/{{ item['icon'] }}.svg" alt="{{ item['name'] }}"
+                                    class="w-5 h-5 invert mr-2" />{{ item['name'] }}
+                            </span>
+                        </button>
+                        {% elif item.get('onclick') %}
+                        <button onclick="{{ item['onclick'] }}"
+                            class="block w-full px-4 py-2 bg-gray-700/40 hover:bg-gray-700/60 text-white rounded-xl transition duration-200 flex items-center justify-between text-left">
+                            <span class="flex items-center">
+                                <img src="/static/icon/{{ item['icon'] }}.svg" alt="{{ item['name'] }}"
+                                    class="w-5 h-5 invert mr-2" />{{ item['name'] }}
+                            </span>
+                        </button>
+                        {% elif item.get('direct_link') %}
+                        <a href="{{ item['direct_link'] }}" target="_blank"
+                            class="block w-full px-4 py-2 bg-gray-700/40 hover:bg-gray-700/60 text-white rounded-xl transition duration-200 flex items-center justify-between">
+                            <span class="flex items-center">
+                                <img src="/static/icon/{{ item['icon'] }}.svg" alt="{{ item['name'] }}"
+                                    class="w-5 h-5 invert mr-2" />{{ item['name'] }}
+                            </span>
+                            <img src="/static/icon/external-link.svg" alt="External Link" class="w-4 h-4 invert" />
+                        </a>
+                        {% elif item.get('external') %}
+                        {{ menu_item_external(item['name'], item['route'], item['icon']) }}
+                        {% else %}
+                        {{ menu_item(item['name'], item['route'], item['icon']) }}
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="hidden md:block relative" onmouseenter="openYouMenu()" onmouseleave="closeYouMenu()">
                     <button id="youMenuBtn"
                         class="w-full px-4 py-2 bg-gray-700/40 hover:bg-gray-700/60 text-white rounded-xl transition duration-200 flex items-center justify-between">
                         <span class="flex items-center">
@@ -145,7 +185,7 @@
                 </div>
                 {% endmacro %}
 
-                <span class="h-[calc(100%-80px)] flex flex-col justify-between">
+                <span class="h-full sm:h-[calc(100%-80px)] flex flex-col justify-between">
                     <div class="flex flex-col gap-2">
                         {{ menu_item('Search', 'search', 'search') }}
                         {{ menu_section('TRENDING') }}
@@ -257,7 +297,7 @@
 
         <div id="sidebarOverlay" class="fixed inset-0 bg-gray-900/80 z-30 hidden md:hidden"></div>
 
-        <div class="mt-10 sm:mt-0 w-full md:ml-[300px] md:w-[calc(100%-300px)] min-h-screen p-6">
+        <div class="mt-10 sm:mt-0 w-full md:ml-[300px] md:w-[calc(100%-300px)] min-h-screen sm:p-6">
             {% with messages = get_flashed_messages() %}
             {% for message in messages %}
             <div class="bg-yellow-500/20 border border-yellow-600/30 text-yellow-200 px-4 py-3 rounded-lg mb-6">

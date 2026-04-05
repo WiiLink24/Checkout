@@ -8,7 +8,7 @@ WiiLink Checkout | Contest Submissions
 {% set page_title = "Contest Submissions" %}
 {% include "components/page_header.html" %}
 
-<div class="min-h-screen px-4 sm:px-6 lg:px-8 py-12">
+<div class="min-h-screen sm:px-6 lg:px-8 py-12">
     <div class="max-w-6xl mx-auto">
 
         {% if submissions %}
@@ -53,8 +53,6 @@ WiiLink Checkout | Contest Submissions
 
         <ul class="grid grid-cols-1 lg:grid-cols-2 gap-6 list-none p-0">
             {% for submission in submissions %}
-            {% set close_date = submission.close_time %}
-            {% set open_date = submission.open_time %}
             <li class="contest-card rounded-3xl shadow-lg hover:shadow-2xl transition-all"
                 onmouseenter="this.style.setProperty('--rotation', Math.floor(Math.random() * 6) - 3)"
                 onmouseleave="this.style.setProperty('--rotation', 0)">
@@ -68,7 +66,7 @@ WiiLink Checkout | Contest Submissions
                             {% endif %}
                         </div>
                         <div class="flex-1 pr-4">
-                            <div class="flex items-center gap-3 mb-2">
+                            <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 mb-2">
                                 <img class="w-12 h-12 rounded-lg object-cover border-2 border-gray-300"
                                     src="https://miicontestp.wii.rc24.xyz//assets/contest/{{ submission.contest_id }}/thumbnail.jpg"
                                     alt="Contest thumbnail" />

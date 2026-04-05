@@ -7,7 +7,7 @@ WiiLink Checkout | Search Users
 {% block content %}
 <div class="px-4 sm:px-6 lg:px-8 py-8">
     <div class="max-w-6xl mx-auto">
-        <div class="mt-72 mb-8">
+        <div class="mt-20 sm:mt-72 mb-8">
             <h1 class="text-3xl font-bold text-white mb-2">Checkout Search</h1>
             <p class="text-gray-400">Find players and explore their recommendations</p>
         </div>
@@ -31,12 +31,12 @@ WiiLink Checkout | Search Users
         </form>
 
         {% if users %}
-        <div class="flex flex-row flex-wrap gap-3">
+        <div class="flex flex-col sm:flex-row flex-wrap gap-3">
             {% for user in users %}
             {% set wii_value = user.attributes.wiis[0] if user.attributes.wiis is iterable and user.attributes.wiis is
             not string else user.attributes.wiis %}
             <a href="/{{ wii_value }}/"
-                class="w-[300px] flex flex-row items-center gap-3 p-3 bg-gray-800 border border-gray-700 rounded-xl overflow-hidden hover:border-gray-500 transition duration-200">
+                class="w-full sm:w-[300px] flex flex-row items-center gap-3 p-3 bg-gray-800 border border-gray-700 rounded-xl overflow-hidden hover:border-gray-500 transition duration-200">
                 <img src="{{ user.avatar }}" alt="{{ user.username }}"
                     class="w-16 h-16 rounded-xl object-cover border border-gray-600">
                 <p class="flex flex-col gap-1">

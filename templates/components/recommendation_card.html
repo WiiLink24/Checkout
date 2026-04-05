@@ -57,7 +57,7 @@
                     </div>
                 </div>
             </div>
-            <div class="mt-4 grid grid-cols-3 gap-3 text-sm">
+            <div class="mt-4 flex flex-col sm:grid sm:grid-cols-3 gap-3 text-sm">
                 <div class="rounded-xl bg-gray-900/70 p-3">
                     <p class="text-xs uppercase text-gray-400">enjoyed by</p>
                     {% set appeal_label = "everyone" if rec.appeal|int == 0 else "gamers" %}

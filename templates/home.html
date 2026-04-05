@@ -10,9 +10,9 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
 </div>
 <div class="px-4 sm:px-6 lg:px-8 py-8">
     <div class="max-w-6xl mx-auto">
-        <span class="flex flex-row items-center justify-between gap-6">
-            <div class="flex flex-row items-center gap-6 mb-10">
-                <div class="relative w-32 h-32 mx-auto flex items-center justify-center group">
+        <span class="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+            <div class="mt-6 sm:mt-0 flex flex-col sm:flex-row sm:items-center gap-6 mb-10">
+                <div class="relative w-32 h-32 sm:mx-auto flex sm:items-center sm:justify-center group">
                     <img src="{{ viewed_user.profile_picture }}" alt="{{ viewed_user.username }}"
                         class="w-32 h-32 rounded-2xl object-cover relative z-10">
                     <a href="{% if viewed_user.linked_wii_no %}/{{ viewed_user.linked_wii_no[0] }}.png{% else %}#{% endif %}"
@@ -21,7 +21,7 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                     </a>
                 </div>
                 <span class="flex flex-col items-start gap-3">
-                    <h1 class="text-5xl font-bold text-white mt-2 !mb-0">
+                    <h1 class="text-3xl sm:text-5xl font-bold text-white sm:mt-2 !mb-0">
                         {{ viewed_user.username }}
                     </h1>
                     <span class="flex flex-col items-start gap-2 mt-1">
@@ -94,7 +94,7 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                     {% endfor %}
                 </div>
                 <span class="mt-3 flex flex-row items-center justify-between">
-                    <h2 class="text-2xl font-bold text-white/30 mb-4">Favorites</h2>
+                    <h2 class="text-2xl font-bold text-white/30">Favorites</h2>
                     <a href="{% if base_url %}{{ base_url }}/favorites{% else %}/favorites{% endif %}"
                         class="flex flex-row items-center gap-1 text-gray-300 hover:text-white transition duration-200">
                         View All <img src="/static/icon/chevron-right.svg" alt="Chevron Right"
@@ -142,7 +142,7 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                     {% endfor %}
                 </div>
                 <span class="mt-3 flex flex-row items-center justify-between">
-                    <h2 class="text-2xl font-bold text-white/30 mb-4">Latest Games Played</h2>
+                    <h2 class="text-2xl font-bold text-white/30">Latest Games Played</h2>
                     <a href="{% if base_url %}{{ base_url }}/time_played{% else %}/time_played{% endif %}"
                         class="flex flex-row items-center gap-1 text-gray-300 hover:text-white transition duration-200">
                         View All <img src="/static/icon/chevron-right.svg" alt="Chevron Right"
@@ -205,7 +205,7 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                     {% endfor %}
                 </div>
                 <span class="mt-3 flex flex-row items-center justify-between">
-                    <h2 class="text-2xl font-bold text-white/30 mb-4">Latest Reviews</h2>
+                    <h2 class="text-2xl font-bold text-white/30">Latest Reviews</h2>
                     <a href="{% if base_url %}{{ base_url }}/recommendations{% else %}/recommendations{% endif %}"
                         class="flex flex-row items-center gap-1 text-gray-300 hover:text-white transition duration-200">
                         View All <img src="/static/icon/chevron-right.svg" alt="Chevron Right"

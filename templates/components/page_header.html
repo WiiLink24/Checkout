@@ -19,28 +19,28 @@
                 <img src="{{ viewed_user.profile_picture }}" alt="{{ viewed_user.username }}"
                     class="w-32 h-32 rounded-2xl mx-auto object-cover relative z-10">
             </div>
-            <h1 class="text-4xl font-bold text-white mt-2">
+            <h1 class="text-2xl sm:text-4xl font-bold text-white mt-2">
                 {{ viewed_user.username }}
-                <details class="relative inline-block ml-2 text-left group">
+                <details class="relative inline-block ml-2 text-left group align-middle">
                     <summary
-                        class="!text-4xl inline-flex items-center gap-2 px-3 py-1 border border-dashed border-gray-600/30 text-gray-500 hover:text-gray-300 transition rounded-lg text-base font-light cursor-pointer select-none">
+                        class="!text-2xl sm:!text-4xl inline-flex items-center gap-2 px-3 py-1 border border-dashed border-gray-600/30 text-gray-500 hover:text-gray-300 transition rounded-lg text-base font-light cursor-pointer select-none min-h-[44px]">
                         's {{ page_title }}
                     </summary>
                     <div
-                        class="absolute left-1/2 -translate-x-1/2 mt-2 w-44 rounded-xl border border-gray-700 bg-gray-800/95 shadow-xl z-20 overflow-hidden">
+                        class="fixed left-1/2 -translate-x-1/2 mt-2 w-[calc(100vw-2rem)] max-w-sm rounded-xl border border-gray-700 bg-gray-800/95 shadow-xl z-30 overflow-hidden sm:absolute sm:left-1/2 sm:-translate-x-1/2 sm:w-56">
                         {% for item in nav_items %}
                         {% if item.active %}
-                        <span class="block px-3 py-2 text-sm text-white-300 bg-gray-500/10">{{ item.name }}</span>
+                        <span class="block px-4 py-3 text-sm text-white-300 bg-gray-500/10">{{ item.name }}</span>
                         {% else %}
                         <a href="{% if base_url %}{{ base_url }}{{ item.path }}{% else %}{{ item.path }}{% endif %}"
-                            class="block px-3 py-2 text-sm text-gray-300 hover:bg-gray-800 transition">{{ item.name
+                            class="block px-4 py-3 text-sm text-gray-300 hover:bg-gray-800 transition">{{ item.name
                             }}</a>
                         {% endif %}
                         {% endfor %}
                     </div>
                 </details>
             </h1>
-            <span class="flex flex-row items-center justify-center gap-2 mt-3">
+            <span class="flex flex-wrap items-center justify-center gap-2 mt-3">
                 {% for linked_wii in viewed_user.linked_wii_no %}
                 <p class="px-3 py-1 bg-gray-700 rounded-md text-gray-300">{{ linked_wii|format_serial }}</p>
                 {% endfor %}

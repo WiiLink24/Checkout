@@ -1,5 +1,5 @@
 {% if total_pages and total_pages > 1 %}
-<div class="mt-8 flex items-center justify-between">
+<div class="mt-8 mb-16 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
     <div class="text-sm text-gray-400">
         Page <b>{{ page }}</b> of {{ total_pages }} ({{ total_count }} total)
     </div>
