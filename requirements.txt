@@ -2,3 +2,4 @@ flask
 flask_oidc
 psycopg2
 black
+playwright
