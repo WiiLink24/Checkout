@@ -1,3 +1,5 @@
+import os
+from apscheduler.schedulers.background import BackgroundScheduler
 from flask import (
     Flask,
     render_template,
@@ -70,6 +72,9 @@ app.config["OIDC_OVERWRITE_REDIRECT_URI"] = config.oidc_redirect_uri
 
 oidc = OpenIDConnect(app)
 
+CACHE_DIR = "cache"
+os.makedirs(CACHE_DIR, exist_ok=True)
+
 # Register template filters
 app.jinja_env.filters["format_serial"] = format_serial
 app.jinja_env.filters["format_playtime"] = format_playtime
@@ -93,6 +98,24 @@ def get_logged_in_user_info():
         profile = get_user_profile()
         return build_user_info(profile)
     return None
+
+
+def generate_top_page_cache():
+    """Generate and cache the top pages as HTML files."""
+    try:
+        pages = {
+            "top_most_played.html": (fetch_top_most_played(30), "top_most_played.html"),
+            "top_best_games.html": (fetch_top_best_games(30), "top_best_games.html"),
+            "top_favorites.html": (fetch_top_favorites(30), "top_favorites.html"),
+        }
+
+        for cache_file, (games, template) in pages.items():
+            html = render_template(template, games=games, user_info=None)
+            with open(os.path.join(CACHE_DIR, cache_file), "w") as f:
+                f.write(html)
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
 
 
 @app.route("/recommendations")
@@ -238,23 +261,71 @@ def search():
 
 @app.route("/top/most-played")
 def top_most_played():
+    cache_file = os.path.join(CACHE_DIR, "top_most_played.html")
+    
+    # Serve from cache if exists
+    if os.path.exists(cache_file):
+        with open(cache_file, "r") as f:
+            return f.read()
+    
+    # Generate and cache if not found
     user_info = get_logged_in_user_info()
     games = fetch_top_most_played(30)
-    return render_template("top_most_played.html", games=games, user_info=user_info)
+    html = render_template("top_most_played.html", games=games, user_info=user_info)
+    
+    try:
+        with open(cache_file, "w") as f:
+            f.write(html)
+    except Exception as e:
+        print(f"[CACHE] Failed to save cache: {e}")
+    
+    return html
 
 
 @app.route("/top/best-games")
 def top_best_games():
+    cache_file = os.path.join(CACHE_DIR, "top_best_games.html")
+    
+    # Serve from cache if exists
+    if os.path.exists(cache_file):
+        with open(cache_file, "r") as f:
+            return f.read()
+    
+    # Generate and cache if not found
     user_info = get_logged_in_user_info()
     games = fetch_top_best_games(30)
-    return render_template("top_best_games.html", games=games, user_info=user_info)
+    html = render_template("top_best_games.html", games=games, user_info=user_info)
+    
+    try:
+        with open(cache_file, "w") as f:
+            f.write(html)
+    except Exception as e:
+        print(f"[CACHE] Failed to save cache: {e}")
+    
+    return html
 
 
 @app.route("/top/favorites")
 def top_favorites():
+    cache_file = os.path.join(CACHE_DIR, "top_favorites.html")
+    
+    # Serve from cache if exists
+    if os.path.exists(cache_file):
+        with open(cache_file, "r") as f:
+            return f.read()
+    
+    # Generate and cache if not found
     user_info = get_logged_in_user_info()
     games = fetch_top_favorites(30)
-    return render_template("top_favorites.html", games=games, user_info=user_info)
+    html = render_template("top_favorites.html", games=games, user_info=user_info)
+    
+    try:
+        with open(cache_file, "w") as f:
+            f.write(html)
+    except Exception as e:
+        print(f"[CACHE] Failed to save cache: {e}")
+    
+    return html
 
 
 @app.route("/discover")
@@ -861,6 +932,11 @@ def handle_400(error):
         ),
         400,
     )
+    
+
+scheduler = BackgroundScheduler()
+scheduler.add_job(generate_top_page_cache, "cron", hour=0, minute=0)
+scheduler.start()
 
 
 if __name__ == "__main__":

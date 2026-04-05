@@ -3,3 +3,4 @@ config.py
 /.venv
 .DS_Store
 /.idea
+/cache
