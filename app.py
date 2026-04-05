@@ -163,8 +163,6 @@ def recommendations():
 
 @app.route("/recommendations/averages")
 def recommendation_averages():
-    if not oidc.user_loggedin:
-        return redirect(url_for("index"))
     game_id = request.args.get("game_id", "").strip()
     if not game_id:
         return jsonify({"error": "game_id is required"}), 400
@@ -181,8 +179,6 @@ def recommendation_averages():
 
 @app.route("/time_played/stats")
 def time_played_stats():
-    if not oidc.user_loggedin:
-        return redirect(url_for("index"))
     game_id = request.args.get("game_id", "").strip()
     if not game_id:
         return jsonify({"error": "game_id is required"}), 400
