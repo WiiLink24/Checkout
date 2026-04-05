@@ -31,8 +31,6 @@ from nc import (
     fetch_user_latest_reviews,
     fetch_user_stats,
     fetch_favorites,
-    serial_has_bookmarks,
-    serial_has_recommendations,
     serial_has_time_played,
     count_bookmarks,
     count_recommendations,
@@ -106,7 +104,7 @@ def recommendations():
     serial_prefixes = get_serial_prefixes(profile)
     if not serial_prefixes:
         return render_template("errors/not_linked.html", user_info=user_info), 400
-    if not serial_has_recommendations(serial_prefixes):
+    if not serial_has_time_played(serial_prefixes):
         return render_template("errors/not_linked.html", user_info=user_info), 400
 
     sort_by = request.args.get("sort", "recommendation_percent")
@@ -285,7 +283,7 @@ def favorites():
     if not serial_prefixes:
         return render_template("errors/not_linked.html", user_info=user_info), 400
 
-    if not serial_has_bookmarks(serial_prefixes):
+    if not serial_has_time_played(serial_prefixes):
         return render_template("errors/not_linked.html", user_info=user_info), 400
 
     page = parse_int(request.args.get("page", "1"))
@@ -365,7 +363,7 @@ def favorites_by_serial(wii_no):
 
     # Serial is unlinked, check if it exists in the bookmarks database
     serial_prefixes = extract_serial_prefix(wii_no)
-    if not serial_has_bookmarks(serial_prefixes):
+    if not serial_has_time_played(serial_prefixes):
         abort(404)
 
     page = parse_int(request.args.get("page", "1"))
@@ -433,7 +431,7 @@ def recommendations_by_serial(wii_no):
 
     # Serial is unlinked, check if it exists in the recommendations database
     serial_prefixes = extract_serial_prefix(wii_no)
-    if not serial_has_recommendations(serial_prefixes):
+    if not serial_has_time_played(serial_prefixes):
         abort(404)
 
     context = create_unclaimed_serial_context(wii_no, "recommendations.html")

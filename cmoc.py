@@ -111,6 +111,8 @@ def fetch_contest_submissions(wii_numbers, db_url=None, limit=None, offset=None)
     WHERE {where_clause}
     ORDER BY c.close_time DESC, cm.contest_id DESC
     """
+    
+    print(query)
 
     if limit is not None and offset is not None:
         query += f" LIMIT {limit} OFFSET {offset}"

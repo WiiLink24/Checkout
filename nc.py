@@ -3,29 +3,6 @@ from utils import _build_serial_filter, _run_query
 
 # Validation functions
 
-
-def serial_has_bookmarks(serial_prefixes):
-    """Check if a serial has any bookmarks in the database."""
-    where_clause, params = _build_serial_filter("serial_number", serial_prefixes)
-    if not where_clause:
-        return False
-
-    query = f"SELECT 1 FROM bookmarks WHERE {where_clause} LIMIT 1"
-    result = _run_query(query, params, config.db_url)
-    return bool(result)
-
-
-def serial_has_recommendations(serial_prefixes):
-    """Check if a serial has any recommendations in the database."""
-    where_clause, params = _build_serial_filter("serial_number", serial_prefixes)
-    if not where_clause:
-        return False
-
-    query = f"SELECT 1 FROM recommendations WHERE {where_clause} LIMIT 1"
-    result = _run_query(query, params, config.db_url)
-    return bool(result)
-
-
 def serial_has_time_played(serial_prefixes):
     """Check if a serial has any time played entries in the database."""
     where_clause, params = _build_serial_filter("serial_number", serial_prefixes)
