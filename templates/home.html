@@ -226,5 +226,20 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    function setCookie(name, value, days) {
+      const date = new Date();
+      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+      const expires = "expires=" + date.toUTCString();
+      document.cookie = name + "=" + value + ";" + expires + ";path=/;domain=.wiilink.ca;Secure";
+    }
+
+    setCookie("wiilink_user", JSON.stringify({ username: "{{ user_info.username }}", pfp: "{{ user_info.profile_picture }}" }), 7);
+    setCookie("is_logged_in", "true", 7);
+});
+</script>
 {% include "components/details_modal.html" %}
 {% endblock %}
