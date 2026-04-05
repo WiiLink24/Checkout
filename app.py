@@ -253,10 +253,7 @@ def search():
         ]
     else:
         users = fetch_authentik_users()
-        users = [
-            user for user in users
-            if user.get("attributes", {}).get("wiis")
-        ]
+        users = [user for user in users if user.get("attributes", {}).get("wiis")]
 
     return render_template(
         "search.html", users=users, search_query=search_query, user_info=user_info
@@ -684,7 +681,11 @@ def friend_code_home(friend_code):
     print(user_info)
     if authentik_user and not user_serial:
         return (
-            render_template("errors/not_linked_external.html", user_info=user_info, friend_code=friend_code_normalized),
+            render_template(
+                "errors/not_linked_external.html",
+                user_info=user_info,
+                friend_code=friend_code_normalized,
+            ),
             400,
         )
 
