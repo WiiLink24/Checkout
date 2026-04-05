@@ -111,14 +111,13 @@ def generate_top_page_cache():
 
         for cache_file, (games, score_type) in pages.items():
             games_html = render_template(
-                "partials/games_grid.html",
-                games=games,
-                score_type=score_type
+                "partials/games_grid.html", games=games, score_type=score_type
             )
             with open(os.path.join(CACHE_DIR, cache_file), "w") as f:
                 f.write(games_html)
     except Exception as e:
         import traceback
+
         traceback.print_exc()
 
 
@@ -267,7 +266,7 @@ def search():
 def top_most_played():
     cache_file = os.path.join(CACHE_DIR, "top_most_played.html")
     games_html = ""
-    
+
     # Load cached games content if exists
     if os.path.exists(cache_file):
         with open(cache_file, "r") as f:
@@ -275,21 +274,17 @@ def top_most_played():
     else:
         games = fetch_top_most_played(30)
         games_html = render_template(
-            "partials/games_grid.html",
-            games=games,
-            score_type="most_played"
+            "partials/games_grid.html", games=games, score_type="most_played"
         )
         try:
             with open(cache_file, "w") as f:
                 f.write(games_html)
         except Exception as e:
             print(f"[CACHE] Failed to save cache: {e}")
-    
+
     user_info = get_logged_in_user_info()
     return render_template(
-        "top_most_played.html",
-        cached_games_html=games_html,
-        user_info=user_info
+        "top_most_played.html", cached_games_html=games_html, user_info=user_info
     )
 
 
@@ -297,7 +292,7 @@ def top_most_played():
 def top_best_games():
     cache_file = os.path.join(CACHE_DIR, "top_best_games.html")
     games_html = ""
-    
+
     # Load cached games content if exists
     if os.path.exists(cache_file):
         with open(cache_file, "r") as f:
@@ -305,21 +300,17 @@ def top_best_games():
     else:
         games = fetch_top_best_games(30)
         games_html = render_template(
-            "partials/games_grid.html",
-            games=games,
-            score_type="best_games"
+            "partials/games_grid.html", games=games, score_type="best_games"
         )
         try:
             with open(cache_file, "w") as f:
                 f.write(games_html)
         except Exception as e:
             print(f"[CACHE] Failed to save cache: {e}")
-    
+
     user_info = get_logged_in_user_info()
     return render_template(
-        "top_best_games.html",
-        cached_games_html=games_html,
-        user_info=user_info
+        "top_best_games.html", cached_games_html=games_html, user_info=user_info
     )
 
 
@@ -327,7 +318,7 @@ def top_best_games():
 def top_favorites():
     cache_file = os.path.join(CACHE_DIR, "top_favorites.html")
     games_html = ""
-    
+
     # Load cached games content if exists
     if os.path.exists(cache_file):
         with open(cache_file, "r") as f:
@@ -335,21 +326,17 @@ def top_favorites():
     else:
         games = fetch_top_favorites(30)
         games_html = render_template(
-            "partials/games_grid.html",
-            games=games,
-            score_type="favorites"
+            "partials/games_grid.html", games=games, score_type="favorites"
         )
         try:
             with open(cache_file, "w") as f:
                 f.write(games_html)
         except Exception as e:
             print(f"[CACHE] Failed to save cache: {e}")
-    
+
     user_info = get_logged_in_user_info()
     return render_template(
-        "top_favorites.html",
-        cached_games_html=games_html,
-        user_info=user_info
+        "top_favorites.html", cached_games_html=games_html, user_info=user_info
     )
 
 
@@ -957,7 +944,7 @@ def handle_400(error):
         ),
         400,
     )
-    
+
 
 scheduler = BackgroundScheduler()
 scheduler.add_job(generate_top_page_cache, "cron", hour=0, minute=0)
