@@ -729,7 +729,7 @@ def index():
     if oidc.user_loggedin:
         profile = get_user_profile()
         user_info = get_logged_in_user_info()
-        serial_prefixes = get_serial_prefixes(user_info)
+        serial_prefixes = get_serial_prefixes(profile)
 
         if not serial_prefixes:
             return render_template("errors/not_linked.html", user_info=user_info), 400

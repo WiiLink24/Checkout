@@ -11,12 +11,7 @@ def get_serial_prefixes(user_info):
         serials = [serials]
     if not isinstance(serials, list) or not serials:
         return []
-    prefixes = []
-    for serial in serials:
-        match = re.match(r"^([A-Z]{2}\d{9})", serial)
-        if match:
-            prefixes.append(match.group(1))
-    return prefixes
+    return [serial[:12] for serial in serials]
 
 
 def _build_serial_filter(column_name, serial_prefixes):
@@ -179,9 +174,7 @@ def normalize_serial(serial):
 
 
 def extract_serial_prefix(serial):
-    """Extract serial prefix (first 11 characters: 2 letters + 9 digits)"""
-    match = re.match(r"^([A-Z]{2}\d{9})", serial)
-    return [match.group(1)] if match else [serial]
+    return [serial[:12]]
 
 
 def generate_gravatar_url(email):
