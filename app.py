@@ -101,18 +101,22 @@ def get_logged_in_user_info():
 
 
 def generate_top_page_cache():
-    """Generate and cache the top pages as HTML files."""
+    """Generate and cache only the games div for top pages."""
     try:
         pages = {
-            "top_most_played.html": (fetch_top_most_played(30), "top_most_played.html"),
-            "top_best_games.html": (fetch_top_best_games(30), "top_best_games.html"),
-            "top_favorites.html": (fetch_top_favorites(30), "top_favorites.html"),
+            "top_most_played.html": (fetch_top_most_played(30), "most_played"),
+            "top_best_games.html": (fetch_top_best_games(30), "best_games"),
+            "top_favorites.html": (fetch_top_favorites(30), "favorites"),
         }
 
-        for cache_file, (games, template) in pages.items():
-            html = render_template(template, games=games, user_info=None)
+        for cache_file, (games, score_type) in pages.items():
+            games_html = render_template(
+                "partials/games_grid.html",
+                games=games,
+                score_type=score_type
+            )
             with open(os.path.join(CACHE_DIR, cache_file), "w") as f:
-                f.write(html)
+                f.write(games_html)
     except Exception as e:
         import traceback
         traceback.print_exc()
@@ -262,70 +266,91 @@ def search():
 @app.route("/top/most-played")
 def top_most_played():
     cache_file = os.path.join(CACHE_DIR, "top_most_played.html")
+    games_html = ""
     
-    # Serve from cache if exists
+    # Load cached games content if exists
     if os.path.exists(cache_file):
         with open(cache_file, "r") as f:
-            return f.read()
+            games_html = f.read()
+    else:
+        games = fetch_top_most_played(30)
+        games_html = render_template(
+            "partials/games_grid.html",
+            games=games,
+            score_type="most_played"
+        )
+        try:
+            with open(cache_file, "w") as f:
+                f.write(games_html)
+        except Exception as e:
+            print(f"[CACHE] Failed to save cache: {e}")
     
-    # Generate and cache if not found
     user_info = get_logged_in_user_info()
-    games = fetch_top_most_played(30)
-    html = render_template("top_most_played.html", games=games, user_info=user_info)
-    
-    try:
-        with open(cache_file, "w") as f:
-            f.write(html)
-    except Exception as e:
-        print(f"[CACHE] Failed to save cache: {e}")
-    
-    return html
+    return render_template(
+        "top_most_played.html",
+        cached_games_html=games_html,
+        user_info=user_info
+    )
 
 
 @app.route("/top/best-games")
 def top_best_games():
     cache_file = os.path.join(CACHE_DIR, "top_best_games.html")
+    games_html = ""
     
-    # Serve from cache if exists
+    # Load cached games content if exists
     if os.path.exists(cache_file):
         with open(cache_file, "r") as f:
-            return f.read()
+            games_html = f.read()
+    else:
+        games = fetch_top_best_games(30)
+        games_html = render_template(
+            "partials/games_grid.html",
+            games=games,
+            score_type="best_games"
+        )
+        try:
+            with open(cache_file, "w") as f:
+                f.write(games_html)
+        except Exception as e:
+            print(f"[CACHE] Failed to save cache: {e}")
     
-    # Generate and cache if not found
     user_info = get_logged_in_user_info()
-    games = fetch_top_best_games(30)
-    html = render_template("top_best_games.html", games=games, user_info=user_info)
-    
-    try:
-        with open(cache_file, "w") as f:
-            f.write(html)
-    except Exception as e:
-        print(f"[CACHE] Failed to save cache: {e}")
-    
-    return html
+    return render_template(
+        "top_best_games.html",
+        cached_games_html=games_html,
+        user_info=user_info
+    )
 
 
 @app.route("/top/favorites")
 def top_favorites():
     cache_file = os.path.join(CACHE_DIR, "top_favorites.html")
+    games_html = ""
     
-    # Serve from cache if exists
+    # Load cached games content if exists
     if os.path.exists(cache_file):
         with open(cache_file, "r") as f:
-            return f.read()
+            games_html = f.read()
+    else:
+        games = fetch_top_favorites(30)
+        games_html = render_template(
+            "partials/games_grid.html",
+            games=games,
+            score_type="favorites"
+        )
+        try:
+            with open(cache_file, "w") as f:
+                f.write(games_html)
+        except Exception as e:
+            print(f"[CACHE] Failed to save cache: {e}")
     
-    # Generate and cache if not found
     user_info = get_logged_in_user_info()
-    games = fetch_top_favorites(30)
-    html = render_template("top_favorites.html", games=games, user_info=user_info)
-    
-    try:
-        with open(cache_file, "w") as f:
-            f.write(html)
-    except Exception as e:
-        print(f"[CACHE] Failed to save cache: {e}")
-    
-    return html
+    return render_template(
+        "top_favorites.html",
+        cached_games_html=games_html,
+        user_info=user_info
+    )
 
 
 @app.route("/discover")

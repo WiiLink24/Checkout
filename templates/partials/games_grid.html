@@ -1,0 +1,12 @@
+{% if games %}
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    {% for game in games %}
+    {% set score_type = score_type %}
+    {% include "components/global_game_card.html" %}
+    {% endfor %}
+</div>
+{% else %}
+<div class="bg-gray-800 border border-gray-700 rounded-xl p-12 text-center">
+    <p class="text-gray-400 text-lg">No gameplay data available</p>
+</div>
+{% endif %}

@@ -13,7 +13,9 @@ WiiLink Checkout | Top 30 Best Games
             <p class="text-gray-400">Games with the highest average recommendation scores from the community</p>
         </div>
 
-        {% if games %}
+        {% if cached_games_html %}
+        {{ cached_games_html|safe }}
+        {% elif games %}
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {% for game in games %}
             {% set score_type = "best_games" %}
