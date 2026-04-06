@@ -65,26 +65,26 @@ def fetch_authentik_user(uid):
         return None
 
 
-def find_user_by_wii_number(wii_number):
+def find_user_by_wii_number(wii_number, attempt=0):
     """
     Find an Authentik user by their Wii number (friend code).
     Returns the first matching user or None (there can only be one).
     """
     base_url = config.authentik_api_url.rstrip("/")
-    # Filter for wiis array containing object with matching wii_number
-    url = f'{base_url}/core/users/?page_size=30&attributes=%7B%22wiis__0__wii_number%22%3A+"{wii_number}"%7D'
+    url = f'{base_url}/core/users/?page_size=30&attributes=%7B%22wiis__{attempt}__wii_number%22%3A+"{wii_number}"%7D'
     headers = {
         "Accept": "application/json",
         "Authorization": f"Bearer {config.authentik_service_account_token}",
     }
-
     try:
         response = requests.get(url, headers=headers, timeout=15)
         response.raise_for_status()
         data = response.json()
         results = data.get("results", [])
+        print(results)
+        if not results and attempt < 10: # Honestly fuck you if you have more than 9 Wiis.
+            return find_user_by_wii_number(wii_number, attempt=attempt + 1)
         return results[0] if results else None
-
     except requests.RequestException as e:
         print(f"Authentik API error: {e}")
         return None
