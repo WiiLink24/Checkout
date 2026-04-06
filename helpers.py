@@ -191,4 +191,6 @@ def is_public_profile(user_profile, logged_in_user):
         "username"
     ):
         return True
-    return user_profile.get("public_profile", False)
+    public_profile = user_profile.get("attributes", {}).get("public_profile")
+    print(public_profile)
+    return public_profile if public_profile is not None else False
