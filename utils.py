@@ -82,7 +82,9 @@ def find_user_by_wii_number(wii_number, attempt=0):
         data = response.json()
         results = data.get("results", [])
         print(results)
-        if not results and attempt < 10: # Honestly fuck you if you have more than 9 Wiis.
+        if (
+            not results and attempt < 10
+        ):  # Honestly fuck you if you have more than 9 Wiis.
             return find_user_by_wii_number(wii_number, attempt=attempt + 1)
         return results[0] if results else None
     except requests.RequestException as e:
