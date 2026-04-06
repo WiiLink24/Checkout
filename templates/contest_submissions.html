@@ -88,6 +88,13 @@ WiiLink Checkout | Contest Submissions
             </li>
             {% endfor %}
         </ul>
+
+        <a href="https://miicontest.wiilink.ca/artisans/{{ artisan_id.artisan_id }}" target="_blank"
+            class="flex flex-row items-center justify-between gap-3 inline-block mt-6 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition">
+            View {{ viewed_user.username }}'s Mii on the CMOC Viewer
+            <img src="/static/icon/external-link.svg" alt="External Link" class="w-4 h-4 invert inline-block ml-1">
+        </a>
+
         {% include "components/pagination.html" %}
         {% else %}
         <div class="text-center text-gray-400 py-12">No contest submissions found...

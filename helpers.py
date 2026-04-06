@@ -47,9 +47,20 @@ def create_serial_page_context(friend_code, template_name):
     if not authentik_user:
         abort(404)
 
-    user_serial = authentik_user.get("attributes", {}).get("serial")
-    if isinstance(user_serial, list):
-        user_serial = user_serial[0] if user_serial else friend_code
+    wiis = authentik_user.get("attributes", {}).get("wiis") or authentik_user.get(
+        "wiis", []
+    )
+    user_serial = None
+    if isinstance(wiis, list):
+        for wii in wiis:
+            if isinstance(wii, dict) and wii.get("serial_number"):
+                user_serial = wii.get("serial_number")
+                break
+
+    if not user_serial:
+        # No serial found, return 400 error
+        abort(400)
+
     serial_prefixes = extract_serial_prefix(user_serial)
 
     # Pagination

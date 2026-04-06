@@ -43,7 +43,7 @@ def generate_user_tag(friend_code):
     if not authentik_user:
         return None
 
-    user_serial = _extract_user_serial(authentik_user, friend_code_normalized)
+    user_serial = _extract_user_serial(authentik_user)
     serial_prefixes = extract_serial_prefix(user_serial)
 
     user_stats = (
@@ -94,11 +94,17 @@ async def _render_html_to_png(html_content):
         return png_bytes
 
 
-def _extract_user_serial(authentik_user, fallback_serial):
-    user_serial = authentik_user.get("attributes", {}).get("serial")
-    if isinstance(user_serial, list):
-        return user_serial[0] if user_serial else fallback_serial
-    return user_serial or fallback_serial
+def _extract_user_serial(authentik_user):
+    wiis = authentik_user.get("attributes", {}).get("wiis") or authentik_user.get(
+        "wiis", []
+    )
+    if isinstance(wiis, list):
+        for wii in wiis:
+            if isinstance(wii, dict):
+                serial = wii.get("serial_number")
+                if serial:
+                    return serial
+    return None
 
 
 def _format_playtime(total_minutes):

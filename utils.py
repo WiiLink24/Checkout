@@ -6,12 +6,19 @@ import hashlib
 
 
 def get_serial_prefixes(user_info):
-    serials = user_info.get("serial")
-    if isinstance(serials, str):
-        serials = [serials]
-    if not isinstance(serials, list) or not serials:
+    wiis = user_info.get("wiis")
+    if not wiis:
         return []
-    return [serial[:12] for serial in serials]
+
+    serials = []
+    if isinstance(wiis, list):
+        for wii in wiis:
+            if isinstance(wii, dict):
+                serial = wii.get("serial_number")
+                if serial:
+                    serials.append(serial)
+
+    return [serial[:12] for serial in serials if serial]
 
 
 def _build_serial_filter(column_name, serial_prefixes):
@@ -64,7 +71,8 @@ def find_user_by_wii_number(wii_number):
     Returns the first matching user or None (there can only be one).
     """
     base_url = config.authentik_api_url.rstrip("/")
-    url = f'{base_url}/core/users/?page_size=30&attributes=%7B%22wiis__contains%22%3A+"{wii_number}"%7D'
+    # Filter for wiis array containing object with matching wii_number
+    url = f'{base_url}/core/users/?page_size=30&attributes=%7B%22wiis__0__wii_number%22%3A+"{wii_number}"%7D'
     headers = {
         "Accept": "application/json",
         "Authorization": f"Bearer {config.authentik_service_account_token}",
@@ -84,10 +92,10 @@ def find_user_by_wii_number(wii_number):
 
 def fetch_authentik_users():
     """
-    Fetch all Authentik users that contain the 'serial' key inside their attributes JSON.
+    Fetch all Authentik users that have empty serial_number in their wiis.
     """
     base_url = config.authentik_api_url.rstrip("/")
-    url = f"{base_url}/core/users/?page_size=30&attributes=%7B%22serial__isnull%22%3A+false%7D"
+    url = f"{base_url}/core/users/?page_size=30&attributes=%7B%22wiis__0__serial_number%22%3A+%22%22%7D"
     headers = {
         "Accept": "application/json",
         "Authorization": f"Bearer {config.authentik_service_account_token}",
@@ -101,7 +109,14 @@ def fetch_authentik_users():
             response.raise_for_status()
             data = response.json()
             users.extend(data.get("results", []))
-            url = data.get("pagination", {}).get("next")
+            next_url = data.get("pagination", {}).get("next")
+
+            if isinstance(next_url, str) and (
+                next_url.startswith("http://") or next_url.startswith("https://")
+            ):
+                url = next_url
+            else:
+                url = None
 
     except requests.RequestException as e:
         print(f"Authentik API error: {e}")
@@ -136,7 +151,13 @@ def search_authentik_users_by_name(search_query):
             users.extend(
                 [user for user in results if user.get("attributes", {}).get("wiis")]
             )
-            url = data.get("pagination", {}).get("next")
+            next_url = data.get("pagination", {}).get("next")
+            if isinstance(next_url, str) and (
+                next_url.startswith("http://") or next_url.startswith("https://")
+            ):
+                url = next_url
+            else:
+                url = None
 
     except requests.RequestException as e:
         print(f"Authentik API error searching for '{search_query}': {e}")
@@ -147,11 +168,12 @@ def search_authentik_users_by_name(search_query):
 
 def find_user_by_serial(serial):
     """
-    Find an Authentik user by their serial number.
+    Find an Authentik user by their serial number in wiis array.
     Returns the first matching user or None (there can only be one).
     """
     base_url = config.authentik_api_url.rstrip("/")
-    url = f'{base_url}/core/users/?page_size=30&attributes=%7B%22serial__icontains%22%3A+"{serial}"%7D'
+    # Filter for wiis array containing object with matching serial_number
+    url = f'{base_url}/core/users/?page_size=30&attributes=%7B%22wiis__serial_number__icontains%22%3A+"{serial}"%7D'
     headers = {
         "Accept": "application/json",
         "Authorization": f"Bearer {config.authentik_service_account_token}",
@@ -187,7 +209,6 @@ def generate_gravatar_url(email):
 
 def build_viewed_user_info(authentik_user):
     """Build viewed_user info dict from an Authentik user object"""
-    # Handle case where authentik_user is unexpectedly a list
     if isinstance(authentik_user, list):
         authentik_user = authentik_user[0] if authentik_user else {}
 
@@ -195,16 +216,22 @@ def build_viewed_user_info(authentik_user):
     email = authentik_user.get("email", "")
     picture_url = generate_gravatar_url(email)
 
-    # Get Wii numbers from Authentik attributes
-    wii_numbers = authentik_user.get("attributes", {}).get("wiis", [])
-    if isinstance(wii_numbers, str):
-        wii_numbers = [wii_numbers]
+    wiis = authentik_user.get("attributes", {}).get("wiis") or authentik_user.get(
+        "wiis", []
+    )
+    wii_numbers = []
 
+    if isinstance(wiis, list):
+        for wii in wiis:
+            if isinstance(wii, dict):
+                wii_number = wii.get("wii_number")
+                if wii_number:
+                    wii_numbers.append(wii_number)
     return {
         "username": username,
         "profile_picture": picture_url,
         "linked_wii_no": wii_numbers,
-        "serial": wii_numbers,
+        "serial_number": wii_numbers,
     }
 
 
@@ -214,7 +241,7 @@ def build_unclaimed_user_info(serial, logged_in_user_picture):
         "username": serial,
         "profile_picture": logged_in_user_picture,
         "linked_wii_no": [serial],
-        "serial": serial,
+        "serial_number": serial,
     }
 
 

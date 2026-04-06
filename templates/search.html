@@ -35,7 +35,7 @@ WiiLink Checkout | Search Users
             {% for user in users %}
             {% set wii_value = user.attributes.wiis[0] if user.attributes.wiis is iterable and user.attributes.wiis is
             not string else user.attributes.wiis %}
-            <a href="/{{ wii_value }}/"
+            <a href="/{{ user.attributes.wiis[0].wii_number }}/"
                 class="flex flex-row items-center gap-3 p-3 bg-gray-800 border border-gray-700 rounded-xl overflow-hidden hover:border-gray-500 transition duration-200">
                 <img src="{{ user.avatar }}" alt="{{ user.username }}"
                     class="w-16 h-16 rounded-xl object-cover border border-gray-600">
@@ -43,7 +43,7 @@ WiiLink Checkout | Search Users
                     <span class="text-lg font-semibold text-white overflow-ellipsis whitespace-nowrap">{{ user.username
                         }}</span>
                     <span class="font-light text-gray-400 overflow-ellipsis whitespace-nowrap">{{
-                        user.attributes.wiis[0]|format_serial }}</span>
+                        user.attributes.wiis[0].wii_number|format_serial }}</span>
                 </p>
             </a>
             {% endfor %}

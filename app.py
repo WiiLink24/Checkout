@@ -1,4 +1,5 @@
 import os
+import random
 from apscheduler.schedulers.background import BackgroundScheduler
 from flask import (
     Flask,
@@ -247,14 +248,17 @@ def search():
             for user in users
             if search_query in user.get("username", "").lower()
             or any(
-                search_query in wii.lower()
+                search_query in wii.get("wii_number", "").lower()
+                or search_query in wii.get("serial_number", "").lower()
                 for wii in user.get("attributes", {}).get("wiis", [])
+                if isinstance(wii, dict)
             )
         ]
     else:
         users = fetch_authentik_users()
         users = [user for user in users if user.get("attributes", {}).get("wiis")]
 
+    random.shuffle(users)
     return render_template(
         "search.html", users=users, search_query=search_query, user_info=user_info
     )
@@ -402,14 +406,19 @@ def favorites_by_serial(wii_no):
 
     # Check if it's a linked friend code
     authentik_user = find_user_by_wii_number(wii_no)
-    user_serial = (
-        authentik_user.get("attributes", {}).get("serial") if authentik_user else None
-    )
+    user_serial = None
+    if authentik_user:
+        wiis = authentik_user.get("attributes", {}).get("wiis") or authentik_user.get(
+            "wiis", []
+        )
+        if isinstance(wiis, list):
+            for wii in wiis:
+                if isinstance(wii, dict) and wii.get("serial_number"):
+                    user_serial = wii.get("serial_number")
+                    break
 
     # We need the serial to check for this info
     if authentik_user and user_serial:
-        if isinstance(user_serial, list):
-            user_serial = user_serial[0] if user_serial else wii_no
         serial_prefixes = extract_serial_prefix(user_serial)
 
         page = parse_int(request.args.get("page", "1"))
@@ -494,9 +503,16 @@ def recommendations_by_serial(wii_no):
 
     # Check if it's a linked friend code and serial
     authentik_user = find_user_by_wii_number(wii_no)
-    user_serial = (
-        authentik_user.get("attributes", {}).get("serial") if authentik_user else None
-    )
+    user_serial = None
+    if authentik_user:
+        wiis = authentik_user.get("attributes", {}).get("wiis") or authentik_user.get(
+            "wiis", []
+        )
+        if isinstance(wiis, list):
+            for wii in wiis:
+                if isinstance(wii, dict) and wii.get("serial_number"):
+                    user_serial = wii.get("serial_number")
+                    break
 
     if authentik_user and user_serial:
         context = create_serial_page_context(wii_no, "recommendations.html")
@@ -530,9 +546,16 @@ def time_played_by_serial(wii_no):
 
     # Check if it's a linked friend code and serial
     authentik_user = find_user_by_wii_number(wii_no)
-    user_serial = (
-        authentik_user.get("attributes", {}).get("serial") if authentik_user else None
-    )
+    user_serial = None
+    if authentik_user:
+        wiis = authentik_user.get("attributes", {}).get("wiis") or authentik_user.get(
+            "wiis", []
+        )
+        if isinstance(wiis, list):
+            for wii in wiis:
+                if isinstance(wii, dict) and wii.get("serial_number"):
+                    user_serial = wii.get("serial_number")
+                    break
     if authentik_user and user_serial:
         context = create_serial_page_context(wii_no, "time_played.html")
         context["user_info"] = user_info  # Ensure logged-in user info is included
@@ -655,6 +678,11 @@ def contest_submissions_by_serial(wii_no):
             "page": page,
             "total_pages": total_pages,
             "total_count": total_count,
+            "artisan_id": (
+                get_artisan_ids_from_wii_number(wii_no)[0]
+                if get_artisan_ids_from_wii_number(wii_no)
+                else None
+            ),
         }
         return render_template("contest_submissions.html", **context)
 
@@ -670,16 +698,21 @@ def friend_code_home(friend_code):
     # Look up user by Wii number (friend code)
     friend_code_normalized = normalize_serial(friend_code)
     authentik_user = find_user_by_wii_number(friend_code_normalized)
-    user_serial = (
-        authentik_user.get("attributes", {}).get("serial") if authentik_user else None
-    )
 
     # Return 404 if user not found
     if not authentik_user:
         abort(404)
 
+    wiis = authentik_user.get("attributes", {}).get("wiis")
+    user_serial = None
+    if isinstance(wiis, list):
+        for wii in wiis:
+            if isinstance(wii, dict) and wii.get("serial_number"):
+                user_serial = wii.get("serial_number")
+                break
+
     print(user_info)
-    if authentik_user and not user_serial:
+    if not user_serial:
         return (
             render_template(
                 "errors/not_linked_external.html",
@@ -689,9 +722,6 @@ def friend_code_home(friend_code):
             400,
         )
 
-    user_serial = authentik_user.get("attributes", {}).get("serial")
-    if isinstance(user_serial, list):
-        user_serial = user_serial[0] if user_serial else friend_code_normalized
     serial_prefixes = extract_serial_prefix(user_serial)
 
     # Fetch data from database
@@ -868,6 +898,9 @@ def contest_submissions():
         page=page,
         total_pages=total_pages,
         total_count=total_count,
+        artisan_id=(
+            get_artisan_ids_from_wii_number(wii_numbers[0])[0] if wii_numbers else None
+        ),
     )
 
 

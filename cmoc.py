@@ -111,9 +111,7 @@ def fetch_contest_submissions(wii_numbers, db_url=None, limit=None, offset=None)
     WHERE {where_clause}
     ORDER BY c.close_time DESC, cm.contest_id DESC
     """
-
-    print(query)
-
+    
     if limit is not None and offset is not None:
         query += f" LIMIT {limit} OFFSET {offset}"
 
@@ -142,7 +140,3 @@ def count_contest_submissions(wii_numbers, db_url=None):
     query = f"SELECT COUNT(*) AS count FROM contest_miis WHERE {where_clause}"
     result = _run_query(query, wii_numbers, db_url)
     return result[0].get("count", 0) if result else 0
-
-
-def renderMii(miiData):
-    """Render Mii data as an image using Mii Studio"""
