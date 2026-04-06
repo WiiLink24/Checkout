@@ -184,3 +184,8 @@ def create_unclaimed_serial_context(serial, template_name):
         context["sort_by"] = sort_by
 
     return context
+
+def is_public_profile(user_profile, logged_in_user):
+    if user_profile.get("username") == logged_in_user.get("username"):
+        return False
+    return user_profile.get("public_profile", False)

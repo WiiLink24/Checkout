@@ -95,7 +95,7 @@ def fetch_authentik_users():
     Fetch all Authentik users that have empty serial_number in their wiis.
     """
     base_url = config.authentik_api_url.rstrip("/")
-    url = f"{base_url}/core/users/?page_size=30&attributes=%7B%22wiis__0__serial_number%22%3A+%22%22%7D"
+    url = f"{base_url}/core/users/?page_size=30&attributes=%7B%22public_profile%22%3A+true%7D"
     headers = {
         "Accept": "application/json",
         "Authorization": f"Bearer {config.authentik_service_account_token}",
@@ -135,7 +135,7 @@ def search_authentik_users_by_name(search_query):
 
     base_url = config.authentik_api_url.rstrip("/")
     # Use search parameter for username search
-    url = f"{base_url}/core/users/?page_size=50&search={search_query}"
+    url = f"{base_url}/core/users/?page_size=50&search={search_query}&attributes=%7B%22public_profile%22%3A+true%7D"
     headers = {
         "Accept": "application/json",
         "Authorization": f"Bearer {config.authentik_service_account_token}",

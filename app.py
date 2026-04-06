@@ -20,6 +20,7 @@ from helpers import (
     parse_int,
     create_serial_page_context,
     create_unclaimed_serial_context,
+    is_public_profile,
 )
 from tag_generator import generate_user_tag
 from nc import (
@@ -406,8 +407,16 @@ def favorites_by_serial(wii_no):
 
     # Check if it's a linked friend code
     authentik_user = find_user_by_wii_number(wii_no)
+        
     user_serial = None
     if authentik_user:
+        # Check if the user wants their data to be public
+        if not is_public_profile(authentik_user, user_info):
+            return (
+                render_template("errors/private_profile.html", user_info=user_info),
+                400,
+            )
+        
         wiis = authentik_user.get("attributes", {}).get("wiis") or authentik_user.get(
             "wiis", []
         )
@@ -505,6 +514,13 @@ def recommendations_by_serial(wii_no):
     authentik_user = find_user_by_wii_number(wii_no)
     user_serial = None
     if authentik_user:
+        # Check if the user wants their data to be public
+        if not is_public_profile(authentik_user, user_info):
+            return (
+                render_template("errors/private_profile.html", user_info=user_info),
+                400,
+            )
+        
         wiis = authentik_user.get("attributes", {}).get("wiis") or authentik_user.get(
             "wiis", []
         )
@@ -548,6 +564,13 @@ def time_played_by_serial(wii_no):
     authentik_user = find_user_by_wii_number(wii_no)
     user_serial = None
     if authentik_user:
+        # Check if the user wants their data to be public
+        if not is_public_profile(authentik_user, user_info):
+            return (
+                render_template("errors/private_profile.html", user_info=user_info),
+                400,
+            )
+            
         wiis = authentik_user.get("attributes", {}).get("wiis") or authentik_user.get(
             "wiis", []
         )
@@ -589,6 +612,12 @@ def polls_by_serial(wii_no):
     # Check if it's a linked friend code
     authentik_user = find_user_by_wii_number(wii_no)
     if authentik_user:
+        # Check if the user wants their data to be public
+        if not is_public_profile(authentik_user, user_info):
+            return (
+                render_template("errors/private_profile.html", user_info=user_info),
+                400,
+            )
         # It's a linked friend code - show linked account data
         viewed_user = build_viewed_user_info(authentik_user)
         polls_data = fetch_user_polls([wii_no], 30)
@@ -619,6 +648,13 @@ def suggestions_by_serial(wii_no):
     # Check if it's a linked friend code
     authentik_user = find_user_by_wii_number(wii_no)
     if authentik_user:
+        # Check if the user wants their data to be public
+        if not is_public_profile(authentik_user, user_info):
+            return (
+                render_template("errors/private_profile.html", user_info=user_info),
+                400,
+            )
+            
         # It's a linked friend code - show linked account data
         viewed_user = build_viewed_user_info(authentik_user)
         suggestions_data = fetch_user_suggestions([wii_no], 30)
@@ -647,6 +683,13 @@ def contest_submissions_by_serial(wii_no):
     # Check if it's a linked friend code
     authentik_user = find_user_by_wii_number(wii_no)
     if authentik_user:
+        # Check if the user wants their data to be public
+        if not is_public_profile(authentik_user, user_info):
+            return (
+                render_template("errors/private_profile.html", user_info=user_info),
+                400,
+            )
+            
         viewed_user = build_viewed_user_info(authentik_user)
 
         page = parse_int(request.args.get("page", "1"))
@@ -702,6 +745,13 @@ def friend_code_home(friend_code):
     # Return 404 if user not found
     if not authentik_user:
         abort(404)
+        
+    # Check if the user wants their data to be public
+    if not is_public_profile(authentik_user, user_info):
+        return (
+            render_template("errors/private_profile.html", user_info=user_info),
+            400,
+        )
 
     wiis = authentik_user.get("attributes", {}).get("wiis")
     user_serial = None
@@ -711,7 +761,6 @@ def friend_code_home(friend_code):
                 user_serial = wii.get("serial_number")
                 break
 
-    print(user_info)
     if not user_serial:
         return (
             render_template(
