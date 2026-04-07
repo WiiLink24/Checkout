@@ -3,7 +3,6 @@
 import configparser
 import enum
 import io
-import os
 import re
 from PIL import Image, ImageDraw, ImageFont
 from werkzeug.utils import secure_filename
@@ -16,17 +15,12 @@ class ObjectTypes(enum.Enum):
     BACKGROUND = "4"
 
 
-UPLOADS_DIR = os.getenv("CAM_UPLOADS_DIR", "uploads")
-TEMPLATES_DIR = os.getenv("CAM_TEMPLATES_DIR", "templates/templates")
-FONTS_DIR = os.getenv("CAM_FONTS_DIR", "templates/fonts")
-
-
-def parse_coords(coordinates: str) -> tuple[int, int]:
+def parse_coords(coordinates: str) -> (int, int):
     x, y = coordinates.split(",")
     return int(x), int(y)
 
 
-def parse_rgb(color: str) -> tuple[int, int, int]:
+def parse_rgb(color: str) -> (int, int, int):
     r, g, b = color.split(",")
     return int(r), int(g), int(b)
 
@@ -37,16 +31,8 @@ def determine_path(order_id: str, filename: str) -> str:
     Used for loading image files and uploaded assets.
     """
     if order_id:
-        return os.path.join(UPLOADS_DIR, order_id, filename)
-    return os.path.join(UPLOADS_DIR, filename)
-
-
-def determine_template_path(filename: str) -> str:
-    return os.path.join(TEMPLATES_DIR, filename)
-
-
-def determine_font_path(filename: str) -> str:
-    return os.path.join(FONTS_DIR, filename)
+        return f"uploads/{order_id}/{filename}"
+    return f"uploads/{filename}"
 
 
 def render(order_schema: str, order_id: str = None):
@@ -113,7 +99,7 @@ def handle_page(page_num: int, config: configparser.ConfigParser, order_id: str 
     # If we were given a true filename, paste it over our background.
     if ".bmp" in background_filename:
         try:
-            bg_frame_id = determine_template_path(
+            bg_frame_id = "templates/templates/{}".format(
                 background_filename.replace(".bmp", ".png")
             )
 
@@ -232,7 +218,7 @@ def handle_page(page_num: int, config: configparser.ConfigParser, order_id: str 
 
             draw = ImageDraw.Draw(page_img)
             font = ImageFont.truetype(
-                determine_font_path("FOT-RodinNTLGPro-DB.otf"), character_height
+                "templates/fonts/FOT-RodinNTLGPro-DB.otf", character_height
             )
 
             draw.text(
@@ -245,7 +231,7 @@ def handle_page(page_num: int, config: configparser.ConfigParser, order_id: str 
         # Object is a background.
         elif object_type == ObjectTypes.BACKGROUND:
             try:
-                bg_frame_id = determine_template_path(
+                bg_frame_id = "templates/templates/{}".format(
                     object_section["BGFrameID"].replace(".bmp", ".png")
                 )
 
