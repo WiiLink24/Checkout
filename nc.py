@@ -85,8 +85,8 @@ def fetch_favorites(serial_prefixes, limit=30, offset=0):
         ") stats ON true "
         "LEFT JOIN LATERAL ("
         "    SELECT * FROM titles t "
-        "    WHERE t.game_id = lb.game_id OR t.game_id LIKE lb.game_id || '%%' "
-        "    ORDER BY CASE WHEN t.game_id = lb.game_id THEN 0 ELSE 1 END, t.game_id "
+        "    WHERE SUBSTRING(t.game_id, 1, 4) = SUBSTRING(lb.game_id, 1, 4) "
+        "    ORDER BY LENGTH(t.game_id) DESC, t.game_id "
         "    LIMIT 1"
         ") t ON true "
         "ORDER BY lb.id DESC "
@@ -96,7 +96,7 @@ def fetch_favorites(serial_prefixes, limit=30, offset=0):
 
     favorites = []
     for row in rows:
-        game_id = row.get("bookmarked_game_id") or row.get("game_id")
+        game_id = row.get("game_id")
         title_value = (
             row.get("display_name")
             or row.get("title")
@@ -108,8 +108,8 @@ def fetch_favorites(serial_prefixes, limit=30, offset=0):
         normalized = dict(row)
         normalized["game_id"] = game_id
         normalized["title"] = title_value
-        normalized["title_en"] = row.get("title_en") or row.get("title")
-        normalized["synopsis_en"] = row.get("synopsis_en") or synopsis_value
+        normalized["title_en"] = row.get("title_en")
+        normalized["synopsis_en"] = row.get("synopsis_en")
         favorites.append(normalized)
 
     return favorites
@@ -119,8 +119,8 @@ def fetch_top_favorites(limit=30):
     """Fetch top games by total bookmark count across all users."""
     query = (
         "SELECT "
-        "b.game_id, "
-        "COALESCE(t.display_name, t.title_en, b.game_id) AS title, "
+        "COALESCE(t.game_id, b.game_id) AS game_id, "
+        "COALESCE(t.display_name, t.title_en, COALESCE(t.game_id, b.game_id)) AS title, "
         "t.title_en, t.display_name, t.synopsis_en, t.genre, t.developer, t.publisher, t.game_type, "
         "t.release_year, t.rating_type, t.rating_value, t.region, "
         "COUNT(*) AS favorite_count, "
@@ -128,11 +128,11 @@ def fetch_top_favorites(limit=30):
         "FROM bookmarks b "
         "LEFT JOIN LATERAL ("
         "    SELECT * FROM titles t "
-        "    WHERE t.game_id LIKE b.game_id || '%%' "
-        "    ORDER BY t.game_id "
+        "    WHERE t.game_id = b.game_id OR SUBSTRING(t.game_id, 1, 4) = SUBSTRING(b.game_id, 1, 4) "
+        "    ORDER BY CASE WHEN t.game_id = b.game_id THEN 0 ELSE 1 END, LENGTH(t.game_id) DESC, t.game_id "
         "    LIMIT 1"
         ") t ON true "
-        "GROUP BY b.game_id, t.display_name, t.title_en, t.synopsis_en, t.genre, t.developer, t.publisher, t.game_type, t.release_year, t.rating_type, t.rating_value, t.region "
+        "GROUP BY COALESCE(t.game_id, b.game_id), t.display_name, t.title_en, t.synopsis_en, t.genre, t.developer, t.publisher, t.game_type, t.release_year, t.rating_type, t.rating_value, t.region "
         "ORDER BY favorite_count DESC, user_count DESC "
         f"LIMIT {limit}"
     )
@@ -157,8 +157,9 @@ def fetch_recommendations(
 
     query = (
         "SELECT "
-        "r.id, r.serial_number, r.game_id, r.gender, r.age, "
+        "r.id, r.serial_number, r.gender, r.age, "
         "r.recommendation_percent, r.appeal, r.gaming_mood, r.friend_or_alone, "
+        "COALESCE(t.game_id, r.game_id) AS game_id, "
         "COALESCE(t.display_name, t.title_en, r.game_id) AS title, "
         "t.title_en, t.display_name, t.synopsis_en, t.genre, t.developer, t.publisher, t.region, t.game_type, "
         "t.release_year, t.rating_type, t.rating_value "
@@ -171,8 +172,8 @@ def fetch_recommendations(
         ") latest ON latest.latest_id = r.id "
         "LEFT JOIN LATERAL ("
         "    SELECT * FROM titles t "
-        "    WHERE t.game_id LIKE r.game_id || '%%' "
-        "    ORDER BY t.game_id "
+        "    WHERE t.game_id = r.game_id OR SUBSTRING(t.game_id, 1, 4) = SUBSTRING(r.game_id, 1, 4) "
+        "    ORDER BY CASE WHEN t.game_id = r.game_id THEN 0 ELSE 1 END, LENGTH(t.game_id) DESC, t.game_id "
         "    LIMIT 1"
         ") t ON true "
         f"ORDER BY {order_by} "
@@ -224,8 +225,8 @@ def fetch_top_best_games(limit=30):
         "    GROUP BY r.game_id"
         ") "
         "SELECT "
-        "pg.game_id, "
-        "COALESCE(t.display_name, t.title_en, pg.game_id) AS title, "
+        "COALESCE(t.game_id, pg.game_id) AS game_id, "
+        "COALESCE(t.display_name, t.title_en, COALESCE(t.game_id, pg.game_id)) AS title, "
         "t.title_en, t.display_name, t.synopsis_en, t.genre, t.developer, t.publisher, t.game_type, "
         "t.release_year, t.rating_type, t.rating_value, t.region, "
         "pg.avg_recommendation, "
@@ -234,8 +235,8 @@ def fetch_top_best_games(limit=30):
         "CROSS JOIN global_stats gs "
         "LEFT JOIN LATERAL ("
         "    SELECT * FROM titles t "
-        "    WHERE t.game_id LIKE pg.game_id || '%%' "
-        "    ORDER BY t.game_id "
+        "    WHERE t.game_id = pg.game_id OR SUBSTRING(t.game_id, 1, 4) = SUBSTRING(pg.game_id, 1, 4) "
+        "    ORDER BY CASE WHEN t.game_id = pg.game_id THEN 0 ELSE 1 END, LENGTH(t.game_id) DESC, t.game_id "
         "    LIMIT 1"
         ") t ON true "
         "ORDER BY "
@@ -281,7 +282,8 @@ def fetch_time_played(serial_prefixes, sort_by="time_played", limit=30, offset=0
         "    FROM latest_per_game lp"
         "), detailed_games AS ("
         "    SELECT "
-        "    r.id, r.serial_number, r.game_id, r.times_played, r.time_played, "
+        "    r.id, r.serial_number, r.times_played, r.time_played, "
+        "    COALESCE(t.game_id, r.game_id) AS game_id, "
         "    COALESCE(t.display_name, t.title_en, r.game_id) AS title, "
         "    t.title_en, t.display_name, t.synopsis_en, t.genre, t.developer, t.publisher, t.game_type, "
         "    t.release_year, t.rating_type, t.rating_value, t.region, "
@@ -289,8 +291,8 @@ def fetch_time_played(serial_prefixes, sort_by="time_played", limit=30, offset=0
         "    FROM ranked r "
         "    LEFT JOIN LATERAL ("
         "        SELECT * FROM titles t "
-        "        WHERE t.game_id LIKE r.game_id || '%%' "
-        "        ORDER BY t.game_id "
+        "        WHERE t.game_id = r.game_id OR SUBSTRING(t.game_id, 1, 4) = SUBSTRING(r.game_id, 1, 4) "
+        "        ORDER BY CASE WHEN t.game_id = r.game_id THEN 0 ELSE 1 END, LENGTH(t.game_id) DESC, t.game_id "
         "        LIMIT 1"
         "    ) t ON true"
         ") "
@@ -319,8 +321,8 @@ def fetch_top_most_played(limit=30):
     """Fetch top games by total time played across all users"""
     query = (
         "SELECT "
-        "tp.game_id, "
-        "COALESCE(t.display_name, t.title_en, tp.game_id) AS title, "
+        "COALESCE(t.game_id, tp.game_id) AS game_id, "
+        "COALESCE(t.display_name, t.title_en, COALESCE(t.game_id, tp.game_id)) AS title, "
         "t.title_en, t.display_name, t.synopsis_en, t.genre, t.developer, t.publisher, t.game_type, "
         "t.release_year, t.rating_type, t.rating_value, t.region, "
         "SUM(tp.time_played) AS total_time_played, "
@@ -329,11 +331,11 @@ def fetch_top_most_played(limit=30):
         "FROM time_played tp "
         "LEFT JOIN LATERAL ("
         "    SELECT * FROM titles t "
-        "    WHERE t.game_id LIKE tp.game_id || '%%' "
-        "    ORDER BY t.game_id "
+        "    WHERE t.game_id = tp.game_id OR SUBSTRING(t.game_id, 1, 4) = SUBSTRING(tp.game_id, 1, 4) "
+        "    ORDER BY CASE WHEN t.game_id = tp.game_id THEN 0 ELSE 1 END, LENGTH(t.game_id) DESC, t.game_id "
         "    LIMIT 1"
         ") t ON true "
-        "GROUP BY tp.game_id, t.display_name, t.title_en, t.synopsis_en, t.genre, t.developer, t.publisher, t.game_type, t.release_year, t.rating_type, t.rating_value, t.region "
+        "GROUP BY COALESCE(t.game_id, tp.game_id), t.display_name, t.title_en, t.synopsis_en, t.genre, t.developer, t.publisher, t.game_type, t.release_year, t.rating_type, t.rating_value, t.region "
         "ORDER BY total_time_played DESC "
         f"LIMIT {limit}"
     )
