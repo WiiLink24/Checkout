@@ -46,11 +46,12 @@
 
                 <div
                     class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100">
-                    <a href=""
+                    <button
+                        onclick="downloadCard('{{ card.order_id }}', '{{ card.card_info.name }}', 'data:image/jpeg;base64,{{ card.image_base64 }}')"
                         class="text-white py-3 px-6 transition-colors flex flex-col items-center gap-2">
                         <img src="/static/icon/download.svg" alt="Download Icon" class="w-10 h-10 inline invert">
                         Download
-                    </a>
+                    </button>
                 </div>
             </div>
 
@@ -65,4 +66,15 @@
     </div>
     {% endif %}
 </div>
+
+<script>
+    function downloadCard(orderId, cardName, dataUrl) {
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.download = `digicard-${orderId}-${cardName.replace(/\s+/g, '-')}.jpg`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+</script>
 {% endblock %}
