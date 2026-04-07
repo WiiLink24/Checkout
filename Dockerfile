@@ -16,4 +16,7 @@ USER ubuntu
 COPY . .
 
 ENV FLASK_APP app.py
+ENV CAM_UPLOADS_DIR /home/ubuntu/uploads
+ENV CAM_TEMPLATES_DIR /home/ubuntu/templates/templates
+ENV CAM_FONTS_DIR /home/ubuntu/templates/fonts
 ENTRYPOINT ["gunicorn", "-b", ":9001", "--access-logfile", "-", "--error-logfile", "-", "app:app"]

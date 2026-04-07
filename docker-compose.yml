@@ -1,0 +1,19 @@
+services:
+  checkout:
+    image: checkout:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: checkout
+    ports:
+      - "9001:9001"
+    environment:
+      FLASK_APP: app.py
+      CAM_UPLOADS_DIR: /home/ubuntu/uploads
+      CAM_TEMPLATES_DIR: /home/ubuntu/templates/templates
+      CAM_FONTS_DIR: /home/ubuntu/templates/fonts
+    volumes:
+      - /opt/wiilink/prod/cam-orders:/home/ubuntu/uploads:ro
+      - /opt/wiilink/prod/cam-templates/templates:/home/ubuntu/templates/templates:ro
+      - /opt/wiilink/prod/cam-templates/fonts:/home/ubuntu/templates/fonts:ro
+    restart: unless-stopped
