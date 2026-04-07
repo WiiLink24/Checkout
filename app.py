@@ -941,6 +941,8 @@ def contest_submissions():
         else:
             submission["mii_image_url"] = None
 
+    artisan_ids = get_artisan_ids_from_wii_number(wii_numbers[0]) if wii_numbers else []
+
     return render_template(
         "contest_submissions.html",
         submissions=submissions_data,
@@ -949,9 +951,7 @@ def contest_submissions():
         page=page,
         total_pages=total_pages,
         total_count=total_count,
-        artisan_id=(
-            get_artisan_ids_from_wii_number(wii_numbers[0])[0] if wii_numbers else None
-        ),
+        artisan_id=artisan_ids[0] if artisan_ids else None,
     )
 
 
