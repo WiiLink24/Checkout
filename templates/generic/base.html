@@ -230,6 +230,14 @@
                         artisan_ids|length == 1 else None},
                         {'name': 'Contest Submissions', 'route': 'contest_submissions', 'icon': 'send-horizontal'}
                         ]
+                        },
+                        {
+                        'id': 'private',
+                        'name': 'Private',
+                        'icon': 'lock_inv',
+                        'items': [
+                        {'name': 'My Digicard', 'route': 'private_digicard', 'icon': 'id-card'}
+                        ]
                         }
                         ] %}
                         {{ you_menu(channels) }}

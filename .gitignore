@@ -4,3 +4,6 @@ config.py
 .DS_Store
 /.idea
 /cache
+/templates
+/uploads
+/digicam/__pycache__
