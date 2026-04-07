@@ -8,3 +8,4 @@ config.py
 /uploads
 /digicam/__pycache__
 /templates/fonts
+/session

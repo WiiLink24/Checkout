@@ -1,4 +1,5 @@
 flask
+Flask-Session
 flask_oidc
 psycopg2-binary
 black

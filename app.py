@@ -13,6 +13,7 @@ from flask import (
 )
 import config
 from flask_oidc import OpenIDConnect
+from flask_session import Session
 
 from filters import format_serial, format_playtime
 from auth import build_user_info, get_user_profile
@@ -73,8 +74,17 @@ app.config["SECRET_KEY"] = config.secret_key
 app.config["OIDC_CLIENT_SECRETS"] = config.oidc_client_secrets_json
 app.config["OIDC_SCOPES"] = "openid profile email"
 app.config["OIDC_OVERWRITE_REDIRECT_URI"] = config.oidc_redirect_uri
+app.config["SESSION_TYPE"] = "filesystem"
+app.config["SESSION_FILE_DIR"] = os.getenv(
+    "SESSION_FILE_DIR", os.path.join(os.path.dirname(__file__), "session")
+)
+app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_USE_SIGNER"] = True
+
+os.makedirs(app.config["SESSION_FILE_DIR"], exist_ok=True)
 
 oidc = OpenIDConnect(app)
+Session(app)
 
 CACHE_DIR = "cache"
 os.makedirs(CACHE_DIR, exist_ok=True)
