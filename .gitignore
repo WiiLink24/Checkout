@@ -4,6 +4,7 @@ config.py
 .DS_Store
 /.idea
 /cache
-/templates
+/templates/templates
 /uploads
 /digicam/__pycache__
+/templates/fonts

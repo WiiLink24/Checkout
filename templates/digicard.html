@@ -1,0 +1,68 @@
+{% extends "generic/base.html" %}
+
+{% block title %}WiiLink Checkout | My Digicards{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <span class="flex flex-row items-center justify-between mb-8">
+        <div>
+            <h1 class="text-4xl font-bold text-white mb-2">My Digicards</h1>
+            <p class="text-gray-300">View all generated Digicards from the Photo Prints Channel</p>
+        </div>
+        {% if has_cards %}
+        <a href="{% if base_url %}{{ base_url }}/time_played{% else %}/time_played{% endif %}"
+            class="bg-gray-300/5 rounded-2xl p-6">
+            <div class="flex items-center justify-end">
+                <div>
+                    <p class="text-white/50 text-sm font-semibold uppercase tracking-wide mb-2 text-right">
+                        Total Cards
+                    </p>
+                    <p class="text-4xl font-bold text-white text-right">{{ cards|length }}</p>
+                </div>
+            </div>
+        </a>
+        {% endif %}
+    </span>
+
+    {% if has_cards %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for card in cards %}
+        <div class="bg-gray-700/30 rounded-lg overflow-hidden">
+            <div class="p-4">
+                <span class="flex flex-row items-center justify-between mb-2">
+                    <h3 class="text-lg font-bold text-white mb-1">{{ card.card_info.name }}</h3>
+                    <span class="text-xs bg-gray-600 text-white px-3 py-1 rounded-full">
+                        {{ card.date_created.strftime('%Y-%m-%d') if card.date_created else 'Unknown' }}
+                    </span>
+                </span>
+                <p class="text-xs text-gray-400 mb-1">
+                    Order ID: <code class="text-gray-300">{{ card.order_id }}</code>
+                </p>
+            </div>
+
+            <div class="bg-gray-800 p-4 flex items-center justify-center relative group">
+                <img src="data:image/jpeg;base64,{{ card.image_base64 }}"
+                    alt="Business Card for {{ card.card_info.name }}" class="w-full h-auto rounded max-w-md" />
+
+                <div
+                    class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                    <a href=""
+                        class="text-white py-3 px-6 transition-colors flex flex-col items-center gap-2">
+                        <img src="/static/icon/download.svg" alt="Download Icon" class="w-10 h-10 inline invert">
+                        Download
+                    </a>
+                </div>
+            </div>
+
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="rounded-lg p-12 text-center">
+        <p class="text-gray-400 mb-6">
+            You don't have any digicards yet. Create your first card on the Photo Prints Channel to get started!
+        </p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
