@@ -18,7 +18,7 @@
                     <img src="{{ cover.url }}" alt="{{ game.title_en or game.title }} Cover"
                         data-fallback="{{ cover.fallback }}"
                         onerror="if (!this.dataset.tried && this.dataset.fallback) { this.dataset.tried = '1'; this.src = this.dataset.fallback; } else { this.style.display = 'none'; }"
-                        class="w-24 object-cover rounded-lg flex-shrink-0">
+                        class="h-32 object-cover rounded-lg flex-shrink-0">
                     <span class="flex flex-col gap-3">
                         <div>
                             <h2 class="text-2xl font-bold text-white">{{ game.title_en or game.title }}</h2>
