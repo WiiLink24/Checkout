@@ -176,7 +176,7 @@ def recommendation_averages():
     age_max = parse_int(request.args.get("age_max", ""))
 
     averages = fetch_recommendation_averages(
-        game_id, gender=gender, age_min=age_min, age_max=age_max
+        game_id[:4], gender=gender, age_min=age_min, age_max=age_max
     )
     return jsonify(averages or {"total": 0}), 200
 
@@ -187,7 +187,7 @@ def time_played_stats():
     if not game_id:
         return jsonify({"error": "game_id is required"}), 400
 
-    stats = fetch_time_played_stats(game_id)
+    stats = fetch_time_played_stats(game_id[:4])
     return (
         jsonify(
             stats
