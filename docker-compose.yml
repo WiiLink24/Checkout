@@ -1,19 +1,26 @@
 services:
   checkout:
-    image: checkout:latest
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: checkout
+    image: ghcr.io/wiilink24/checkout:latest
     ports:
-      - "9001:9001"
+      - "127.0.0.1:9001:9001"
     environment:
       FLASK_APP: app.py
       CAM_UPLOADS_DIR: /home/ubuntu/uploads
       CAM_TEMPLATES_DIR: /home/ubuntu/templates/templates
       CAM_FONTS_DIR: /home/ubuntu/templates/fonts
     volumes:
+      - /opt/wiilink/prod/config/checkout/config.py:/home/ubuntu/config.py:rw
+      - /opt/wiilink/prod/checkout-cache:/home/ubuntu/cache:rw
       - /opt/wiilink/prod/cam-orders:/home/ubuntu/uploads:ro
       - /opt/wiilink/prod/cam-templates/templates:/home/ubuntu/templates/templates:ro
       - /opt/wiilink/prod/cam-templates/fonts:/home/ubuntu/templates/fonts:ro
+    networks:
+      - prod_db_access
+      - prod_internal
     restart: unless-stopped
+
+networks:
+  prod_db_access:
+    external: true
+  prod_internal:
+    external: true
