@@ -5,7 +5,7 @@ Expected output namespace: cover
 Outputs on namespace: cover.url, cover.fallback
 #}
 {% if cover_game.game_type == "DS" %}
-{% set cover.url = "https://art.gametdb.com/ds/coverHQ/US/" ~ cover_game.game_id ~ ".jpg" %}
+{% set cover.url = "https://art.gametdb.com/ds/coverHQ/EN/" ~ cover_game.game_id ~ ".jpg" %}
 {% set cover.fallback = "" %}
 {% elif cover_game.game_type == "3DS" %}
 {% set cover.url = "https://art.gametdb.com/3ds/coverHQ/EN/" ~ cover_game.game_id ~ ".jpg" %}
