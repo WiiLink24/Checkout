@@ -3,11 +3,11 @@ import io
 import config
 import base64
 from digicam.render import render
-from utils import _run_query
+from utils.utils import _run_query
 
 
 def fetch_orders_by_email(email, db_url=None):
-    """Fetch all business cards for a given email from cam_server database"""
+    """Fetch all mii business cards for a given email from cam_server database"""
     if db_url is None:
         db_url = getattr(config, "cam_server_db_url", None)
     if not db_url or not email:

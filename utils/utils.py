@@ -1,6 +1,5 @@
 import psycopg2
 import config
-import re
 import requests
 import hashlib
 
@@ -43,28 +42,6 @@ def _run_query(query, params, db_url=None):
     return [dict(zip(columns, row)) for row in rows]
 
 
-def fetch_authentik_user(uid):
-    """Fetch user details from Authentik API"""
-    import requests
-    import config
-
-    url = f"{config.authentik_api_url}/core/users/{uid}/"
-    headers = {
-        "Accept": "application/json",
-        "Authorization": f"Bearer {config.authentik_service_account_token}",
-    }
-
-    try:
-        response = requests.get(url, headers=headers, timeout=10)
-        if response.status_code == 200:
-            data = response.json()
-            return data.get("attributes", {})
-        return None
-    except Exception as e:
-        print(f"Error fetching user {uid}: {e}")
-        return None
-
-
 def find_user_by_wii_number(wii_number, attempt=0):
     """
     Find an Authentik user by their Wii number (friend code).
@@ -94,7 +71,7 @@ def find_user_by_wii_number(wii_number, attempt=0):
 
 def fetch_authentik_users():
     """
-    Fetch all Authentik users that have empty serial_number in their wiis.
+    Fetch all Authentik users that have their profile set to public.
     """
     base_url = config.authentik_api_url.rstrip("/")
     url = f"{base_url}/core/users/?page_size=30&attributes=%7B%22public_profile%22%3A+true%7D"
@@ -168,31 +145,6 @@ def search_authentik_users_by_name(search_query):
     return users
 
 
-def find_user_by_serial(serial):
-    """
-    Find an Authentik user by their serial number in wiis array.
-    Returns the first matching user or None (there can only be one).
-    """
-    base_url = config.authentik_api_url.rstrip("/")
-    # Filter for wiis array containing object with matching serial_number
-    url = f'{base_url}/core/users/?page_size=30&attributes=%7B%22wiis__serial_number__icontains%22%3A+"{serial}"%7D'
-    headers = {
-        "Accept": "application/json",
-        "Authorization": f"Bearer {config.authentik_service_account_token}",
-    }
-
-    try:
-        response = requests.get(url, headers=headers, timeout=15)
-        response.raise_for_status()
-        data = response.json()
-        results = data.get("results", [])
-        return results[0] if results else None
-
-    except requests.RequestException as e:
-        print(f"Authentik API error: {e}")
-        return None
-
-
 def normalize_serial(serial):
     return serial.strip("[]'\" ").replace("-", "") if serial else serial
 
@@ -246,62 +198,31 @@ def build_unclaimed_user_info(serial, logged_in_user_picture):
         "serial_number": serial,
     }
 
-
-def _split_genres(genre_value):
-    """Split a comma-separated genre string into clean tokens."""
-    if not genre_value:
-        return []
-    return [g.strip() for g in genre_value.split(",") if g.strip()]
+def format_serial(s):
+    """Format serial number with dashes every 4 characters"""
+    s = str(s)
+    return "-".join([s[i : i + 4] for i in range(0, len(s), 4)])
 
 
-def fetch_user_latest_games(serial_prefixes, limit=5):
-    """Fetch user's most recently played games."""
-    from nc import fetch_time_played
+def format_playtime(minutes):
+    """Format minutes as years, days, hours, minutes"""
+    if not minutes:
+        return "0m"
+    minutes = int(minutes)
+    years = minutes // (365 * 24 * 60)
+    remaining = minutes % (365 * 24 * 60)
+    days = remaining // (24 * 60)
+    remaining = remaining % (24 * 60)
+    hours = remaining // 60
+    mins = remaining % 60
 
-    games = fetch_time_played(serial_prefixes, sort_by="last_played")
-    return games[:limit]
-
-
-def fetch_user_latest_reviews(serial_prefixes, limit=5):
-    """Fetch user's most recent game recommendations/reviews."""
-    from nc import fetch_recommendations
-
-    reviews = fetch_recommendations(serial_prefixes, sort_by="last_recommended")
-    return reviews[:limit]
-
-
-def fetch_global_stats():
-    """Fetch global statistics: total time played and total reviews"""
-    query_time = (
-        "SELECT COALESCE(SUM(time_played), 0) AS total_minutes FROM time_played"
-    )
-    query_reviews = "SELECT COUNT(*) AS total_reviews FROM recommendations"
-
-    time_result = _run_query(query_time, [], config.db_url)
-    reviews_result = _run_query(query_reviews, [], config.db_url)
-
-    total_minutes = time_result[0]["total_minutes"] if time_result else 0
-    total_reviews = reviews_result[0]["total_reviews"] if reviews_result else 0
-
-    return {"total_minutes": int(total_minutes), "total_reviews": int(total_reviews)}
-
-
-def fetch_user_stats(serial_prefixes):
-    """Fetch user-specific statistics: total time played and total reviews"""
-    where_clause, params = _build_serial_filter("serial_number", serial_prefixes)
-    if not where_clause:
-        return {"total_minutes": 0, "total_reviews": 0}
-
-    # Get total time played
-    time_query = f"SELECT COALESCE(SUM(time_played), 0) AS total_minutes FROM time_played WHERE {where_clause}"
-    time_result = _run_query(time_query, params, config.db_url)
-    total_minutes = int(time_result[0]["total_minutes"]) if time_result else 0
-
-    # Get total reviews
-    reviews_query = (
-        f"SELECT COUNT(*) AS total_reviews FROM recommendations WHERE {where_clause}"
-    )
-    reviews_result = _run_query(reviews_query, params, config.db_url)
-    total_reviews = int(reviews_result[0]["total_reviews"]) if reviews_result else 0
-
-    return {"total_minutes": total_minutes, "total_reviews": total_reviews}
+    parts = []
+    if years > 0:
+        parts.append(f"{years}y")
+    if days > 0:
+        parts.append(f"{days}d")
+    if hours > 0:
+        parts.append(f"{hours}h")
+    if mins > 0 or not parts:
+        parts.append(f"{mins}m")
+    return " ".join(parts)

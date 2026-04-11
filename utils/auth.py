@@ -1,5 +1,5 @@
 from flask import session
-from utils import generate_gravatar_url
+from utils.utils import generate_gravatar_url
 
 
 def get_user_profile():

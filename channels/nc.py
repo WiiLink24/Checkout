@@ -1,5 +1,5 @@
 import config
-from utils import _build_serial_filter, _run_query
+from utils.utils import _build_serial_filter, _run_query
 
 # Validation functions
 

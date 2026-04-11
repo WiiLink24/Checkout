@@ -153,10 +153,14 @@
 
             function formatMinutes(minutes) {
                 minutes = parseInt(minutes) || 0;
-                const days = Math.floor(minutes / (24 * 60));
-                const hours = Math.floor((minutes % (24 * 60)) / 60);
-                const mins = minutes % 60;
+                const years = Math.floor(minutes / (365 * 24 * 60));
+                let remaining = minutes % (365 * 24 * 60);
+                const days = Math.floor(remaining / (24 * 60));
+                remaining = remaining % (24 * 60);
+                const hours = Math.floor(remaining / 60);
+                const mins = remaining % 60;
                 const parts = [];
+                if (years > 0) parts.push(`${years}y`);
                 if (days > 0) parts.push(`${days}d`);
                 if (hours > 0) parts.push(`${hours}h`);
                 if (mins > 0 || parts.length === 0) parts.push(`${mins}m`);

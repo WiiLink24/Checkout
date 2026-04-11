@@ -1,6 +1,6 @@
 import config
 import random
-from utils import _build_serial_filter, _run_query
+from utils.utils import _build_serial_filter, _run_query
 
 
 def find_game_recommendation(serial_prefixes):

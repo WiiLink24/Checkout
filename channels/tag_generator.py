@@ -5,15 +5,14 @@ from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from filters import format_serial
-from utils import (
+from utils.utils import (
     extract_serial_prefix,
-    fetch_user_latest_games,
-    fetch_user_stats,
     find_user_by_wii_number,
     generate_gravatar_url,
     normalize_serial,
+    format_serial,
 )
+from channels.nc import fetch_user_latest_games, fetch_user_stats
 
 try:
     from playwright.async_api import async_playwright
@@ -25,7 +24,7 @@ except ImportError:
 
 _TAG_VIEWPORT = {"width": 1000, "height": 400}
 _TEMPLATE_ENV = Environment(
-    loader=FileSystemLoader(str(Path(__file__).resolve().parent / "templates")),
+    loader=FileSystemLoader(str(Path(__file__).resolve().parent.parent / "templates")),
     autoescape=select_autoescape(["html", "xml"]),
 )
 _TAG_TEMPLATE = _TEMPLATE_ENV.get_template("tag/user_tag.html")

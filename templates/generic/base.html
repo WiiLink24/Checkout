@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="WiiLink Checkout is the home for all your WiiLink Data. Use your WiiLink Account to access your polls, submissions, gameplay statistics, and more!" />
+    <meta name="description"
+        content="WiiLink Checkout is the home for all your WiiLink Data. Use your WiiLink Account to access your polls, submissions, gameplay statistics, and more!" />
     <meta name="author" content="WiiLink Team" />
     <meta name="theme-color" content="#1F2937" />
     {% block og_image %}
@@ -190,11 +191,11 @@
 
                 <span class="h-full sm:h-[calc(100%-80px)] flex flex-col justify-between">
                     <div class="flex flex-col gap-2">
-                        {{ menu_item('Search', 'search', 'search') }}
+                        {{ menu_item('Search', 'misc_routes.search', 'search') }}
                         {{ menu_section('TRENDING') }}
-                        {{ menu_item('Most Played', 'top_most_played', 'trending-up') }}
-                        {{ menu_item('Best Games', 'top_best_games', 'star') }}
-                        {{ menu_item('Top Favorites', 'top_favorites', 'heart') }}
+                        {{ menu_item('Most Played', 'trending.top_most_played', 'trending-up') }}
+                        {{ menu_item('Best Games', 'trending.top_best_games', 'star') }}
+                        {{ menu_item('Top Favorites', 'trending.top_favorites', 'heart') }}
                     </div>
                     {% if g.oidc_user.logged_in %}
                     <div class="flex flex-col gap-2 mt-8">
@@ -204,10 +205,10 @@
                         'name': 'Nintendo Channel',
                         'icon': 'nc',
                         'items': [
-                        {'name': 'Discover', 'route': 'discover', 'icon': 'lightbulb'},
-                        {'name': 'Recommendations', 'route': 'recommendations', 'icon': 'gamepad'},
-                        {'name': 'Time Played', 'route': 'time_played', 'icon': 'clock'},
-                        {'name': 'Favorites', 'route': 'favorites', 'icon': 'star'}
+                        {'name': 'Discover', 'route': 'auth_routes.discover', 'icon': 'lightbulb'},
+                        {'name': 'Recommendations', 'route': 'auth_routes.recommendations', 'icon': 'gamepad'},
+                        {'name': 'Time Played', 'route': 'auth_routes.time_played', 'icon': 'clock'},
+                        {'name': 'Favorites', 'route': 'auth_routes.favorites', 'icon': 'star'}
                         ]
                         },
                         {
@@ -215,8 +216,8 @@
                         'name': 'Everybody Votes Channel',
                         'icon': 'evc',
                         'items': [
-                        {'name': 'Polls', 'route': 'polls', 'icon': 'chart-line'},
-                        {'name': 'Suggestions', 'route': 'suggestions', 'icon': 'circle-question-mark'}
+                        {'name': 'Polls', 'route': 'auth_routes.polls', 'icon': 'chart-line'},
+                        {'name': 'Suggestions', 'route': 'auth_routes.suggestions', 'icon': 'circle-question-mark'}
                         ]
                         },
                         {
@@ -228,7 +229,8 @@
                         'onclick': 'openArtisanModal()' if artisan_ids|length > 1 else None, 'direct_link':
                         'https://miicontest.wiilink.ca/artisans/' + (artisan_ids[0].artisan_id|string) if
                         artisan_ids|length == 1 else None},
-                        {'name': 'Contest Submissions', 'route': 'contest_submissions', 'icon': 'send-horizontal'}
+                        {'name': 'Contest Submissions', 'route': 'auth_routes.contest_submissions', 'icon':
+                        'send-horizontal'}
                         ]
                         },
                         {
@@ -236,7 +238,7 @@
                         'name': 'Private',
                         'icon': 'lock_inv',
                         'items': [
-                        {'name': 'My Digicard', 'route': 'private_digicard', 'icon': 'id-card'}
+                        {'name': 'My Digicard', 'route': 'digicard.private_digicard', 'icon': 'id-card'}
                         ]
                         }
                         ] %}
@@ -295,7 +297,7 @@
                 </a>
                 {% endif %}
                 {% if g.oidc_user.logged_in %}
-                <a href="{{ url_for('logout') }}"
+                <a href="{{ url_for('misc_routes.logout') }}"
                     class="hover:bg-red-600/30 p-2 rounded-xl flex items-center space-x-2 text-gray-400 hover:text-white transition-colors group mb-6">
                     <img src="/static/icon/log-out.svg" alt="Logout"
                         class="w-5 h-5 invert group-hover:translate-x-1 transition-transform duration-200" />

@@ -1,6 +1,5 @@
-# Fetch a user's submitted miis and submitted miis to a given contest
 import config
-from utils import _run_query
+from utils.utils import _run_query
 import requests
 from io import BytesIO
 from urllib.parse import urlencode

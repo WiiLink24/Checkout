@@ -1,5 +1,5 @@
 import config
-from utils import _build_serial_filter, _run_query
+from utils.utils import _build_serial_filter, _run_query
 from datetime import datetime
 
 
@@ -129,18 +129,6 @@ def fetch_user_polls(wii_numbers, limit=30, offset=0, db_url=None):
                     formatted_predictions.append({"gender": "female", "choice": 2})
             poll["predictions"] = formatted_predictions
     return polls
-
-
-def aggregate_ans_cnt(ans_cnt_array_list):
-    """Aggregate multiple ans_cnt arrays by summing each position."""
-    if not ans_cnt_array_list:
-        return [0, 0, 0, 0]
-
-    result = [0, 0, 0, 0]
-    for ans_cnt_array in ans_cnt_array_list:
-        for i in range(4):
-            result[i] += ans_cnt_array[i]
-    return result
 
 
 def fetch_user_suggestions(wii_numbers, limit=30, offset=0, db_url=None):
