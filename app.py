@@ -1,6 +1,6 @@
 import os
 from apscheduler.schedulers.background import BackgroundScheduler
-from flask import Flask, has_request_context
+from flask import Flask, has_request_context, render_template
 import config
 from flask_oidc import OpenIDConnect
 from flask_session import Session
@@ -86,6 +86,75 @@ cache_files = set(os.listdir(cache_dir)) if os.path.exists(cache_dir) else set()
 if not all(f in cache_files for f in required_cache_files):
     print("Cache directory incomplete. Generating cache...")
     generate_top_page_cache()
+
+
+# Global error handlers
+@app.errorhandler(404)
+def handle_404(error):
+    """Handle 404 Not Found errors"""
+    user_info = get_logged_in_user_info()
+    return (
+        render_template(
+            "errors/error.html",
+            error_code=404,
+            error_title="Page Not Found",
+            error_message="The page you're looking for doesn't exist.",
+            error_details="Make sure the URL is correct and try again.",
+            user_info=user_info,
+        ),
+        404,
+    )
+
+
+@app.errorhandler(500)
+def handle_500(error):
+    """Handle 500 Internal Server errors"""
+    user_info = get_logged_in_user_info()
+    return (
+        render_template(
+            "errors/error.html",
+            error_code=500,
+            error_title="Internal Server Error",
+            error_message="Something went wrong on our end.",
+            error_details="The server encountered an unexpected error. Please try again later.",
+            user_info=user_info,
+        ),
+        500,
+    )
+
+
+@app.errorhandler(403)
+def handle_403(error):
+    """Handle 403 Forbidden errors"""
+    user_info = get_logged_in_user_info()
+    return (
+        render_template(
+            "errors/error.html",
+            error_code=403,
+            error_title="Access Forbidden",
+            error_message="You don't have permission to access this resource.",
+            error_details="If you believe this is a mistake, please contact an administrator.",
+            user_info=user_info,
+        ),
+        403,
+    )
+
+
+@app.errorhandler(400)
+def handle_400(error):
+    """Handle 400 Bad Request errors"""
+    user_info = get_logged_in_user_info()
+    return (
+        render_template(
+            "errors/error.html",
+            error_code=400,
+            error_title="Bad Request",
+            error_message="The request was invalid or malformed.",
+            error_details="Please check your input and try again.",
+            user_info=user_info,
+        ),
+        400,
+    )
 
 
 if __name__ == "__main__":
