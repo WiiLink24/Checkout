@@ -32,7 +32,7 @@
                             {% if game.genre %}
                             {% set genres = game.genre.split(',') %}
                             <span class="px-3 py-1 rounded-full bg-gray-900/60">
-                                {% for genre in genres %}
+                                {% for genre in genres[:3] %}
                                 {{ genre.strip().upper() }}{% if not loop.last %} | {% endif %}
                                 {% endfor %}
                             </span>
