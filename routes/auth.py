@@ -96,7 +96,7 @@ def get_next_export_time():
 @auth_routes_bp.route("/recommendations", endpoint="recommendations")
 def recommendations():
     if not oidc or not oidc.user_loggedin:
-        return redirect(url_for("index"))
+        return redirect(url_for("auth_routes.index"))
     profile = get_user_profile()
     user_info = get_logged_in_user_info()
     serial_prefixes = get_serial_prefixes(profile)
@@ -168,7 +168,7 @@ def time_played_stats():
 @auth_routes_bp.route("/time_played", endpoint="time_played")
 def time_played():
     if not oidc or not oidc.user_loggedin:
-        return redirect(url_for("index"))
+        return redirect(url_for("auth_routes.index"))
     profile = get_user_profile()
     user_info = get_logged_in_user_info()
     serial_prefixes = get_serial_prefixes(profile)
@@ -210,7 +210,7 @@ def time_played():
 @auth_routes_bp.route("/favorites", endpoint="favorites")
 def favorites():
     if not oidc or not oidc.user_loggedin:
-        return redirect(url_for("index"))
+        return redirect(url_for("auth_routes.index"))
     profile = get_user_profile()
     user_info = get_logged_in_user_info()
     serial_prefixes = get_serial_prefixes(profile)
@@ -247,7 +247,7 @@ def favorites():
 @auth_routes_bp.route("/discover", endpoint="discover")
 def discover():
     if not oidc or not oidc.user_loggedin:
-        return redirect(url_for("index"))
+        return redirect(url_for("auth_routes.index"))
     profile = get_user_profile()
     user_info = get_logged_in_user_info()
     serial_prefixes = get_serial_prefixes(profile)
@@ -262,7 +262,7 @@ def discover():
 @auth_routes_bp.route("/polls", endpoint="polls")
 def polls():
     if not oidc or not oidc.user_loggedin:
-        return redirect(url_for("index"))
+        return redirect(url_for("auth_routes.index"))
     profile = get_user_profile()
     user_info = get_logged_in_user_info()
 
@@ -299,7 +299,7 @@ def polls():
 @auth_routes_bp.route("/suggestions", endpoint="suggestions")
 def suggestions():
     if not oidc or not oidc.user_loggedin:
-        return redirect(url_for("index"))
+        return redirect(url_for("auth_routes.index"))
     user_info = get_logged_in_user_info()
 
     wii_numbers = user_info.get("linked_wii_no", [])
@@ -335,7 +335,7 @@ def suggestions():
 @auth_routes_bp.route("/contest_submissions", endpoint="contest_submissions")
 def contest_submissions():
     if not oidc or not oidc.user_loggedin:
-        return redirect(url_for("index"))
+        return redirect(url_for("auth_routes.index"))
     user_info = get_logged_in_user_info()
 
     wii_numbers = user_info.get("linked_wii_no", [])
@@ -381,13 +381,12 @@ def contest_submissions():
 @auth_routes_bp.route("/private/takeout", endpoint="takeout")
 def takeout():
     if not (oidc and oidc.user_loggedin):
-        return redirect(url_for("index"))
+        return redirect(url_for("auth_routes.index"))
 
     user_info = get_logged_in_user_info()
-    serial_prefixes = get_serial_prefixes(user_info)
-    wii_numbers = user_info.get("linked_wii_no", [])
-
     profile = get_user_profile()
+    serial_prefixes = get_serial_prefixes(profile)
+    wii_numbers = user_info.get("linked_wii_no", [])
     email = profile.get("email") if profile else None
 
     can_export, next_available = can_export_data()
@@ -424,7 +423,7 @@ def takeout():
 )
 def takeout_export():
     if not (oidc and oidc.user_loggedin):
-        return redirect(url_for("index"))
+        return redirect(url_for("auth_routes.index"))
 
     # Check rate limiting
     can_export, _ = can_export_data()
@@ -435,10 +434,9 @@ def takeout_export():
         return redirect(url_for("auth_routes.takeout"))
 
     user_info = get_logged_in_user_info()
-    serial_prefixes = get_serial_prefixes(user_info)
-    wii_numbers = user_info.get("linked_wii_no", [])
-
     profile = get_user_profile()
+    serial_prefixes = get_serial_prefixes(profile)
+    wii_numbers = user_info.get("linked_wii_no", [])
     email = profile.get("email") if profile else None
 
     # Get requested exports from form

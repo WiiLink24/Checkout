@@ -22,12 +22,12 @@ def get_logged_in_user_info():
 @digicard_bp.route("/private/digicard", endpoint="private_digicard", methods=["GET"])
 def private_digicard():
     if not oidc or not oidc.user_loggedin:
-        return redirect(url_for("index"))
+        return redirect(url_for("auth_routes.index"))
 
     user_info = get_logged_in_user_info()
 
     if not user_info:
-        return redirect(url_for("index"))
+        return redirect(url_for("auth_routes.index"))
 
     # Get email from OIDC profile
     profile = get_user_profile()
