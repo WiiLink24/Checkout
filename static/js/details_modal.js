@@ -19,7 +19,6 @@
     let currentGameId = "";
     let currentSource = "recommendations";
     let currentFavoriteCount = null;
-    let currentFavoriteUserCount = null;
 
     async function loadAverages() {
         if (!currentGameId) return;
@@ -35,10 +34,8 @@
 
     function loadFavoritesStats() {
         const favoriteCountText = document.getElementById("favoriteCountText");
-        const favoriteUserCountText = document.getElementById("favoriteUserCountText");
 
         favoriteCountText.textContent = currentFavoriteCount !== null && currentFavoriteCount !== "" ? currentFavoriteCount : "-";
-        favoriteUserCountText.textContent = currentFavoriteUserCount !== null && currentFavoriteUserCount !== "" ? currentFavoriteUserCount : "-";
 
         document.getElementById("recommendationStatsSection").style.display = "none";
         document.getElementById("timePlayedStatsSection").style.display = "none";
@@ -189,7 +186,6 @@
         currentGameId = data.gameId || "";
         currentSource = data.source || "recommendations";
         currentFavoriteCount = data.favoriteCount;
-        currentFavoriteUserCount = data.favoriteUserCount;
 
         coverEl.dataset.tried = "";
         coverEl.dataset.fallback = data.coverFallback || "";
@@ -260,7 +256,6 @@
                 coverUrl: button.dataset.coverUrl,
                 coverFallback: button.dataset.coverFallback,
                 favoriteCount: button.dataset.favoriteCount,
-                favoriteUserCount: button.dataset.favoriteUserCount,
                 source: button.dataset.source || "recommendations"
             });
         });
