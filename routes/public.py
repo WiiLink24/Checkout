@@ -77,25 +77,25 @@ def recommendations_by_serial(wii_no):
 
     if authentik_user and user_serial:
         serial_prefixes = extract_serial_prefix(user_serial)
-        
+
         page = parse_int(request.args.get("page", "1"))
         if page < 1:
             page = 1
         per_page = 30
         offset = (page - 1) * per_page
-        
+
         sort_by = request.args.get("sort", "recommendation_percent")
         if sort_by not in ("recommendation_percent", "last_recommended"):
             sort_by = "recommendation_percent"
-        
+
         total_count = count_recommendations(serial_prefixes)
         total_pages = (total_count + per_page - 1) // per_page
         recommendations = fetch_recommendations(
             serial_prefixes, sort_by=sort_by, limit=per_page, offset=offset
         )
-        
+
         viewed_user = build_viewed_user_info(authentik_user)
-        
+
         context = {
             "recommendations": recommendations,
             "user_info": user_info,
@@ -124,20 +124,20 @@ def recommendations_by_serial(wii_no):
         page = 1
     per_page = 30
     offset = (page - 1) * per_page
-    
+
     sort_by = request.args.get("sort", "recommendation_percent")
     if sort_by not in ("recommendation_percent", "last_recommended"):
         sort_by = "recommendation_percent"
-    
+
     total_count = count_recommendations(serial_prefixes)
     total_pages = (total_count + per_page - 1) // per_page
     recommendations = fetch_recommendations(
         serial_prefixes, sort_by=sort_by, limit=per_page, offset=offset
     )
-    
+
     logged_in_user_picture = user_info.get("profile_picture") if user_info else None
     viewed_user = build_unclaimed_user_info(wii_no, logged_in_user_picture)
-    
+
     context = {
         "recommendations": recommendations,
         "user_info": user_info,
@@ -176,25 +176,25 @@ def time_played_by_serial(wii_no):
                     break
     if authentik_user and user_serial:
         serial_prefixes = extract_serial_prefix(user_serial)
-        
+
         page = parse_int(request.args.get("page", "1"))
         if page < 1:
             page = 1
         per_page = 30
         offset = (page - 1) * per_page
-        
+
         sort_by = request.args.get("sort", "time_played")
         if sort_by not in ("time_played", "times_played", "last_played"):
             sort_by = "time_played"
-        
+
         total_count = count_time_played(serial_prefixes)
         total_pages = (total_count + per_page - 1) // per_page
         time_played = fetch_time_played(
             serial_prefixes, sort_by=sort_by, limit=per_page, offset=offset
         )
-        
+
         viewed_user = build_viewed_user_info(authentik_user)
-        
+
         context = {
             "time_played": time_played,
             "user_info": user_info,
@@ -223,20 +223,20 @@ def time_played_by_serial(wii_no):
         page = 1
     per_page = 30
     offset = (page - 1) * per_page
-    
+
     sort_by = request.args.get("sort", "time_played")
     if sort_by not in ("time_played", "times_played", "last_played"):
         sort_by = "time_played"
-    
+
     total_count = count_time_played(serial_prefixes)
     total_pages = (total_count + per_page - 1) // per_page
     time_played = fetch_time_played(
         serial_prefixes, sort_by=sort_by, limit=per_page, offset=offset
     )
-    
+
     logged_in_user_picture = user_info.get("profile_picture") if user_info else None
     viewed_user = build_unclaimed_user_info(wii_no, logged_in_user_picture)
-    
+
     context = {
         "time_played": time_played,
         "user_info": user_info,

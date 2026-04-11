@@ -9,6 +9,7 @@ def parse_int(value):
     """Parse string to int, return None if invalid"""
     return int(value) if value.isdigit() else None
 
+
 def is_public_profile(user_profile, logged_in_user):
     if logged_in_user and user_profile.get("username") == logged_in_user.get(
         "username"

@@ -39,7 +39,7 @@ os.makedirs(app.config["SESSION_FILE_DIR"], exist_ok=True)
 oidc = OpenIDConnect(app)
 Session(app)
 
-init_cache()
+init_cache(app)
 
 # Register template filters
 app.jinja_env.filters["format_serial"] = format_serial

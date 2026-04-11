@@ -198,6 +198,7 @@ def build_unclaimed_user_info(serial, logged_in_user_picture):
         "serial_number": serial,
     }
 
+
 def format_serial(s):
     """Format serial number with dashes every 4 characters"""
     s = str(s)
