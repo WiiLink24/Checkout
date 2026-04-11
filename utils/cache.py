@@ -37,6 +37,7 @@ def generate_top_page_cache():
                 )
                 with open(os.path.join(CACHE_DIR, cache_file), "w") as f:
                     f.write(games_html)
+                print(f"[CACHE] Generated cache for {cache_file}")
         except Exception as e:
             import traceback
 

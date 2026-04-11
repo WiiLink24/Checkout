@@ -1,6 +1,6 @@
 import os
 from apscheduler.schedulers.background import BackgroundScheduler
-from flask import Flask
+from flask import Flask, has_request_context
 import config
 from flask_oidc import OpenIDConnect
 from flask_session import Session
@@ -50,7 +50,8 @@ app.jinja_env.filters["format_playtime"] = format_playtime
 def inject_artisan_id():
     """Inject artisan IDs for logged-in user into template context."""
     artisan_ids = []
-    if oidc.user_loggedin:
+    # Only check for user login if we're in a request context
+    if has_request_context() and oidc.user_loggedin:
         user_info = get_logged_in_user_info()
         if user_info and user_info.get("linked_wii_no"):
             wii_number = user_info["linked_wii_no"][0]
@@ -73,6 +74,18 @@ app.register_blueprint(misc_routes_bp)
 scheduler = BackgroundScheduler()
 scheduler.add_job(generate_top_page_cache, "cron", hour=0, minute=0)
 scheduler.start()
+
+# If any cache file is missing on startup, generate the cache immediately
+cache_dir = os.path.join(os.path.dirname(__file__), "cache")
+required_cache_files = [
+    "top_most_played.html",
+    "top_best_games.html",
+    "top_favorites.html",
+]
+cache_files = set(os.listdir(cache_dir)) if os.path.exists(cache_dir) else set()
+if not all(f in cache_files for f in required_cache_files):
+    print("Cache directory incomplete. Generating cache...")
+    generate_top_page_cache()
 
 
 if __name__ == "__main__":
