@@ -52,4 +52,3 @@ def logout():
     oidc = get_oidc()
     oidc.logout()
     return redirect(config.oidc_logout_url)
-
