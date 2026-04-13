@@ -19,7 +19,7 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
             <div class="mt-6 sm:mt-0 flex flex-col sm:flex-row sm:items-center gap-6 mb-10">
                 <div class="relative w-32 h-32 sm:mx-auto flex sm:items-center sm:justify-center group">
                     <img src="{{ viewed_user.profile_picture }}" alt="{{ viewed_user.username }}"
-                        class="w-32 h-32 rounded-2xl object-cover relative z-10">
+                        class="w-32 h-32 rounded-2xl object-contain object-bottom relative z-10">
                     <a href="{% if viewed_user.linked_wii_no %}/{{ viewed_user.linked_wii_no[0] }}.png{% else %}#{% endif %}"
                         class="absolute inset-0 rounded-2xl bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center z-20">
                         <img src="/static/icon/tag.svg" alt="Copy Icon" class="w-10 h-10 invert">
@@ -88,13 +88,7 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                         data-favorite-user-count="{{ game.user_count or 0 }}">
                         <img src="{{ cover.url }}" alt="{{ game.title }} Cover" data-fallback="{{ cover.fallback }}"
                             onerror="if (!this.dataset.tried && this.dataset.fallback) { this.dataset.tried = '1'; this.src = this.dataset.fallback; } else { this.style.display = 'none'; }"
-                            class="w-full h-full object-cover rounded">
-                        <div class="bottom-0 p-3 z-10 absolute w-full">
-                            <p class="text-white font-semibold break-words">{{ game.title_en or game.title }}</p>
-                        </div>
-                        <div
-                            class="bottom-0 absolute bg-gradient-to-t from-black/70 to-transparent w-full h-40 rounded">
-                        </div>
+                            class="w-full h-full object-contain object-bottom rounded">
                     </button>
                     {% endfor %}
                 </div>
@@ -133,15 +127,7 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                         <div class="w-full flex items-center gap-4">
                             <img src="{{ cover.url }}" alt="{{ game.title }} Cover" data-fallback="{{ cover.fallback }}"
                                 onerror="if (!this.dataset.tried && this.dataset.fallback) { this.dataset.tried = '1'; this.src = this.dataset.fallback; } else { var placeholder = document.createElement('div'); placeholder.className = 'w-full h-auto bg-gray-700 rounded flex-shrink-0'; this.parentNode.replaceChild(placeholder, this); }"
-                                class="w-full h-full object-cover rounded">
-                            <div class="bottom-0 p-3 z-10 absolute">
-                                <p class="text-white font-semibold break-words">{{ game.title_en or game.title }}</p>
-                                <p class="text-sm text-gray-300">{{
-                                    game.time_played|format_playtime }} played</p>
-                            </div>
-                            <div
-                                class="bottom-0 absolute bg-gradient-to-t from-black/70 to-transparent w-full h-40 rounded">
-                            </div>
+                                class="w-full h-full object-contain object-bottom rounded">
                         </div>
                     </button>
                     {% endfor %}
@@ -180,7 +166,7 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                         data-rating-value="{{ game.rating_value or '' }}" data-synopsis="{{ game.synopsis_en or '' }}">
                         <img src="{{ cover.url }}" alt="{{ game.title }} Cover" data-fallback="{{ cover.fallback }}"
                             onerror="if (!this.dataset.tried && this.dataset.fallback) { this.dataset.tried = '1'; this.src = this.dataset.fallback; } else { this.style.display = 'none'; }"
-                            class="w-full h-full object-cover rounded">
+                            class="w-full h-full object-contain object-bottom rounded">
                         <div class="bottom-0 p-3 z-10 absolute w-full">
                             <p class="text-white font-semibold break-words">{{ game.title_en or game.title }}</p>
                             {% set score_percent = game.recommendation_percent or 0 %}
