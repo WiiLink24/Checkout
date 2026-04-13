@@ -77,7 +77,7 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                     {% set cover_game = game %}
                     {% include "components/game_cover_vars.html" %}
                     <button
-                        class="flex flex-col items-end justify-end block rounded-xl hover:scale-110 transition duration-200 relative w-full text-left bg-transparent border-0 cursor-pointer"
+                        class="flex flex-col items-end justify-end block rounded-xl hover:scale-110 transition duration-200 relative w-full text-left bg-transparent border-0 cursor-pointer aspect-[9/16]"
                         data-modal-open data-source="favorites" data-title="{{ game.title_en or game.title }}"
                         data-game-id="{{ game.game_id }}" data-cover-url="{{ cover.url }}"
                         data-cover-fallback="{{ cover.fallback }}" data-release-year="{{ game.release_year or '' }}"
@@ -88,7 +88,7 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                         data-favorite-user-count="{{ game.user_count or 0 }}">
                         <img src="{{ cover.url }}" alt="{{ game.title }} Cover" data-fallback="{{ cover.fallback }}"
                             onerror="if (!this.dataset.tried && this.dataset.fallback) { this.dataset.tried = '1'; this.src = this.dataset.fallback; } else { this.style.display = 'none'; }"
-                            class="w-full object-cover rounded">
+                            class="w-full h-full object-cover rounded">
                         <div class="bottom-0 p-3 z-10 absolute w-full">
                             <p class="text-white font-semibold break-words">{{ game.title_en or game.title }}</p>
                         </div>
