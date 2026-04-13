@@ -67,6 +67,13 @@ def search_games_by_publisher(search_query, offset=0, limit=15):
                t.input_controls, t.wifi_players, t.input_players,
                COALESCE(b.favorite_count, 0) as favorite_count,
                COALESCE(b.user_count, 0) as user_count
+        FROM titles t
+        LEFT JOIN (
+            SELECT game_id, COUNT(*) as favorite_count, COUNT(DISTINCT serial_number) as user_count
+            FROM bookmarks
+            GROUP BY game_id
+        ) b ON t.game_id LIKE b.game_id || '%%'
+        WHERE LOWER(t.publisher) LIKE %s
         ORDER BY favorite_count DESC
         LIMIT %s OFFSET %s
     """
@@ -94,6 +101,13 @@ def search_games_by_developer(search_query, offset=0, limit=15):
                t.input_controls, t.wifi_players, t.input_players,
                COALESCE(b.favorite_count, 0) as favorite_count,
                COALESCE(b.user_count, 0) as user_count
+        FROM titles t
+        LEFT JOIN (
+            SELECT game_id, COUNT(*) as favorite_count, COUNT(DISTINCT serial_number) as user_count
+            FROM bookmarks
+            GROUP BY game_id
+        ) b ON t.game_id LIKE b.game_id || '%%'
+        WHERE LOWER(t.developer) LIKE %s
         ORDER BY favorite_count DESC
         LIMIT %s OFFSET %s
     """
