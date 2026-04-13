@@ -111,18 +111,19 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                             class="inline w-4 h-4 ml-1 invert">
                     </a>
                 </span>
-                <hr class="border-gray-300/10">
+                <hr class="mt-6 border-gray-300/10">
                 {% endif %}
             </div>
 
             <div class="flex flex-row items-start gap-6">
-                <div {% if recent_contests or recent_polls or (not base_url and latest_digicard) %} class="w-1/2" {% else %} class="w-full"
-                    {% endif %}>
+                <div {% if recent_contests or recent_polls or (not base_url and latest_digicard) %} class="w-1/2" {%
+                    else %} class="w-full" {% endif %}>
                     <div class="mt-8">
                         {% if latest_games %}
                         <div class="grid gap-4"
                             style="grid-template-columns: repeat(auto-fill, minmax({% if recent_contests or recent_polls or (not base_url and latest_digicard) %} 130px {% else %} 180px {% endif %}, 1fr));">
-                            {% for game in latest_games %}
+                            {% set game_slice = latest_games if (recent_contests or recent_polls or (not base_url and latest_digicard)) else latest_games[:5] %}
+                            {% for game in game_slice %}
                             {% set cover = namespace(url='', fallback='') %}
                             {% set cover_game = game %}
                             {% include "components/game_cover_vars.html" %}
@@ -174,13 +175,14 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                         {% endif %}
                     </div>
 
-                    <hr class="border-gray-300/10">
+                    <hr class="mt-6 border-gray-300/10">
 
                     <div class="mt-8">
                         {% if latest_reviews %}
                         <div class="grid gap-4"
                             style="grid-template-columns: repeat(auto-fill, minmax({% if recent_contests or recent_polls or (not base_url and latest_digicard) %} 130px {% else %} 180px {% endif %}, 1fr));">
-                            {% for game in latest_reviews %}
+                            {% set review_slice = latest_reviews if (recent_contests or recent_polls or (not base_url and latest_digicard)) else latest_reviews[:5] %}
+                            {% for game in review_slice %}
                             {% set cover = namespace(url='', fallback='') %}
                             {% set cover_game = game %}
                             {% include "components/game_cover_vars.html" %}
@@ -257,11 +259,9 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
 
                     {% if recent_contests %}
                     <div class="mt-8">
-                        <ul class="grid grid-cols-1 lg:grid-cols-2 gap-6 list-none p-0">
-                            {% for submission in recent_contests[:1] %}
-                            {% include "components/contest_card.html" %}
-                            {% endfor %}
-                        </ul>
+                        {% for submission in recent_contests[:1] %}
+                        {% include "components/contest_card.html" %}
+                        {% endfor %}
                     </div>
                     {% endif %}
 

@@ -576,9 +576,9 @@ def index():
         if not serial_prefixes:
             return render_template("errors/not_linked.html", user_info=user_info), 400
 
-        latest_games = fetch_user_latest_games(serial_prefixes, 5)
+        latest_games = fetch_user_latest_games(serial_prefixes, 6)
         latest_favorites = fetch_favorites(serial_prefixes, 5)
-        latest_reviews = fetch_user_latest_reviews(serial_prefixes, 5)
+        latest_reviews = fetch_user_latest_reviews(serial_prefixes, 6)
         user_stats = fetch_user_stats(serial_prefixes)
 
         # Get user's wii numbers for contests and polls

@@ -489,11 +489,11 @@ def friend_code_home(friend_code):
     serial_prefixes = extract_serial_prefix(user_serial)
 
     latest_games = (
-        fetch_user_latest_games(serial_prefixes, 5) if serial_prefixes else []
+        fetch_user_latest_games(serial_prefixes, 6) if serial_prefixes else []
     )
     latest_favorites = fetch_favorites(serial_prefixes, 5) if serial_prefixes else []
     latest_reviews = (
-        fetch_user_latest_reviews(serial_prefixes, 5) if serial_prefixes else []
+        fetch_user_latest_reviews(serial_prefixes, 6) if serial_prefixes else []
     )
     user_stats = (
         fetch_user_stats(serial_prefixes)
