@@ -247,20 +247,20 @@
                 if (Array.isArray(controls) && controls.length > 0) {
                     // Clear previous content
                     inputControlsText.innerHTML = "";
-                    
+
                     controls.forEach(c => {
                         const type = (c.type || "Unknown").toLowerCase().replace(/\s+/g, "_");
                         const required = c.required ? "Required" : "Optional";
-                        
+
                         const img = document.createElement("img");
                         img.src = `/static/img/controller/${type}.svg`;
                         img.alt = `${c.type} (${required})`;
                         img.title = `${c.type} (${required})`;
                         img.className = "h-6 object-contain brightness-[10000000%]";
-                        
+
                         inputControlsText.appendChild(img);
                     });
-                    
+
                     inputControlsWrap.classList.remove("hidden");
                 } else {
                     inputControlsWrap.classList.add("hidden");
@@ -277,10 +277,10 @@
         const playersWrapEl = document.getElementById("modalPlayersWrap");
         const inputPlayersEl = document.getElementById("modalInputPlayers");
         const wifiEl = document.getElementById("modalWifi");
-        
+
         const hasInputPlayers = data.inputPlayers && parseInt(data.inputPlayers) > 0;
         const hasWifiPlayers = data.wifiPlayers && parseInt(data.wifiPlayers) > 0;
-        
+
         if (hasInputPlayers || hasWifiPlayers) {
             if (hasInputPlayers) {
                 inputPlayersEl.textContent = parseInt(data.inputPlayers);

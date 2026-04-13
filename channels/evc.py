@@ -71,7 +71,7 @@ def fetch_user_polls(wii_numbers, limit=30, offset=0, db_url=None):
         "FROM votes v "
         "LEFT JOIN questions q ON v.question_id = q.question_id "
         f"WHERE {where_clause} "
-        "ORDER BY v.id DESC "
+        "ORDER BY q.date DESC "
         f"LIMIT {limit} OFFSET {offset}"
     )
     polls = _run_query(query, wii_numbers, db_url)

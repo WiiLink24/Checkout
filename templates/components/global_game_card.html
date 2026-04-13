@@ -109,10 +109,10 @@
                 data-publisher="{{ game.publisher or '' }}" data-rating-type="{{ game.rating_type or '' }}"
                 data-rating-value="{{ game.rating_value or '' }}" data-synopsis="{{ game.synopsis_en or '' }}"
                 data-favorite-count="{{ game.favorite_count or 0 }}"
-                data-favorite-user-count="{{ game.user_count or 0 }}"
-                {%- if game.input_controls %} data-input-controls='{{ game.input_controls | tojson }}'{% endif %}
-                data-wifi-players="{{ game.wifi_players or 0 }}"
-                data-input-players="{{ game.input_players or 0 }}">View details</button>
+                data-favorite-user-count="{{ game.user_count or 0 }}" {%- if game.input_controls %}
+                data-input-controls='{{ game.input_controls | tojson }}' {% endif %}
+                data-wifi-players="{{ game.wifi_players or 0 }}" data-input-players="{{ game.input_players or 0 }}">View
+                details</button>
         </div>
     </div>
 </div>

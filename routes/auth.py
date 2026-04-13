@@ -45,7 +45,7 @@ from channels.cmoc import (
 )
 import config
 from channels.discover import find_game_recommendation
-from channels.digi import fetch_orders_by_email
+from channels.digi import fetch_orders_by_email, render_card_to_image, get_card_name
 
 auth_routes_bp = Blueprint("auth_routes", __name__)
 oidc = None
@@ -581,6 +581,44 @@ def index():
         latest_reviews = fetch_user_latest_reviews(serial_prefixes, 5)
         user_stats = fetch_user_stats(serial_prefixes)
 
+        # Get user's wii numbers for contests and polls
+        wii_numbers = user_info.get("linked_wii_no", [])
+        if isinstance(wii_numbers, str):
+            wii_numbers = [wii_numbers]
+
+        recent_contests = (
+            fetch_contest_submissions(wii_numbers, limit=3) if wii_numbers else []
+        )
+        recent_polls = (
+            fetch_user_polls(wii_numbers, limit=3, db_url=config.evc_db_url)
+            if wii_numbers
+            else []
+        )
+
+        # Render Mii images for recent contests
+        for submission in recent_contests:
+            if submission.get("mii_data"):
+                submission["mii_image_url"] = render_mii_to_url(submission["mii_data"])
+            else:
+                submission["mii_image_url"] = None
+
+        # Fetch latest digicard
+        latest_digicard = None
+        email = profile.get("email") if profile else None
+        if email:
+            orders = fetch_orders_by_email(email)
+            if orders:
+                latest_order = orders[0]
+                image_base64 = render_card_to_image(latest_order)
+                if image_base64:
+                    card_info = get_card_name(latest_order.get("order_schema", ""))
+                    latest_digicard = {
+                        "order_id": latest_order["order_id"],
+                        "date_created": latest_order["date_created"],
+                        "image_base64": image_base64,
+                        "card_info": card_info,
+                    }
+
         return render_template(
             "home.html",
             user_info=user_info,
@@ -589,6 +627,9 @@ def index():
             latest_favorites=latest_favorites,
             latest_reviews=latest_reviews,
             user_stats=user_stats,
+            recent_contests=recent_contests,
+            recent_polls=recent_polls,
+            latest_digicard=latest_digicard,
         )
     else:
         return render_template("login.html", user_info=None)

@@ -1,0 +1,42 @@
+{# Generic digicard component #}
+{% if latest_digicard %}
+<div class="bg-gray-700/30 rounded-lg overflow-hidden">
+    <div class="p-4">
+        <span class="flex flex-row items-center justify-between mb-2">
+            <h3 class="text-lg font-bold text-white mb-1">{{ latest_digicard.card_info.name }}</h3>
+            <span class="text-xs bg-gray-600 text-white px-3 py-1 rounded-full">
+                {{ latest_digicard.date_created.strftime('%Y-%m-%d') if latest_digicard.date_created else 'Unknown' }}
+            </span>
+        </span>
+        <p class="text-xs text-gray-400 mb-1">
+            Order ID: <code class="text-gray-300">{{ latest_digicard.order_id }}</code>
+        </p>
+    </div>
+
+    <div class="bg-gray-800 p-4 flex items-center justify-center relative group">
+        <img src="data:image/jpeg;base64,{{ latest_digicard.image_base64 }}"
+            alt="Digicard for {{ latest_digicard.card_info.name }}" class="w-full h-auto rounded max-w-md" />
+
+        <div
+            class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100">
+            <button
+                onclick="downloadCard('{{ latest_digicard.order_id }}', '{{ latest_digicard.card_info.name }}', 'data:image/jpeg;base64,{{ latest_digicard.image_base64 }}')"
+                class="text-white py-3 px-6 transition-colors flex flex-col items-center gap-2">
+                <img src="/static/icon/download.svg" alt="Download Icon" class="w-10 h-10 inline invert">
+                Download
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function downloadCard(orderId, cardName, dataUrl) {
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.download = `digicard-${orderId}-${cardName.replace(/\s+/g, '-')}.jpg`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+</script>
+{% endif %}

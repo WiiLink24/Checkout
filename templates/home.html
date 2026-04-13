@@ -82,13 +82,14 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                         data-modal-open data-source="favorites" data-title="{{ game.title_en or game.title }}"
                         data-game-id="{{ game.game_id }}" data-cover-url="{{ cover.url }}"
                         data-cover-fallback="{{ cover.fallback }}" data-release-year="{{ game.release_year or '' }}"
-                        data-release-month="{{ game.release_month or '' }}" data-release-day="{{ game.release_day or '' }}"
-                        data-genre="{{ game.genre or '' }}" data-developer="{{ game.developer or '' }}"
-                        data-publisher="{{ game.publisher or '' }}" data-rating-type="{{ game.rating_type or '' }}"
+                        data-release-month="{{ game.release_month or '' }}"
+                        data-release-day="{{ game.release_day or '' }}" data-genre="{{ game.genre or '' }}"
+                        data-developer="{{ game.developer or '' }}" data-publisher="{{ game.publisher or '' }}"
+                        data-rating-type="{{ game.rating_type or '' }}"
                         data-rating-value="{{ game.rating_value or '' }}" data-synopsis="{{ game.synopsis_en or '' }}"
                         data-favorite-count="{{ game.favorite_count or 0 }}"
-                        data-favorite-user-count="{{ game.user_count or 0 }}"
-                        {%- if game.input_controls %} data-input-controls='{{ game.input_controls | tojson }}'{% endif %}
+                        data-favorite-user-count="{{ game.user_count or 0 }}" {%- if game.input_controls %}
+                        data-input-controls='{{ game.input_controls | tojson }}' {% endif %}
                         data-wifi-players="{{ game.wifi_players or 0 }}">
                         <img src="{{ cover.url }}" alt="{{ game.title }} Cover" data-fallback="{{ cover.fallback }}"
                             onerror="if (!this.dataset.tried && this.dataset.fallback) { this.dataset.tried = '1'; this.src = this.dataset.fallback; } else { this.style.display = 'none'; }"
@@ -110,146 +111,188 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                             class="inline w-4 h-4 ml-1 invert">
                     </a>
                 </span>
-                {% else %}
-                <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-8 text-center">
-                    <p class="!mb-0 text-gray-400 mb-4">No favorites yet</p>
-                </div>
+                <hr class="border-gray-300/10">
                 {% endif %}
             </div>
 
-            <hr class="border-gray-300/10">
-
-            <div class="mt-8">
-                {% if latest_games %}
-                <div class="grid gap-4" style="grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));">
-                    {% for game in latest_games %}
-                    {% set cover = namespace(url='', fallback='') %}
-                    {% set cover_game = game %}
-                    {% include "components/game_cover_vars.html" %}
-                    <button
-                        class="flex flex-col items-end justify-end rounded-xl hover:scale-110 transition duration-200 relative w-full text-left bg-transparent border-0 cursor-pointer aspect-[2/2.8]"
-                        data-modal-open data-title="{{ game.title_en or game.title }}" data-game-id="{{ game.game_id }}"
-                        data-cover-url="{{ cover.url }}" data-cover-fallback="{{ cover.fallback }}"
-                        data-release-year="{{ game.release_year or '' }}" data-release-month="{{ game.release_month or '' }}"
-                        data-release-day="{{ game.release_day or '' }}" data-genre="{{ game.genre or '' }}"
-                        data-developer="{{ game.developer or '' }}" data-publisher="{{ game.publisher or '' }}"
-                        data-rating-type="{{ game.rating_type or '' }}"
-                        data-rating-value="{{ game.rating_value or '' }}" data-synopsis="{{ game.synopsis_en or '' }}"
-                        {%- if game.input_controls %} data-input-controls='{{ game.input_controls | tojson }}'{% endif %}
-                        data-wifi-players="{{ game.wifi_players or 0 }}">
-                        <div class="w-full flex items-center gap-4">
-                            <img src="{{ cover.url }}" alt="{{ game.title }} Cover" data-fallback="{{ cover.fallback }}"
-                                onerror="if (!this.dataset.tried && this.dataset.fallback) { this.dataset.tried = '1'; this.src = this.dataset.fallback; } else { var placeholder = document.createElement('div'); placeholder.className = 'w-full h-auto bg-gray-700 rounded flex-shrink-0'; this.parentNode.replaceChild(placeholder, this); }"
-                                class="w-full h-full object-contain object-bottom rounded">
-                            <div class="bottom-0 p-3 z-10 absolute">
-                                <p class="text-white font-semibold break-words">{{ game.title_en or game.title }}</p>
-                                <p class="text-sm text-gray-300">{{
-                                    game.time_played|format_playtime }} played</p>
-                            </div>
-                            <div
-                                class="bottom-0 absolute bg-gradient-to-t from-black/70 to-transparent w-full h-40 rounded">
-                            </div>
-                        </div>
-                    </button>
-                    {% endfor %}
-                </div>
-                <span class="mt-3 flex flex-row items-center justify-between">
-                    <h2 class="text-2xl font-bold text-white/30">Latest Games Played</h2>
-                    <a href="{% if base_url %}{{ base_url }}/time_played{% else %}/time_played{% endif %}"
-                        class="flex flex-row items-center gap-1 text-gray-300 hover:text-white transition duration-200">
-                        View All <img src="/static/icon/chevron-right.svg" alt="Chevron Right"
-                            class="inline w-4 h-4 ml-1 invert">
-                    </a>
-                </span>
-                {% else %}
-                <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-8 text-center">
-                    <p class="!mb-0 text-gray-400 mb-4">No games played yet</p>
-                </div>
-                {% endif %}
-            </div>
-
-            <hr class="border-gray-300/10">
-
-            <div class="mt-8">
-                {% if latest_reviews %}
-                <div class="grid gap-4" style="grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));">
-                    {% for game in latest_reviews %}
-                    {% set cover = namespace(url='', fallback='') %}
-                    {% set cover_game = game %}
-                    {% include "components/game_cover_vars.html" %}
-                    <button
-                        class="flex flex-col items-end justify-end block rounded-xl hover:scale-110 transition duration-200 relative w-full text-left bg-transparent border-0 cursor-pointer aspect-[2/2.8]"
-                        data-modal-open data-title="{{ game.title_en or game.title }}" data-game-id="{{ game.game_id }}"
-                        data-cover-url="{{ cover.url }}" data-cover-fallback="{{ cover.fallback }}"
-                        data-release-year="{{ game.release_year or '' }}" data-release-month="{{ game.release_month or '' }}"
-                        data-release-day="{{ game.release_day or '' }}" data-genre="{{ game.genre or '' }}"
-                        data-developer="{{ game.developer or '' }}" data-publisher="{{ game.publisher or '' }}"
-                        data-rating-type="{{ game.rating_type or '' }}"
-                        data-rating-value="{{ game.rating_value or '' }}" data-synopsis="{{ game.synopsis_en or '' }}"
-                        {%- if game.input_controls %} data-input-controls='{{ game.input_controls | tojson }}'{% endif %}
-                        data-wifi-players="{{ game.wifi_players or 0 }}">
-                        <img src="{{ cover.url }}" alt="{{ game.title }} Cover" data-fallback="{{ cover.fallback }}"
-                            onerror="if (!this.dataset.tried && this.dataset.fallback) { this.dataset.tried = '1'; this.src = this.dataset.fallback; } else { this.style.display = 'none'; }"
-                            class="w-full h-full object-contain object-bottom rounded">
-                        <div class="bottom-0 p-3 z-10 absolute w-full">
-                            <p class="text-white font-semibold break-words">{{ game.title_en or game.title }}</p>
-                            {% set score_percent = game.recommendation_percent or 0 %}
-                            {% if score_percent >= 80 %}
-                            {% set score_color = "bg-emerald-400" %}
-                            {% set score_text_color = "text-emerald-300" %}
-                            {% elif score_percent >= 50 %}
-                            {% set score_color = "bg-yellow-400" %}
-                            {% set score_text_color = "text-yellow-300" %}
-                            {% else %}
-                            {% set score_color = "bg-red-400" %}
-                            {% set score_text_color = "text-red-300" %}
-                            {% endif %}
-                            <div class="flex items-center gap-2 mt-1">
-                                <span class="text-sm {{ score_text_color }} font-semibold">{{ score_percent }}%</span>
-                                <div class="flex-1 bg-gray-700 rounded-full h-3">
-                                    <div class="{{ score_color }} h-3 rounded-full"
-                                        style="width: {{ score_percent }}%;">
+            <div class="flex flex-row items-start gap-6">
+                <div {% if recent_contests or recent_polls or (not base_url and latest_digicard) %} class="w-1/2" {% else %} class="w-full"
+                    {% endif %}>
+                    <div class="mt-8">
+                        {% if latest_games %}
+                        <div class="grid gap-4"
+                            style="grid-template-columns: repeat(auto-fill, minmax({% if recent_contests or recent_polls or (not base_url and latest_digicard) %} 130px {% else %} 180px {% endif %}, 1fr));">
+                            {% for game in latest_games %}
+                            {% set cover = namespace(url='', fallback='') %}
+                            {% set cover_game = game %}
+                            {% include "components/game_cover_vars.html" %}
+                            <button
+                                class="flex flex-col items-end justify-end rounded-xl hover:scale-110 transition duration-200 relative w-full text-left bg-transparent border-0 cursor-pointer aspect-[2/2.8]"
+                                data-modal-open data-title="{{ game.title_en or game.title }}"
+                                data-game-id="{{ game.game_id }}" data-cover-url="{{ cover.url }}"
+                                data-cover-fallback="{{ cover.fallback }}"
+                                data-release-year="{{ game.release_year or '' }}"
+                                data-release-month="{{ game.release_month or '' }}"
+                                data-release-day="{{ game.release_day or '' }}" data-genre="{{ game.genre or '' }}"
+                                data-developer="{{ game.developer or '' }}" data-publisher="{{ game.publisher or '' }}"
+                                data-rating-type="{{ game.rating_type or '' }}"
+                                data-rating-value="{{ game.rating_value or '' }}"
+                                data-synopsis="{{ game.synopsis_en or '' }}" {%- if game.input_controls %}
+                                data-input-controls='{{ game.input_controls | tojson }}' {% endif %}
+                                data-wifi-players="{{ game.wifi_players or 0 }}">
+                                <div class="w-full flex items-center gap-4">
+                                    <img src="{{ cover.url }}" alt="{{ game.title }} Cover"
+                                        data-fallback="{{ cover.fallback }}"
+                                        onerror="if (!this.dataset.tried && this.dataset.fallback) { this.dataset.tried = '1'; this.src = this.dataset.fallback; } else { var placeholder = document.createElement('div'); placeholder.className = 'w-full h-auto bg-gray-700 rounded flex-shrink-0'; this.parentNode.replaceChild(placeholder, this); }"
+                                        class="w-full h-full object-contain object-bottom rounded">
+                                    <div class="bottom-0 p-3 z-10 absolute">
+                                        <p class="text-white font-semibold break-words">{{ game.title_en or game.title
+                                            }}
+                                        </p>
+                                        <p class="text-sm text-gray-300">{{
+                                            game.time_played|format_playtime }} played</p>
+                                    </div>
+                                    <div
+                                        class="bottom-0 absolute bg-gradient-to-t from-black/70 to-transparent w-full h-40 rounded">
                                     </div>
                                 </div>
-                            </div>
+                            </button>
+                            {% endfor %}
                         </div>
-                        <div
-                            class="bottom-0 absolute bg-gradient-to-t from-black/70 to-transparent w-full h-40 rounded">
+                        <span class="mt-3 flex flex-row items-center justify-between">
+                            <h2 class="text-2xl font-bold text-white/30">Latest Games Played</h2>
+                            <a href="{% if base_url %}{{ base_url }}/time_played{% else %}/time_played{% endif %}"
+                                class="flex flex-row items-center gap-1 text-gray-300 hover:text-white transition duration-200">
+                                View All <img src="/static/icon/chevron-right.svg" alt="Chevron Right"
+                                    class="inline w-4 h-4 ml-1 invert">
+                            </a>
+                        </span>
+                        {% else %}
+                        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-8 text-center">
+                            <p class="!mb-0 text-gray-400 mb-4">No games played yet</p>
                         </div>
-                    </button>
-                    {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    <hr class="border-gray-300/10">
+
+                    <div class="mt-8">
+                        {% if latest_reviews %}
+                        <div class="grid gap-4"
+                            style="grid-template-columns: repeat(auto-fill, minmax({% if recent_contests or recent_polls or (not base_url and latest_digicard) %} 130px {% else %} 180px {% endif %}, 1fr));">
+                            {% for game in latest_reviews %}
+                            {% set cover = namespace(url='', fallback='') %}
+                            {% set cover_game = game %}
+                            {% include "components/game_cover_vars.html" %}
+                            <button
+                                class="flex flex-col items-end justify-end block rounded-xl hover:scale-110 transition duration-200 relative w-full text-left bg-transparent border-0 cursor-pointer aspect-[2/2.8]"
+                                data-modal-open data-title="{{ game.title_en or game.title }}"
+                                data-game-id="{{ game.game_id }}" data-cover-url="{{ cover.url }}"
+                                data-cover-fallback="{{ cover.fallback }}"
+                                data-release-year="{{ game.release_year or '' }}"
+                                data-release-month="{{ game.release_month or '' }}"
+                                data-release-day="{{ game.release_day or '' }}" data-genre="{{ game.genre or '' }}"
+                                data-developer="{{ game.developer or '' }}" data-publisher="{{ game.publisher or '' }}"
+                                data-rating-type="{{ game.rating_type or '' }}"
+                                data-rating-value="{{ game.rating_value or '' }}"
+                                data-synopsis="{{ game.synopsis_en or '' }}" {%- if game.input_controls %}
+                                data-input-controls='{{ game.input_controls | tojson }}' {% endif %}
+                                data-wifi-players="{{ game.wifi_players or 0 }}">
+                                <img src="{{ cover.url }}" alt="{{ game.title }} Cover"
+                                    data-fallback="{{ cover.fallback }}"
+                                    onerror="if (!this.dataset.tried && this.dataset.fallback) { this.dataset.tried = '1'; this.src = this.dataset.fallback; } else { this.style.display = 'none'; }"
+                                    class="w-full h-full object-contain object-bottom rounded">
+                                <div class="bottom-0 p-3 z-10 absolute w-full">
+                                    <p class="text-white font-semibold break-words">{{ game.title_en or game.title }}
+                                    </p>
+                                    {% set score_percent = game.recommendation_percent or 0 %}
+                                    {% if score_percent >= 80 %}
+                                    {% set score_color = "bg-emerald-400" %}
+                                    {% set score_text_color = "text-emerald-300" %}
+                                    {% elif score_percent >= 50 %}
+                                    {% set score_color = "bg-yellow-400" %}
+                                    {% set score_text_color = "text-yellow-300" %}
+                                    {% else %}
+                                    {% set score_color = "bg-red-400" %}
+                                    {% set score_text_color = "text-red-300" %}
+                                    {% endif %}
+                                    <div class="flex items-center gap-2 mt-1">
+                                        <span class="text-sm {{ score_text_color }} font-semibold">{{ score_percent
+                                            }}%</span>
+                                        <div class="flex-1 bg-gray-700 rounded-full h-3">
+                                            <div class="{{ score_color }} h-3 rounded-full"
+                                                style="width: {{ score_percent }}%;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div
+                                    class="bottom-0 absolute bg-gradient-to-t from-black/70 to-transparent w-full h-40 rounded">
+                                </div>
+                            </button>
+                            {% endfor %}
+                        </div>
+                        <span class="mt-3 flex flex-row items-center justify-between">
+                            <h2 class="text-2xl font-bold text-white/30">Latest Reviews</h2>
+                            <a href="{% if base_url %}{{ base_url }}/recommendations{% else %}/recommendations{% endif %}"
+                                class="flex flex-row items-center gap-1 text-gray-300 hover:text-white transition duration-200">
+                                View All <img src="/static/icon/chevron-right.svg" alt="Chevron Right"
+                                    class="inline w-4 h-4 ml-1 invert">
+                            </a>
+                        </span>
+                        {% else %}
+                        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-8 text-center">
+                            <p class="!mb-0 text-gray-400 mb-4">No reviews yet</p>
+                        </div>
+                        {% endif %}
+                    </div>
                 </div>
-                <span class="mt-3 flex flex-row items-center justify-between">
-                    <h2 class="text-2xl font-bold text-white/30">Latest Reviews</h2>
-                    <a href="{% if base_url %}{{ base_url }}/recommendations{% else %}/recommendations{% endif %}"
-                        class="flex flex-row items-center gap-1 text-gray-300 hover:text-white transition duration-200">
-                        View All <img src="/static/icon/chevron-right.svg" alt="Chevron Right"
-                            class="inline w-4 h-4 ml-1 invert">
-                    </a>
-                </span>
-                {% else %}
-                <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-8 text-center">
-                    <p class="!mb-0 text-gray-400 mb-4">No reviews yet</p>
+                {% if recent_contests or recent_polls or (not base_url and latest_digicard) %}
+                <div class="w-1/2">
+                    {% if not base_url and latest_digicard %}
+                    <div class="mt-8">
+                        {% include "components/digicard_card.html" with context %}
+                    </div>
+                    {% endif %}
+
+                    {% if recent_contests %}
+                    <div class="mt-8">
+                        <ul class="grid grid-cols-1 lg:grid-cols-2 gap-6 list-none p-0">
+                            {% for submission in recent_contests[:1] %}
+                            {% include "components/contest_card.html" %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    <div class="mt-8">
+                        {% if recent_polls %}
+                        <div class="flex flex-col gap-6">
+                            {% for poll in recent_polls[:1] %}
+                            {% include "components/poll_card.html" %}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
                 </div>
-                {% endif %}
             </div>
+            {% endif %}
         </div>
     </div>
-</div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
 
-        function setCookie(name, value, days) {
-            const date = new Date();
-            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-            const expires = "expires=" + date.toUTCString();
-            document.cookie = name + "=" + value + ";" + expires + ";path=/;domain=.wiilink.ca;Secure";
-        }
+            function setCookie(name, value, days) {
+                const date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                const expires = "expires=" + date.toUTCString();
+                document.cookie = name + "=" + value + ";" + expires + ";path=/;domain=.wiilink.ca;Secure";
+            }
 
-        setCookie("wiilink_user", JSON.stringify({ username: "{{ user_info.username }}", pfp: "{{ user_info.profile_picture }}" }), 7);
-        setCookie("is_logged_in", "true", 7);
-    });
-</script>
-{% include "components/details_modal.html" %}
-{% endblock %}
+            setCookie("wiilink_user", JSON.stringify({ username: "{{ user_info.username }}", pfp: "{{ user_info.profile_picture }}" }), 7);
+            setCookie("is_logged_in", "true", 7);
+        });
+    </script>
+    {% include "components/details_modal.html" %}
+    {% endblock %}

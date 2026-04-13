@@ -7,165 +7,23 @@ WiiLink Checkout | Polls
 {% block content %}
 {% set page_title = "Polls" %}
 {% include "components/page_header.html" %}
-<style>
-    .flip-card {
-        background-color: transparent;
-        width: 100%;
-        height: 100%;
-        perspective: 1000px;
-        transform-style: preserve-3d;
-        transition: transform 0.6s;
-    }
 
-    .flip-card-inner {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        text-align: center;
-        transform-style: preserve-3d;
-    }
-
-    .flip-card-front,
-    .flip-card-back {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        backface-visibility: hidden;
-    }
-
-    .flip-card-front {
-        background-color: transparent;
-        color: white;
-    }
-
-    .flip-card-back {
-        background-color: transparent;
-        color: white;
-        transform: rotateY(180deg);
-    }
-</style>
-
-{% if polls %}
-<div class="grid lg:grid-cols-2 gap-6">
-    {% for poll in polls %}
-    {% if poll.votes %}
-    <div class="poll-card h-[250px] pl-1 pr-1 pb-1 rounded-[20px] relative hover:shadow-lg transition cursor-pointer"
-        onclick="window.location.href='https://evc.wiilink.ca/polls/{{ poll.question_id }}'">
-
-        <div class="flip-card relative w-full h-full rounded-[20px]">
-            <div class="flip-card-inner relative w-full h-full" style="transform-style: preserve-3d;">
-
-                <!-- FRONT - Votes -->
-                <div class="flip-card-front w-full h-full !bg-gray-200 rounded-[20px] p-1"
-                    style="backface-visibility: hidden; transform: rotateY(0deg);">
-                    <div
-                        class="poll-metadata pt-1 pl-2 pr-2 flex flex-row items-center justify-between text-gray-800 text-sm">
-                        <span class="font-bold">
-                            {% if poll.type == 'n' %}
-                            <i class="fas fa-flag mr-1"></i>National
-                            {% else %}
-                            <i class="fas fa-globe-americas mr-1"></i>Worldwide
-                            {% endif %}
-                        </span>
-                        <span class="opacity-70 text-right">
-                            {{ poll.date }}
-                        </span>
-                    </div>
-
-                    <div
-                        class="pt-2 pb-2 p-1.5 rounded-2xl bg-gradient-to-b from-gray-900 to-gray-700 h-[calc(100%-25px)] flex flex-col">
-                        <h3 class="border-black border-2 bg-black rounded-t-xl rounded-b-md text-center text-lg text-white font-bold p-2 line-clamp-2"
-                            title="{{ poll.content_english }}">
-                            {{ poll.content_english }}
-                        </h3>
-
-                        <div class="poll-user-vote mt-1 w-full flex-1 overflow-y-auto">
-                            <div class="space-y-1">
-                                {% for vote in poll.votes %}
-                                <div class="flex items-center gap-2">
-                                    <div
-                                        class="w-full py-2 rounded-lg flex-shrink-0 {% if vote.choice == 1 %}bg-pink-500{% else %}bg-green-500{% endif %}">
-                                        {% if vote.gender == 'male' %}♂{% else %}♀{% endif %}
-                                        {% if vote.choice == 1 %}
-                                        {{ poll.choice1_english|truncate(12) }}
-                                        {% else %}
-                                        {{ poll.choice2_english|truncate(12) }}
-                                        {% endif %}
-                                    </div>
-                                </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- BACK - Predictions -->
-                <div class="flip-card-back w-full h-full !bg-gray-300 rounded-[20px] p-1"
-                    style="backface-visibility: hidden; transform: rotateY(180deg);">
-                    <div
-                        class="poll-metadata pt-1 pl-2 pr-2 flex flex-row items-center justify-between text-gray-800 text-sm">
-                        <span class="font-bold">
-                            Predictions
-                        </span>
-                        <span class="opacity-70 text-right">
-                            {{ poll.date }}
-                        </span>
-                    </div>
-
-                    <div
-                        class="pt-2 pb-2 p-1.5 rounded-2xl bg-gradient-to-b from-gray-900 to-gray-700 h-[calc(100%-25px)] flex flex-col">
-                        <h3 class="border-black border-2 bg-black rounded-t-xl rounded-b-md text-center text-lg text-white font-bold p-2 line-clamp-2"
-                            title="{{ poll.content_english }}">
-                            {{ poll.content_english }}
-                        </h3>
-
-                        <div class="poll-predictions mt-1 w-full flex-1 overflow-y-auto">
-                            <div class="space-y-1">
-                                {% for prediction in poll.predictions %}
-                                <div class="flex items-center gap-2">
-                                    <div
-                                        class="w-full py-2 rounded-lg flex-shrink-0 {% if prediction.choice == 1 %}bg-pink-500{% else %}bg-green-500{% endif %}">
-                                        {% if prediction.gender == 'male' %}♂{% else %}♀{% endif %}
-                                        {% if prediction.choice == 1 %}
-                                        {{ poll.choice1_english|truncate(12) }}
-                                        {% else %}
-                                        {{ poll.choice2_english|truncate(12) }}
-                                        {% endif %}
-                                    </div>
-                                </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<div class="min-h-screen sm:px-6 lg:px-8 py-12">
+    <div class="max-w-6xl mx-auto">
+        {% if polls %}
+        <div class="grid lg:grid-cols-2 gap-6">
+            {% for poll in polls %}
+            {% include "components/poll_card.html" %}
+            {% endfor %}
         </div>
+        {% include "components/pagination.html" %}
+        {% else %}
+        <div class="text-center text-gray-300">
+            <p>You haven't participated in any polls yet.</p>
+            <p class="mt-2 text-sm text-gray-500">Polls are sent through the Everybody Votes Channel and appear here
+                once you vote!</p>
+        </div>
+        {% endif %}
     </div>
-    {% endif %}
-    {% endfor %}
 </div>
-{% include "components/pagination.html" %}
-{% else %}
-<div class="text-center text-gray-300">
-    <p>You haven't participated in any polls yet.</p>
-    <p class="mt-2 text-sm text-gray-500">Polls are sent through the Everybody Votes Channel and appear here
-        once you vote!</p>
-</div>
-{% endif %}
-</div>
-</div>
-
-<script>
-    document.querySelectorAll('.poll-card').forEach(card => {
-        card.addEventListener('mouseenter', function () {
-            const flipsCard = this.querySelector('.flip-card');
-            flipsCard.style.transform = 'rotateY(180deg)';
-        });
-
-        card.addEventListener('mouseleave', function () {
-            const flipsCard = this.querySelector('.flip-card');
-            flipsCard.style.transform = 'rotateY(0deg)';
-        });
-    });
-</script>
 {% endblock %}
