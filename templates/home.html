@@ -116,7 +116,7 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
             </div>
 
             <div class="flex flex-col md:flex-row items-start gap-6">
-                <div {% if recent_contests or recent_polls or (not base_url and latest_digicard) %} class="md:w-1/2" {%
+                <div {% if recent_contests or recent_polls or (not base_url and latest_digicard) %} class="w-full md:w-1/2" {%
                     else %} class="w-full" {% endif %}>
                     <div class="mt-8">
                         {% if latest_games %}
@@ -258,7 +258,7 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                     </div>
                 </div>
                 {% if recent_contests or recent_polls or (not base_url and latest_digicard) %}
-                <div class="md:w-1/2">
+                <div class="w-full md:w-1/2">
                     {% if not base_url and latest_digicard %}
                     <div class="mt-8">
                         {% include "components/digicard_card.html" with context %}
