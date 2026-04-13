@@ -122,8 +122,12 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                         {% if latest_games %}
                         <div class="grid gap-4"
                             style="grid-template-columns: repeat(auto-fill, minmax({% if recent_contests or recent_polls or (not base_url and latest_digicard) %} 130px {% else %} 180px {% endif %}, 1fr));">
-                            {% set game_slice = latest_games if (recent_contests or recent_polls or (not base_url and latest_digicard)) else latest_games[:5] %}
-                            {% for game in game_slice %}
+                            {% if recent_contests or recent_polls or (not base_url and latest_digicard) %}
+                            {% set game_list = latest_games %}
+                            {% else %}
+                            {% set game_list = latest_games[:5] %}
+                            {% endif %}
+                            {% for game in game_list %}
                             {% set cover = namespace(url='', fallback='') %}
                             {% set cover_game = game %}
                             {% include "components/game_cover_vars.html" %}
@@ -181,8 +185,12 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                         {% if latest_reviews %}
                         <div class="grid gap-4"
                             style="grid-template-columns: repeat(auto-fill, minmax({% if recent_contests or recent_polls or (not base_url and latest_digicard) %} 130px {% else %} 180px {% endif %}, 1fr));">
-                            {% set review_slice = latest_reviews if (recent_contests or recent_polls or (not base_url and latest_digicard)) else latest_reviews[:5] %}
-                            {% for game in review_slice %}
+                            {% if recent_contests or recent_polls or (not base_url and latest_digicard) %}
+                            {% set review_list = latest_reviews %}
+                            {% else %}
+                            {% set review_list = latest_reviews[:5] %}
+                            {% endif %}
+                            {% for game in review_list %}
                             {% set cover = namespace(url='', fallback='') %}
                             {% set cover_game = game %}
                             {% include "components/game_cover_vars.html" %}
@@ -259,40 +267,54 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
 
                     {% if recent_contests %}
                     <div class="mt-8">
+                        <div class="flex flex-col gap-6">
+                        {% if base_url %}
+                        {% for submission in recent_contests[:2] %}
+                        {% include "components/contest_card.html" %}
+                        {% endfor %}
+                        {% else %}
                         {% for submission in recent_contests[:1] %}
                         {% include "components/contest_card.html" %}
                         {% endfor %}
-                    </div>
-                    {% endif %}
-
-                    <div class="mt-8">
-                        {% if recent_polls %}
-                        <div class="flex flex-col gap-6">
-                            {% for poll in recent_polls[:1] %}
-                            {% include "components/poll_card.html" %}
-                            {% endfor %}
-                        </div>
                         {% endif %}
                     </div>
                 </div>
+                {% endif %}
+
+                <div class="mt-8">
+                    {% if recent_polls %}
+                    <div class="flex flex-col gap-6">
+                        {% if base_url %}
+                        {% for poll in recent_polls[:2] %}
+                        {% include "components/poll_card.html" %}
+                        {% endfor %}
+                        {% else %}
+                        {% for poll in recent_polls[:1] %}
+                        {% include "components/poll_card.html" %}
+                        {% endfor %}
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
             </div>
-            {% endif %}
         </div>
+        {% endif %}
     </div>
+</div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
 
-            function setCookie(name, value, days) {
-                const date = new Date();
-                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-                const expires = "expires=" + date.toUTCString();
-                document.cookie = name + "=" + value + ";" + expires + ";path=/;domain=.wiilink.ca;Secure";
-            }
+        function setCookie(name, value, days) {
+            const date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            const expires = "expires=" + date.toUTCString();
+            document.cookie = name + "=" + value + ";" + expires + ";path=/;domain=.wiilink.ca;Secure";
+        }
 
-            setCookie("wiilink_user", JSON.stringify({ username: "{{ user_info.username }}", pfp: "{{ user_info.profile_picture }}" }), 7);
-            setCookie("is_logged_in", "true", 7);
-        });
-    </script>
-    {% include "components/details_modal.html" %}
-    {% endblock %}
+        setCookie("wiilink_user", JSON.stringify({ username: "{{ user_info.username }}", pfp: "{{ user_info.profile_picture }}" }), 7);
+        setCookie("is_logged_in", "true", 7);
+    });
+</script>
+{% include "components/details_modal.html" %}
+{% endblock %}

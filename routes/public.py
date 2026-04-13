@@ -29,6 +29,7 @@ from channels.nc import (
     fetch_user_latest_reviews,
     fetch_user_stats,
 )
+import config
 
 public_routes_bp = Blueprint("public_routes", __name__)
 
@@ -503,6 +504,29 @@ def friend_code_home(friend_code):
 
     viewed_user = build_viewed_user_info(authentik_user)
 
+    # Get wii numbers for contests and polls
+    wii_numbers = []
+    if isinstance(wiis, list):
+        for wii in wiis:
+            if isinstance(wii, dict) and wii.get("wii_number"):
+                wii_numbers.append(wii.get("wii_number"))
+
+    recent_contests = (
+        fetch_contest_submissions(wii_numbers, limit=3) if wii_numbers else []
+    )
+    recent_polls = (
+        fetch_user_polls(wii_numbers, limit=3, db_url=config.evc_db_url)
+        if wii_numbers
+        else []
+    )
+
+    # Render Mii images for recent contests
+    for submission in recent_contests:
+        if submission.get("mii_data"):
+            submission["mii_image_url"] = render_mii_to_url(submission["mii_data"])
+        else:
+            submission["mii_image_url"] = None
+
     return render_template(
         "home.html",
         user_info=user_info,
@@ -511,6 +535,8 @@ def friend_code_home(friend_code):
         latest_favorites=latest_favorites,
         latest_reviews=latest_reviews,
         user_stats=user_stats,
+        recent_contests=recent_contests,
+        recent_polls=recent_polls,
         is_unclaimed=False,
         base_url=f"/{friend_code}",
     )
