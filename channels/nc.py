@@ -259,11 +259,11 @@ def fetch_time_played(serial_prefixes, sort_by="time_played", limit=30, offset=0
         return []
 
     if sort_by == "times_played":
-        sort_expr = "summed.times_played DESC, summed.time_played DESC"
+        sort_expr = "spg.times_played DESC, spg.time_played DESC"
     elif sort_by == "last_played":
-        sort_expr = "MAX(tp.id) DESC"
+        sort_expr = "spg.latest_id DESC"
     else:
-        sort_expr = "summed.time_played DESC, summed.times_played DESC"
+        sort_expr = "spg.time_played DESC, spg.times_played DESC"
 
     query = (
         "WITH filtered AS ("
