@@ -104,11 +104,15 @@
                 data-modal-open data-source="{{ modal_source }}" data-title="{{ game.title_en or game.title }}"
                 data-game-id="{{ game.game_id }}" data-cover-url="{{ cover.url }}"
                 data-cover-fallback="{{ cover.fallback }}" data-release-year="{{ game.release_year or '' }}"
+                data-release-month="{{ game.release_month or '' }}" data-release-day="{{ game.release_day or '' }}"
                 data-genre="{{ game.genre or '' }}" data-developer="{{ game.developer or '' }}"
                 data-publisher="{{ game.publisher or '' }}" data-rating-type="{{ game.rating_type or '' }}"
                 data-rating-value="{{ game.rating_value or '' }}" data-synopsis="{{ game.synopsis_en or '' }}"
                 data-favorite-count="{{ game.favorite_count or 0 }}"
-                data-favorite-user-count="{{ game.user_count or 0 }}">View details</button>
+                data-favorite-user-count="{{ game.user_count or 0 }}"
+                {%- if game.input_controls %} data-input-controls='{{ game.input_controls | tojson }}'{% endif %}
+                data-wifi-players="{{ game.wifi_players or 0 }}"
+                data-input-players="{{ game.input_players or 0 }}">View details</button>
         </div>
     </div>
 </div>

@@ -54,9 +54,13 @@
                 data-modal-open data-source="time_played" data-title="{{ rec.title_en or rec.title }}"
                 data-game-id="{{ rec.game_id }}" data-cover-url="{{ cover.url }}"
                 data-cover-fallback="{{ cover.fallback }}" data-release-year="{{ rec.release_year or '' }}"
+                data-release-month="{{ rec.release_month or '' }}" data-release-day="{{ rec.release_day or '' }}"
                 data-genre="{{ rec.genre or '' }}" data-developer="{{ rec.developer or '' }}"
                 data-publisher="{{ rec.publisher or '' }}" data-rating-type="{{ rec.rating_type or '' }}"
-                data-rating-value="{{ rec.rating_value or '' }}" data-synopsis="{{ rec.synopsis_en or '' }}">View
+                data-rating-value="{{ rec.rating_value or '' }}" data-synopsis="{{ rec.synopsis_en or '' }}"
+                {%- if rec.input_controls %} data-input-controls='{{ rec.input_controls | tojson }}'{% endif %}
+                data-wifi-players="{{ rec.wifi_players or 0 }}"
+                data-input-players="{{ rec.input_players or 0 }}">View
                 details</button>
         </div>
     </div>

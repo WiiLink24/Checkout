@@ -23,22 +23,22 @@
     async function loadAverages() {
         if (!currentGameId) return;
 
-        if (currentSource === "time_played") {
-            loadPlaytimeStats();
-        } else if (currentSource === "favorites" || currentSource === "top_favorites") {
-            loadFavoritesStats();
-        } else {
-            loadRecommendationStats();
-        }
+        // Load all data regardless of source
+        await loadRecommendationStats();
+        await loadPlaytimeStats();
+        loadFavoritesStats();
     }
+
 
     function loadFavoritesStats() {
         const favoriteCountText = document.getElementById("favoriteCountText");
 
-        favoriteCountText.textContent = currentFavoriteCount !== null && currentFavoriteCount !== "" ? currentFavoriteCount : "-";
+        const displayCount = currentFavoriteCount !== undefined && currentFavoriteCount !== null ? currentFavoriteCount : "-";
+        favoriteCountText.textContent = displayCount;
 
-        document.getElementById("recommendationStatsSection").style.display = "none";
-        document.getElementById("timePlayedStatsSection").style.display = "none";
+        // Show all sections
+        document.getElementById("recommendationStatsSection").style.display = "block";
+        document.getElementById("timePlayedStatsSection").style.display = "block";
         document.getElementById("favoritesStatsSection").style.display = "block";
     }
 
@@ -129,8 +129,10 @@
                 friendIcon.src = "/static/icon/user.svg";
                 friendLabel.textContent = "Solo";
             }
+            // Show all sections
             document.getElementById("recommendationStatsSection").style.display = "block";
-            document.getElementById("timePlayedStatsSection").style.display = "none";
+            document.getElementById("timePlayedStatsSection").style.display = "block";
+            document.getElementById("favoritesStatsSection").style.display = "block";
         } catch (err) {
             summary.textContent = "Unable to load community data.";
         }
@@ -167,8 +169,11 @@
             document.getElementById("totalPlayersText").textContent = data.total_players;
             document.getElementById("totalTimeText").textContent = formatMinutes(data.total_minutes);
             document.getElementById("avgTimePerPlayerText").textContent = formatMinutes(data.avg_minutes_per_player);
-            document.getElementById("recommendationStatsSection").style.display = "none";
+
+            // Show all sections
+            document.getElementById("recommendationStatsSection").style.display = "block";
             document.getElementById("timePlayedStatsSection").style.display = "block";
+            document.getElementById("favoritesStatsSection").style.display = "block";
         } catch (err) {
             document.getElementById("totalPlayersText").textContent = "-";
             document.getElementById("totalTimeText").textContent = "-";
@@ -185,7 +190,7 @@
         synopsisEl.textContent = data.synopsis || "No synopsis available.";
         currentGameId = data.gameId || "";
         currentSource = data.source || "recommendations";
-        currentFavoriteCount = data.favoriteCount;
+        currentFavoriteCount = data.favoriteCount ? parseInt(data.favoriteCount) : 0;
 
         coverEl.dataset.tried = "";
         coverEl.dataset.fallback = data.coverFallback || "";
@@ -233,6 +238,61 @@
             developerTagEl.classList.add("hidden");
         }
 
+        // Handle input controls in header
+        const inputControlsWrap = document.getElementById("modalInputControlsWrap");
+        const inputControlsText = document.getElementById("inputControlsText");
+        if (data.inputControls) {
+            try {
+                const controls = typeof data.inputControls === "string" ? JSON.parse(data.inputControls) : data.inputControls;
+                if (Array.isArray(controls) && controls.length > 0) {
+                    // Clear previous content
+                    inputControlsText.innerHTML = "";
+                    
+                    controls.forEach(c => {
+                        const type = (c.type || "Unknown").toLowerCase().replace(/\s+/g, "_");
+                        const required = c.required ? "Required" : "Optional";
+                        
+                        const img = document.createElement("img");
+                        img.src = `/static/img/controller/${type}.svg`;
+                        img.alt = `${c.type} (${required})`;
+                        img.title = `${c.type} (${required})`;
+                        img.className = "h-6 object-contain brightness-[10000000%]";
+                        
+                        inputControlsText.appendChild(img);
+                    });
+                    
+                    inputControlsWrap.classList.remove("hidden");
+                } else {
+                    inputControlsWrap.classList.add("hidden");
+                }
+            } catch (e) {
+                console.error("Error parsing input controls:", e);
+                inputControlsWrap.classList.add("hidden");
+            }
+        } else {
+            inputControlsWrap.classList.add("hidden");
+        }
+
+        // Handle WiFi and input players support in header
+        const playersWrapEl = document.getElementById("modalPlayersWrap");
+        const inputPlayersEl = document.getElementById("modalInputPlayers");
+        const wifiEl = document.getElementById("modalWifi");
+        
+        const hasInputPlayers = data.inputPlayers && parseInt(data.inputPlayers) > 0;
+        const hasWifiPlayers = data.wifiPlayers && parseInt(data.wifiPlayers) > 0;
+        
+        if (hasInputPlayers || hasWifiPlayers) {
+            if (hasInputPlayers) {
+                inputPlayersEl.textContent = parseInt(data.inputPlayers);
+            }
+            if (hasWifiPlayers) {
+                wifiEl.textContent = parseInt(data.wifiPlayers);
+            }
+            playersWrapEl.classList.remove("hidden");
+        } else {
+            playersWrapEl.classList.add("hidden");
+        }
+
         modal.classList.remove("hidden");
         loadAverages();
     }
@@ -247,6 +307,8 @@
                 title: button.dataset.title,
                 gameId: button.dataset.gameId,
                 releaseYear: button.dataset.releaseYear,
+                releaseMonth: button.dataset.releaseMonth,
+                releaseDay: button.dataset.releaseDay,
                 genre: button.dataset.genre,
                 developer: button.dataset.developer,
                 publisher: button.dataset.publisher,
@@ -256,6 +318,8 @@
                 coverUrl: button.dataset.coverUrl,
                 coverFallback: button.dataset.coverFallback,
                 favoriteCount: button.dataset.favoriteCount,
+                inputControls: button.dataset.inputControls,
+                wifiPlayers: button.dataset.wifiPlayers,
                 source: button.dataset.source || "recommendations"
             });
         });

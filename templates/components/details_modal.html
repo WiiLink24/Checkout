@@ -1,22 +1,29 @@
 <div id="detailsModal" class="fixed inset-0 z-50 hidden">
     <div class="absolute inset-0 bg-black/70 backdrop-blur-sm animate-opaque" data-modal-close></div>
     <div
-        class="relative max-h-[calc(100vh-150px)] max-w-2xl left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-gray-900 border border-gray-700 rounded-2xl shadow-2xl overflow-scroll animate-fadeup">
-        <div class="grid gap-5">
+        class="absolute right-0 top-0 bottom-0 w-full max-w-2xl bg-gray-900 border-l border-gray-700 shadow-2xl overflow-y-auto animate-slideIn">
+        <div class="flex flex-col gap-8">
             <div class="relative overflow-hidden">
                 <div id="modalCoverBackdrop"
                     class="absolute inset-x-0 top-0 h-32 bg-center bg-cover blur-lg opacity-10"></div>
-                <div class="relative p-6 flex items-center justify-center gap-8">
+                <div class="relative p-6 flex items-center gap-8">
                     <img id="modalCover" src="" alt="Cover" data-fallback=""
                         onerror="if (!this.dataset.tried && this.dataset.fallback) { this.dataset.tried = '1'; this.src = this.dataset.fallback; } else { this.style.display = 'none'; }"
                         class="h-32 object-cover rounded-lg flex-shrink-0">
-                    <div class="flex flex-col gap-3">
+                    <div class="flex flex-col gap-3 flex-1">
+                        <div class="flex flex-row items-center justify-between gap-3">
                         <div>
                             <h4 class="text-xl font-bold text-white" id="modalTitleDetail"></h4>
                             <p class="text-sm text-gray-400 mt-1">
                                 <span id="modalGameIdDetail">-</span>
                                 <span id="modalReleaseWrap" class="hidden"> • <span id="modalRelease">-</span></span>
+                                <span id="modalPlayersWrap" class="hidden"> • <span id="modalInputPlayers">-</span> input | <span id="modalWifi">-</span> WiFi</span>
                             </p>
+                        </div>
+                                                <div id="modalInputControlsWrap" class="hidden flex flex-col items-end justify-end">
+                            <p class="text-xs uppercase text-gray-400 mb-2">Controls</p>
+                            <div class="flex flex-wrap gap-2 items-center justify-end" id="inputControlsText"></div>
+                        </div>
                         </div>
                         <div class="flex flex-wrap items-center gap-2 text-xs text-gray-200">
                             <img id="modalRatingImg" src="" alt="Rating" class="h-8 object-contain hidden">
@@ -27,7 +34,7 @@
                     </div>
                 </div>
             </div>
-            <div class="px-6" id="recommendationStatsSection">
+            <div id="recommendationStatsSection" class="px-6">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
                         <p class="text-xs uppercase tracking-widest text-gray-400">Community averages</p>
@@ -102,45 +109,51 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="px-6 pb-6" id="timePlayedStatsSection" style="display: none;">
-            <p class="text-xs uppercase tracking-widest text-gray-400 mb-4">Community Playtime</p>
-            <div class="grid grid-cols-3 gap-3 text-sm">
-                <div class="rounded-lg bg-gray-800/70 p-3">
-                    <p class="text-xs uppercase text-gray-400">Total Players</p>
-                    <p class="text-lg font-semibold text-emerald-300" id="totalPlayersText">-</p>
-                </div>
-                <div class="rounded-lg bg-gray-800/70 p-3">
-                    <p class="text-xs uppercase text-gray-400">Total Time</p>
-                    <p class="text-lg font-semibold text-emerald-300" id="totalTimeText">-</p>
-                </div>
-                <div class="rounded-lg bg-gray-800/70 p-3">
-                    <p class="text-xs uppercase text-gray-400">Avg per Player</p>
-                    <p class="text-lg font-semibold text-emerald-300" id="avgTimePerPlayerText">-</p>
-                </div>
-            </div>
-        </div>
-        <div class="px-6 pb-6" id="favoritesStatsSection" style="display: none;">
-            <p class="text-xs uppercase tracking-widest text-gray-400 mb-4">Community Favorites</p>
-            <div class="grid grid-cols-2 gap-3 text-sm">
-                <div class="rounded-lg bg-gray-800/70 p-3">
-                    <p class="text-xs uppercase text-gray-400">Favorites</p>
-                    <p class="text-lg font-semibold text-rose-300" id="favoriteCountText">-</p>
+            <div id="timePlayedStatsSection" class="px-6">
+                <p class="text-xs uppercase tracking-widest text-gray-400 mb-4">Community Playtime</p>
+                <div class="grid grid-cols-3 gap-3 text-sm">
+                    <div class="rounded-lg bg-gray-800/70 p-3">
+                        <p class="text-xs uppercase text-gray-400">Total Players</p>
+                        <p class="text-lg font-semibold text-emerald-300" id="totalPlayersText">-</p>
+                    </div>
+                    <div class="rounded-lg bg-gray-800/70 p-3">
+                        <p class="text-xs uppercase text-gray-400">Total Time</p>
+                        <p class="text-lg font-semibold text-emerald-300" id="totalTimeText">-</p>
+                    </div>
+                    <div class="rounded-lg bg-gray-800/70 p-3">
+                        <p class="text-xs uppercase text-gray-400">Avg per Player</p>
+                        <p class="text-lg font-semibold text-emerald-300" id="avgTimePerPlayerText">-</p>
+                    </div>
                 </div>
             </div>
+            <div id="favoritesStatsSection" class="px-6">
+                <p class="text-xs uppercase tracking-widest text-gray-400 mb-4">Community Favorites</p>
+                <div class="grid gap-3 text-sm">
+                    <div class="rounded-lg bg-gray-800/70 p-3">
+                        <p class="text-xs uppercase text-gray-400">Favorites</p>
+                        <p class="text-lg font-semibold text-rose-300" id="favoriteCountText">-</p>
+                    </div>
+                </div>
+            </div>
+            <div class="px-6 pb-6">
+                <p class="text-xs uppercase tracking-widest text-gray-400 mb-2">Synopsis</p>
+                <p class="text-sm text-gray-300" id="modalSynopsis"></p>
+            </div>
         </div>
-        <div class="mt-6 px-6 pb-6">
-            <p class="text-xs uppercase tracking-widest text-gray-400 mb-2">Synopsis</p>
-            <p class="text-sm text-gray-300" id="modalSynopsis"></p>
-        </div>
+        <button data-modal-close
+            class="w-[calc(100%-37px)] m-4 py-4 text-sm uppercase tracking-wider font-semibold bg-gray-700 rounded-xl text-white hover:bg-gray-600 transition">
+            Close</button>
     </div>
-</div>
 </div>
 <script src="/static/js/details_modal.js"></script>
 
 <style>
     .animate-opaque {
         animation: opaqueAnim 0.3s ease-out forwards;
+    }
+
+    .animate-slideIn {
+        animation: slideInAnim 0.4s ease-out forwards;
     }
 
     @keyframes opaqueAnim {
@@ -150,6 +163,16 @@
 
         to {
             opacity: 1;
+        }
+    }
+
+    @keyframes slideInAnim {
+        from {
+            transform: translateX(100%);
+        }
+
+        to {
+            transform: translateX(0);
         }
     }
 
