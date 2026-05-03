@@ -309,7 +309,7 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
             const date = new Date();
             date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
             const expires = "expires=" + date.toUTCString();
-            document.cookie = name + "=" + value + ";" + expires + ";path=/;domain=.wiilink.ca;Secure";
+            document.cookie = name + "=" + encodeURIComponent(value) + ";" + expires + ";path=/;domain=.wiilink.ca;Secure";
         }
 
         setCookie("wiilink_user", JSON.stringify({ username: "{{ user_info.username }}", pfp: "{{ user_info.profile_picture }}" }), 7);
