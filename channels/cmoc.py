@@ -14,7 +14,7 @@ def render_mii_to_url(mii_data):
         data = {"platform": "wii"}
 
         response = requests.post(
-            "https://miicontestp.wii.rc24.xyz/cgi-bin/studio.cgi",
+            "https://mcc-panel.wiilink.ca/cgi-bin/studio.cgi",
             files=files,
             data=data,
             timeout=10,
