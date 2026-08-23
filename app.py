@@ -1,11 +1,18 @@
 import os
+import atexit
+from datetime import timedelta
 from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask, has_request_context, render_template
 import config
 from flask_oidc import OpenIDConnect
 from flask_session import Session
 
-from utils.utils import format_serial, format_playtime
+from utils.utils import (
+    format_serial,
+    format_playtime,
+    close_db_connections,
+    cache as query_cache,
+)
 from channels.cmoc import get_artisan_ids_from_wii_number
 
 # Import blueprint modules
@@ -25,13 +32,14 @@ app.config["SQLALCHEMY_DATABASE_URI"] = config.db_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SECRET_KEY"] = config.secret_key
 app.config["OIDC_CLIENT_SECRETS"] = config.oidc_client_secrets_json
-app.config["OIDC_SCOPES"] = "openid profile email"
+app.config["OIDC_SCOPES"] = "openid profile email offline_access"
 app.config["OIDC_OVERWRITE_REDIRECT_URI"] = config.oidc_redirect_uri
 app.config["SESSION_TYPE"] = "filesystem"
 app.config["SESSION_FILE_DIR"] = os.getenv(
     "SESSION_FILE_DIR", os.path.join(os.path.dirname(__file__), "session")
 )
-app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_PERMANENT"] = True
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=30)
 app.config["SESSION_USE_SIGNER"] = True
 
 os.makedirs(app.config["SESSION_FILE_DIR"], exist_ok=True)
@@ -40,6 +48,8 @@ oidc = OpenIDConnect(app)
 Session(app)
 
 init_cache(app)
+app.config["CACHE_TYPE"] = "SimpleCache"
+query_cache.init_app(app)
 
 # Register template filters
 app.jinja_env.filters["format_serial"] = format_serial
@@ -74,6 +84,9 @@ app.register_blueprint(misc_routes_bp)
 scheduler = BackgroundScheduler()
 scheduler.add_job(generate_top_page_cache, "cron", hour=0, minute=0)
 scheduler.start()
+
+# Close all database connections when the server shuts down
+atexit.register(close_db_connections)
 
 # If any cache file is missing on startup, generate the cache immediately
 cache_dir = os.path.join(os.path.dirname(__file__), "cache")

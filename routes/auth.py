@@ -581,6 +581,11 @@ def index():
         latest_reviews = fetch_user_latest_reviews(serial_prefixes, 6)
         user_stats = fetch_user_stats(serial_prefixes)
 
+        user_counts = {
+            "favorites": count_bookmarks(serial_prefixes),
+            "games_played": count_time_played(serial_prefixes),
+        }
+
         # Get user's wii numbers for contests and polls
         wii_numbers = user_info.get("linked_wii_no", [])
         if isinstance(wii_numbers, str):
@@ -594,6 +599,15 @@ def index():
             if wii_numbers
             else []
         )
+
+        if wii_numbers:
+            user_counts["polls"] = count_user_polls(wii_numbers)
+            user_counts["suggestions"] = count_user_suggestions(wii_numbers)
+            user_counts["contest_submissions"] = count_contest_submissions(wii_numbers)
+        else:
+            user_counts["polls"] = 0
+            user_counts["suggestions"] = 0
+            user_counts["contest_submissions"] = 0
 
         # Render Mii images for recent contests
         for submission in recent_contests:
@@ -627,6 +641,7 @@ def index():
             latest_favorites=latest_favorites,
             latest_reviews=latest_reviews,
             user_stats=user_stats,
+            user_counts=user_counts,
             recent_contests=recent_contests,
             recent_polls=recent_polls,
             latest_digicard=latest_digicard,
