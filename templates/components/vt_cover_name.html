@@ -1,0 +1,12 @@
+{#
+Reusable view-transition name resolver for game covers.
+Expected input variables: cover_game, vt_seen (namespace with .ids list)
+Expected output namespace: vt_name
+Outputs on namespace: vt_name.name
+Skips games already named on this page to keep names unique.
+#}
+{% set vt_name.name = "" %}
+{% if cover_game and cover_game.game_id and cover_game.game_id not in vt_seen.ids %}
+{% set _ = vt_seen.ids.append(cover_game.game_id) %}
+{% set vt_name.name = "cover-" ~ (cover_game.game_id|slugify) %}
+{% endif %}

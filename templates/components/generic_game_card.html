@@ -1,6 +1,8 @@
 {% set cover = namespace(url='', fallback='') %}
+{% set vt_name = namespace(name='') %}
 {% set cover_game = rec %}
 {% include "components/game_cover_vars.html" %}
+{% include "components/vt_cover_name.html" %}
 <button data-modal-open data-source="search" data-title="{{ rec.title_en }}" data-game-id="{{ rec.game_id }}"
     data-cover-url="{{ cover.url }}" data-cover-fallback="{{ cover.fallback }}"
     data-release-year="{{ rec.release_year or '' }}" data-release-month="{{ rec.release_month or '' }}"
@@ -19,6 +21,7 @@
             <div class="flex items-center justify-between gap-6">
                 <span class="flex items-center gap-4">
                     <img src="{{ cover.url }}" alt="{{ rec.title_en }} Cover" data-fallback="{{ cover.fallback }}"
+                        {% if vt_name.name %}style="view-transition-name: {{ vt_name.name }};"{% endif %}
                         onerror="if (!this.dataset.tried && this.dataset.fallback) { this.dataset.tried = '1'; this.src = this.dataset.fallback; } else { var placeholder = document.createElement('div'); placeholder.className = 'w-24 h-32 bg-gray-700 rounded-lg flex-shrink-0'; this.parentNode.replaceChild(placeholder, this); }"
                         class="h-32 object-cover rounded-lg flex-shrink-0">
                     <span class="flex flex-col gap-3">

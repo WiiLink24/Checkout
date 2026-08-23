@@ -71,6 +71,7 @@ WiiLink Checkout | Discover
 {% set cover_game = game %}
 {% include "components/game_cover_vars.html" %}
 <img src="{{ cover.url }}" alt="{{ game.title_en }} Cover" data-fallback="{{ cover.fallback }}"
+    style="view-transition-name: cover-{{ game.game_id|slugify }};"
     class="w-full h-full top-0 left-0 blur-xl opacity-5 z-0 pointer-events-none absolute"
     onerror="if (!this.dataset.tried && this.dataset.fallback) { this.dataset.tried = '1'; this.src = this.dataset.fallback; } else { this.style.display = 'none'; }"
     class="w-[160px] object-cover rounded-xl shadow-lg">

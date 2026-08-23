@@ -15,8 +15,9 @@ WiiLink Checkout | Top 30 Best Games
 
         {% if cached_games_html %}
         {{ cached_games_html|safe }}
-        {% elif games %}
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+{% elif games %}
+{% set vt_seen = namespace(ids=[]) %}
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {% for game in games %}
             {% set score_type = "best_games" %}
             {% include "components/global_game_card.html" %}

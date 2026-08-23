@@ -1,6 +1,6 @@
 {% if not is_unclaimed %}
 <div class="absolute inset-x-0 top-0 h-[500px] bg-center bg-cover blur-lg opacity-30 pointer-events-none"
-    style="background-image: url('{{ viewed_user.profile_picture }}'); -webkit-mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0)); mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0));">
+    style="view-transition-name: vt-bg-blur; background-image: url('{{ viewed_user.profile_picture }}'); -webkit-mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0)); mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0));">
 </div>
 {% endif %}
 {% set nav_items = [
@@ -17,9 +17,11 @@
         <div class="text-center mb-10">
             <div class="relative w-full mx-auto mb-4 flex items-center justify-center">
                 <img src="{{ viewed_user.profile_picture }}" alt="{{ viewed_user.username }}"
+                    style="view-transition-name: vt-pfp-{{ viewed_user.username|slugify }};"
                     class="w-32 h-32 rounded-2xl mx-auto object-cover relative z-10">
             </div>
-            <h1 class="text-2xl sm:text-4xl font-bold text-white mt-2">
+            <h1 style="view-transition-name: vt-title-{{ page_title|slugify }};"
+                class="text-2xl sm:text-4xl font-bold text-white mt-2">
                 {{ viewed_user.username }}
                 <details class="relative inline-block ml-2 text-left group align-middle">
                     <summary

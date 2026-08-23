@@ -1,5 +1,6 @@
 import os
 import atexit
+import re
 from datetime import timedelta
 from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask, has_request_context, render_template
@@ -54,6 +55,9 @@ query_cache.init_app(app)
 # Register template filters
 app.jinja_env.filters["format_serial"] = format_serial
 app.jinja_env.filters["format_playtime"] = format_playtime
+app.jinja_env.filters["slugify"] = lambda value: re.sub(
+    r"[^a-z0-9-]", "", str(value).lower().replace(" ", "-")
+)
 
 
 @app.context_processor

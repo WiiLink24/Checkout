@@ -9,6 +9,7 @@ WiiLink Checkout | Recommendations for {{ viewed_user.username }}
 {% include "components/page_header.html" %}
 
 {% if recommendations %}
+{% set vt_seen = namespace(ids=[]) %}
 {% set sort_base = base_url ~ '/recommendations' if base_url else '/recommendations' %}
 {% if not is_unclaimed %}
 <div

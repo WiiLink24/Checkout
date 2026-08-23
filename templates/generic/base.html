@@ -14,6 +14,11 @@
     <link rel="icon" href="/static/icon/favicon.png" type="image/png" />
     <title>{% block title %}{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @view-transition {
+            navigation: auto;
+        }
+    </style>
 </head>
 
 <body class="bg-gray-900 min-h-screen">
@@ -312,7 +317,7 @@
 
         <div id="sidebarOverlay" class="fixed inset-0 bg-gray-900/80 z-30 hidden md:hidden"></div>
 
-        <div class="mt-10 sm:mt-0 w-full md:ml-[300px] md:w-[calc(100%-300px)] min-h-screen sm:p-6">
+        <div class="mt-10 sm:mt-0 w-full md:ml-[300px] md:w-[calc(100%-300px)] min-h-screen sm:p-6 animate-fade-up">
             {% with messages = get_flashed_messages() %}
             {% for message in messages %}
             <div class="bg-yellow-500/20 border border-yellow-600/30 text-yellow-200 px-4 py-3 rounded-lg mb-6">
@@ -485,6 +490,24 @@
             }
         });
     </script>
+
+    <style>
+        .animate-fade-up {
+            animation: fadeUp 0.2s ease-in-out;
+        }
+
+        @keyframes fadeUp {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
 
 </body>
 
