@@ -103,6 +103,17 @@ def _query_cache_key(db_url, query, params_tuple):
     return hashlib.md5(raw.encode("utf-8")).hexdigest()
 
 
+def _sanitize_for_cache(value):
+    """Convert non-picklable types (e.g. psycopg2 memoryview) into picklable ones."""
+    if isinstance(value, memoryview):
+        return value.tobytes()
+    if isinstance(value, dict):
+        return {k: _sanitize_for_cache(v) for k, v in value.items()}
+    if isinstance(value, list):
+        return [_sanitize_for_cache(v) for v in value]
+    return value
+
+
 def _run_query(query, params, db_url=None):
     """Execute a query against a specified database (defaults to config.db_url)."""
     if db_url is None:
@@ -124,6 +135,7 @@ def _run_query(query, params, db_url=None):
         _drop_connection(db_url)
         result = _execute_query(query, params, db_url)
 
+    result = _sanitize_for_cache(result)
     cache.set(cache_key, result, timeout=_QUERY_CACHE_TTL)
     print(f"[DB] QUERY ({time.perf_counter() - start:.3f}s): {_short_query(query)}")
     return copy.deepcopy(result)

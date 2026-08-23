@@ -482,17 +482,9 @@ def friend_code_home(friend_code):
                 user_serial = wii.get("serial_number")
                 break
 
-    if not user_serial:
-        return (
-            render_template(
-                "errors/not_linked_external.html",
-                user_info=user_info,
-                friend_code=friend_code_normalized,
-            ),
-            400,
-        )
+    serial_not_linked = not user_serial
 
-    serial_prefixes = extract_serial_prefix(user_serial)
+    serial_prefixes = extract_serial_prefix(user_serial) if user_serial else None
 
     latest_games = (
         fetch_user_latest_games(serial_prefixes, 6) if serial_prefixes else []
@@ -562,4 +554,6 @@ def friend_code_home(friend_code):
         recent_polls=recent_polls,
         is_unclaimed=False,
         base_url=f"/{friend_code}",
+        serial_not_linked=serial_not_linked,
+        friend_code=friend_code_normalized,
     )
