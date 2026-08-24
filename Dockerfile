@@ -1,5 +1,6 @@
 FROM python:3.11-slim
 
+RUN useradd --create-home --uid 1000 ubuntu
 WORKDIR /home/ubuntu
 
 # Copy requirements first as to not disturb cache for other changes.
@@ -11,8 +12,6 @@ RUN pip3 install -r requirements.txt && \
 # Fonts required for Pillow tag rendering
 RUN apt-get update && apt-get install -y --no-install-recommends fonts-dejavu-core && \
   rm -rf /var/lib/apt/lists/*
-
-RUN useradd --create-home --uid 1000 ubuntu
 
 USER ubuntu
 
