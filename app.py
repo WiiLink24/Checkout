@@ -7,6 +7,7 @@ from flask import Flask, has_request_context, render_template
 import config
 from flask_oidc import OpenIDConnect
 from flask_session import Session
+from redis import Redis
 
 from utils.utils import (
     format_serial,
@@ -36,15 +37,11 @@ app.config["SECRET_KEY"] = config.secret_key
 app.config["OIDC_CLIENT_SECRETS"] = config.oidc_client_secrets_json
 app.config["OIDC_SCOPES"] = "openid profile email offline_access"
 app.config["OIDC_OVERWRITE_REDIRECT_URI"] = config.oidc_redirect_uri
-app.config["SESSION_TYPE"] = "filesystem"
-app.config["SESSION_FILE_DIR"] = os.getenv(
-    "SESSION_FILE_DIR", os.path.join(os.path.dirname(__file__), "session")
-)
+app.config["SESSION_TYPE"] = "redis"
+app.config["SESSION_REDIS"] = Redis(host=config.redis_host, password=config.redis_password)
 app.config["SESSION_PERMANENT"] = True
 app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=30)
 app.config["SESSION_USE_SIGNER"] = True
-
-os.makedirs(app.config["SESSION_FILE_DIR"], exist_ok=True)
 
 oidc = OpenIDConnect(app)
 Session(app)

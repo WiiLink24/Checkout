@@ -7,3 +7,4 @@ black
 apscheduler
 pillow
 colorgram.py
+redis
