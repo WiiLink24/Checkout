@@ -38,7 +38,9 @@ app.config["OIDC_CLIENT_SECRETS"] = config.oidc_client_secrets_json
 app.config["OIDC_SCOPES"] = "openid profile email offline_access"
 app.config["OIDC_OVERWRITE_REDIRECT_URI"] = config.oidc_redirect_uri
 app.config["SESSION_TYPE"] = "redis"
-app.config["SESSION_REDIS"] = Redis(host=config.redis_host, password=config.redis_password)
+app.config["SESSION_REDIS"] = Redis(
+    host=config.redis_host, password=config.redis_password
+)
 app.config["SESSION_PERMANENT"] = True
 app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=30)
 app.config["SESSION_USE_SIGNER"] = True
