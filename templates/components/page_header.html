@@ -20,7 +20,7 @@
 <div class="min-h-screen px-4 sm:px-6 lg:px-8 py-12">
     <div class="max-w-6xl mx-auto">
         {% if not is_unclaimed %}
-        <div class="text-center mb-10">
+        <div class="text-center mb-10 z-10 relative">
             <div class="relative w-full mx-auto mb-4 flex items-center justify-center">
                 <img src="{{ viewed_user.profile_picture }}" alt="{{ viewed_user.username }}"
                     style="view-transition-name: vt-pfp-{{ viewed_user.username|slugify }};"
