@@ -6,6 +6,7 @@ config.py
 /cache
 /templates/templates
 /uploads
+/session
 /digicam/__pycache__
 /templates/fonts
 /channels/__pycache__

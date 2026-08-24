@@ -130,18 +130,19 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const card = document.querySelector('.poll-card');
-            if (card) {
-                card.addEventListener('mouseenter', function () {
-                    const flipsCard = this.querySelector('.flip-card');
-                    flipsCard.style.transform = 'rotateY(180deg)';
-                });
+            document.querySelectorAll('.poll-card').forEach(function (card) {
+                if (card) {
+                    card.addEventListener('mouseenter', function () {
+                        const flipsCard = this.querySelector('.flip-card');
+                        flipsCard.style.transform = 'rotateY(180deg)';
+                    });
 
-                card.addEventListener('mouseleave', function () {
-                    const flipsCard = this.querySelector('.flip-card');
-                    flipsCard.style.transform = 'rotateY(0deg)';
-                });
-            }
+                    card.addEventListener('mouseleave', function () {
+                        const flipsCard = this.querySelector('.flip-card');
+                        flipsCard.style.transform = 'rotateY(0deg)';
+                    });
+                }
+            });
         });
     </script>
 </div>

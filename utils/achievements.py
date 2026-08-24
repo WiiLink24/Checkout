@@ -1,0 +1,374 @@
+from collections import Counter
+from dataclasses import dataclass
+from datetime import datetime, timedelta
+from typing import Callable, Dict, Optional, Set
+from utils.utils import (
+    cache,
+    fetch_all_authentik_users,
+    fetch_authentik_user_by_username,
+    get_authentik_user,
+    update_user_attributes,
+)
+
+_ACHIEVEMENTS_VERSION = 1
+_ACHIEVEMENTS_REFRESH_HOURS = 2
+_GLOBAL_TALLY_TTL = 24 * 60 * 60
+
+
+@dataclass(frozen=True)
+class Achievement:
+    id: str
+    name: str
+    description: str
+    icon: str
+    condition: Callable[[Dict], bool]
+
+
+ACHIEVEMENTS = [
+    Achievement(
+        "first_review",
+        "First Review",
+        "Leave your first recommendation",
+        "achievement_recommendations_1",
+        lambda m: m["reviews"] >= 1,
+    ),
+    Achievement(
+        "review_veteran",
+        "Review Veteran",
+        "Leave 25 recommendations",
+        "achievement_recommendations_2",
+        lambda m: m["reviews"] >= 25,
+    ),
+    Achievement(
+        "review_master",
+        "Review Master",
+        "Leave 100 recommendations",
+        "achievement_recommendations_3",
+        lambda m: m["reviews"] >= 100,
+    ),
+    Achievement(
+        "first_play",
+        "First Play",
+        "Play your first game",
+        "achievement_playtime_1",
+        lambda m: m["games_played"] >= 1,
+    ),
+    Achievement(
+        "dedicated_player",
+        "Dedicated Player",
+        "Play 50 different games",
+        "achievement_playtime_2",
+        lambda m: m["games_played"] >= 50,
+    ),
+    Achievement(
+        "marathoner",
+        "Marathoner",
+        "Log 1000 hours of playtime",
+        "achievement_playtime_3",
+        lambda m: m["total_minutes"] >= 60000,
+    ),
+    Achievement(
+        "first_poll",
+        "First Poll",
+        "Vote in your first poll",
+        "achievement_polls_1",
+        lambda m: m["polls"] >= 1,
+    ),
+    Achievement(
+        "poll_addict",
+        "Poll Addict",
+        "Vote in 50 polls",
+        "achievement_polls_2",
+        lambda m: m["polls"] >= 50,
+    ),
+    Achievement(
+        "first_contest",
+        "First Contest Entry",
+        "Enter your first contest",
+        "achievement_contests_1",
+        lambda m: m["contest_submissions"] >= 1,
+    ),
+    Achievement(
+        "contest_regular",
+        "Contest Regular",
+        "Enter 10 contests",
+        "achievement_contests_2",
+        lambda m: m["contest_submissions"] >= 10,
+    ),
+]
+
+_ACHIEVEMENT_BY_ID = {ach.id: ach for ach in ACHIEVEMENTS}
+
+
+def collect_metrics(serial_prefixes=None, wii_numbers=None):
+    from channels.nc import count_recommendations, count_time_played, fetch_user_stats
+    from channels.evc import count_user_polls
+    from channels.cmoc import count_contest_submissions
+
+    serial_prefixes = serial_prefixes or []
+    wii_numbers = wii_numbers or []
+
+    user_stats = fetch_user_stats(serial_prefixes) if serial_prefixes else {}
+
+    return {
+        "reviews": count_recommendations(serial_prefixes) if serial_prefixes else 0,
+        "games_played": count_time_played(serial_prefixes) if serial_prefixes else 0,
+        "total_minutes": (
+            (user_stats or {}).get("total_minutes", 0) if serial_prefixes else 0
+        ),
+        "polls": count_user_polls(wii_numbers) if wii_numbers else 0,
+        "contest_submissions": (
+            count_contest_submissions(wii_numbers) if wii_numbers else 0
+        ),
+    }
+
+
+def evaluate(metrics) -> Set[str]:
+    return {ach.id for ach in ACHIEVEMENTS if ach.condition(metrics)}
+
+
+def build_payload(achieved_ids, achievement_counts, total_users) -> Dict:
+    """Build the JSON payload stored in the user's Authentik attributes."""
+
+    def percent(count):
+        return round(count / total_users * 100, 1) if total_users else 0.0
+
+    return {
+        "version": _ACHIEVEMENTS_VERSION,
+        "generated_at": datetime.now().isoformat(timespec="seconds"),
+        "total_users": total_users,
+        "achievements": [
+            {
+                "id": ach.id,
+                "name": ach.name,
+                "description": ach.description,
+                "icon": ach.icon,
+                "achieved": ach.id in achieved_ids,
+                "percent": percent(achievement_counts.get(ach.id, 0)),
+            }
+            for ach in ACHIEVEMENTS
+        ],
+    }
+
+
+def parse_achievements(attributes) -> Optional[Dict]:
+    if not isinstance(attributes, dict):
+        return None
+    payload = attributes.get("achievements")
+    if not isinstance(payload, dict) or payload.get("version") != _ACHIEVEMENTS_VERSION:
+        return None
+    return payload
+
+
+def _extract_user_identifiers(attributes):
+    """Extract serial prefixes and wii numbers from a user's attributes."""
+    serial_prefixes, wii_numbers = [], []
+    wiis = (attributes or {}).get("wiis")
+    if isinstance(wiis, list):
+        for wii in wiis:
+            if not isinstance(wii, dict):
+                continue
+            serial = wii.get("serial_number")
+            if serial:
+                serial_prefixes.append(serial[:12])
+            wii_number = wii.get("wii_number")
+            if wii_number:
+                wii_numbers.append(wii_number)
+    return serial_prefixes, wii_numbers
+
+
+def is_fresh(payload) -> bool:
+    """True if the payload was generated within the refresh window."""
+    if not isinstance(payload, dict):
+        return False
+    try:
+        generated_at = datetime.fromisoformat(payload.get("generated_at"))
+    except (TypeError, ValueError):
+        return False
+    return datetime.now() - generated_at < timedelta(hours=_ACHIEVEMENTS_REFRESH_HOURS)
+
+
+def _get_global_tally() -> Dict:
+    """Per-achievement unlock counts across all linked-Wii users (cached 24h).
+
+    This is the single source of truth for percentages, so every refresh in the
+    same window shares identical numbers and they can never diverge per user.
+    """
+    cache_key = "achievements:global_tally:v1"
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return cached
+
+    counts = Counter()
+    eligible = 0
+    try:
+        for user in fetch_all_authentik_users():
+            serial_prefixes, wii_numbers = _extract_user_identifiers(
+                (user.get("attributes") or {})
+            )
+            if not serial_prefixes and not wii_numbers:
+                continue
+            eligible += 1
+            try:
+                achieved = evaluate(collect_metrics(serial_prefixes, wii_numbers))
+            except Exception as e:
+                print(f"[ACHIEVEMENTS] Tally error for {user.get('username')}: {e}")
+                continue
+            for ach_id in achieved:
+                counts[ach_id] += 1
+    except Exception as e:
+        print(f"[ACHIEVEMENTS] Tally computation failed: {e}")
+
+    tally = {"counts": dict(counts), "eligible": eligible}
+    # Only cache a meaningful tally so a failed/empty sweep isn't frozen for 24h
+    if eligible:
+        cache.set(cache_key, tally, timeout=_GLOBAL_TALLY_TTL)
+    return tally
+
+
+def _percentages(tally) -> Dict:
+    """Percentage per achievement from the global tally."""
+    eligible = tally["eligible"]
+    return {
+        ach_id: round(count / eligible * 100, 1) if eligible else 0.0
+        for ach_id, count in tally["counts"].items()
+    }
+
+
+def _build_refresh_payload(achieved_ids) -> Dict:
+    tally = _get_global_tally()
+    pcts = _percentages(tally)
+    return {
+        "version": _ACHIEVEMENTS_VERSION,
+        "generated_at": datetime.now().isoformat(timespec="seconds"),
+        "total_users": tally["eligible"],
+        "achievements": [
+            {
+                "id": ach.id,
+                "name": ach.name,
+                "description": ach.description,
+                "icon": ach.icon,
+                "achieved": ach.id in achieved_ids,
+                "percent": pcts.get(ach.id, 0.0),
+            }
+            for ach in ACHIEVEMENTS
+        ],
+    }
+
+
+def refresh_achievements_for_user(user):
+    """Refresh one user's achievements when their stored payload is stale (> 2h).
+
+    Returns (payload, wrote): the payload to display, and whether a write happened.
+    """
+    try:
+        fresh_user = get_authentik_user(user)
+    except Exception as e:
+        print(f"[ACHIEVEMENTS] Could not fetch {user.get('username')}: {e}")
+        return parse_achievements((user.get("attributes") or {})), False
+
+    attributes = (fresh_user or {}).get("attributes") or {}
+    previous = parse_achievements(attributes)
+    if previous and is_fresh(previous):
+        return previous, False
+
+    serial_prefixes, wii_numbers = _extract_user_identifiers(attributes)
+    if not serial_prefixes and not wii_numbers:
+        return previous, False
+
+    try:
+        achieved = evaluate(collect_metrics(serial_prefixes, wii_numbers))
+    except Exception as e:
+        print(f"[ACHIEVEMENTS] Refresh failed for {user.get('username')}: {e}")
+        return previous, False
+
+    payload = _build_refresh_payload(achieved)
+    try:
+        attributes["achievements"] = payload
+        update_user_attributes(user, attributes)
+        return payload, True
+    except Exception as e:
+        print(f"[ACHIEVEMENTS] Failed to update {user.get('username')}: {e}")
+        return payload, False
+
+
+def sync_achievements():
+    import os
+
+    import config
+
+    restricted_username = os.environ.get("ACHIEVEMENTS_SYNC_USERNAME") or getattr(
+        config, "achievements_sync_username", None
+    )
+
+    if restricted_username:
+        user = fetch_authentik_user_by_username(restricted_username)
+        users = [user] if user else []
+        print(f"[ACHIEVEMENTS] Test mode: syncing only {restricted_username}")
+    else:
+        users = fetch_all_authentik_users()
+
+    achieved_by_user = {}
+    achievement_counts = Counter()
+    eligible = 0
+
+    for user in users:
+        uuid = user.get("uuid")
+        if not uuid:
+            continue
+
+        serial_prefixes, wii_numbers = _extract_user_identifiers(
+            (user.get("attributes") or {})
+        )
+
+        if not serial_prefixes and not wii_numbers:
+            continue
+
+        eligible += 1
+        try:
+            metrics = collect_metrics(serial_prefixes, wii_numbers)
+            achieved = evaluate(metrics)
+        except Exception as e:
+            print(f"[ACHIEVEMENTS] Error for {user.get('username')}: {e}")
+            continue
+
+        achieved_by_user[uuid] = achieved
+        for ach_id in achieved:
+            achievement_counts[ach_id] += 1
+
+    if not eligible:
+        print("[ACHIEVEMENTS] No eligible users")
+        return
+
+    updated = 0
+    for user in users:
+        uuid = user.get("uuid")
+        if uuid not in achieved_by_user:
+            continue
+        try:
+            fresh_user = get_authentik_user(user)
+        except Exception as e:
+            print(f"[ACHIEVEMENTS] Could not re-fetch {user.get('username')}: {e}")
+            continue
+
+        fresh_attributes = (fresh_user or {}).get("attributes") or {}
+        if not isinstance(fresh_attributes, dict) or not fresh_attributes.get("wiis"):
+            print(
+                f"[ACHIEVEMENTS] Skipping {user.get('username')}: no linked Wiis anymore"
+            )
+            continue
+
+        attributes = dict(fresh_attributes)
+        attributes["achievements"] = build_payload(
+            achieved_by_user[uuid], achievement_counts, eligible
+        )
+        try:
+            update_user_attributes(user, attributes)
+            updated += 1
+        except Exception as e:
+            print(f"[ACHIEVEMENTS] Failed to update {user.get('username')}: {e}")
+
+    print(
+        f"[ACHIEVEMENTS] Synced {updated}/{len(achieved_by_user)} users "
+        f"({eligible} eligible, {sum(achievement_counts.values())} total unlocks)"
+    )
