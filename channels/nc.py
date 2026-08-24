@@ -301,7 +301,7 @@ def fetch_time_played(serial_prefixes, sort_by="time_played", limit=30, offset=0
         ), detailed_games AS (
             SELECT
                 r.latest_id AS id, r.times_played, r.time_played,
-                r.game_id,
+                COALESCE(t.game_id, r.game_id) AS game_id,
                 COALESCE(t.display_name, t.title_en, r.game_id) AS title,
                 t.title_en, t.display_name, t.synopsis_en, t.genre, t.developer, t.publisher, t.game_type,
                 t.release_year, t.rating_type, t.rating_value, t.region, t.input_controls, t.wifi_players, t.input_players,
