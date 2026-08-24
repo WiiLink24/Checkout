@@ -16,7 +16,12 @@ from channels.nc import (
     serial_has_time_played,
     count_bookmarks,
 )
-from channels.evc import fetch_user_polls, fetch_user_suggestions
+from channels.evc import (
+    fetch_user_polls,
+    fetch_user_suggestions,
+    count_user_polls,
+    count_user_suggestions,
+)
 from channels.cmoc import (
     get_artisan_ids_from_wii_number,
     fetch_contest_submissions,
@@ -477,17 +482,9 @@ def friend_code_home(friend_code):
                 user_serial = wii.get("serial_number")
                 break
 
-    if not user_serial:
-        return (
-            render_template(
-                "errors/not_linked_external.html",
-                user_info=user_info,
-                friend_code=friend_code_normalized,
-            ),
-            400,
-        )
+    serial_not_linked = not user_serial
 
-    serial_prefixes = extract_serial_prefix(user_serial)
+    serial_prefixes = extract_serial_prefix(user_serial) if user_serial else None
 
     latest_games = (
         fetch_user_latest_games(serial_prefixes, 6) if serial_prefixes else []
@@ -500,6 +497,14 @@ def friend_code_home(friend_code):
         fetch_user_stats(serial_prefixes)
         if serial_prefixes
         else {"total_minutes": 0, "total_reviews": 0}
+    )
+    user_counts = (
+        {
+            "favorites": count_bookmarks(serial_prefixes),
+            "games_played": count_time_played(serial_prefixes),
+        }
+        if serial_prefixes
+        else {"favorites": 0, "games_played": 0}
     )
 
     viewed_user = build_viewed_user_info(authentik_user)
@@ -520,6 +525,15 @@ def friend_code_home(friend_code):
         else []
     )
 
+    if wii_numbers:
+        user_counts["polls"] = count_user_polls(wii_numbers)
+        user_counts["suggestions"] = count_user_suggestions(wii_numbers)
+        user_counts["contest_submissions"] = count_contest_submissions(wii_numbers)
+    else:
+        user_counts["polls"] = 0
+        user_counts["suggestions"] = 0
+        user_counts["contest_submissions"] = 0
+
     # Render Mii images for recent contests
     for submission in recent_contests:
         if submission.get("mii_data"):
@@ -535,8 +549,11 @@ def friend_code_home(friend_code):
         latest_favorites=latest_favorites,
         latest_reviews=latest_reviews,
         user_stats=user_stats,
+        user_counts=user_counts,
         recent_contests=recent_contests,
         recent_polls=recent_polls,
         is_unclaimed=False,
         base_url=f"/{friend_code}",
+        serial_not_linked=serial_not_linked,
+        friend_code=friend_code_normalized,
     )

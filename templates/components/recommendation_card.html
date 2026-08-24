@@ -1,7 +1,9 @@
-<div class="relative rounded-2xl border border-gray-700 bg-gray-800/80 shadow-xl overflow-hidden">
+<div class="relative rounded-2xl theme-card border shadow-xl overflow-hidden">
     {% set cover = namespace(url='', fallback='') %}
+    {% set vt_name = namespace(name='') %}
     {% set cover_game = rec %}
     {% include "components/game_cover_vars.html" %}
+    {% include "components/vt_cover_name.html" %}
     <div class="absolute inset-x-0 top-0 h-44 bg-center bg-cover blur-lg opacity-10"
         style="background-image: url('{{ cover.url }}'); -webkit-mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0)); mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0));">
     </div>
@@ -10,6 +12,7 @@
             <div class="flex items-center justify-between gap-6">
                 <span class="flex items-center gap-4">
                     <img src="{{ cover.url }}" alt="{{ rec.title }} Cover" data-fallback="{{ cover.fallback }}"
+                        {% if vt_name.name %}style="view-transition-name: {{ vt_name.name }};"{% endif %}
                         onerror="if (!this.dataset.tried && this.dataset.fallback) { this.dataset.tried = '1'; this.src = this.dataset.fallback; } else { var placeholder = document.createElement('div'); placeholder.className = 'w-24 h-32 bg-gray-700 rounded-lg flex-shrink-0'; this.parentNode.replaceChild(placeholder, this); }"
                         class="h-32 object-cover rounded-lg flex-shrink-0">
                     <span class="flex flex-col gap-3">
@@ -49,7 +52,7 @@
             {% set score_bar_class = "bg-red-400" %}
             {% endif %}
             <div class="mt-5">
-                <div class="h-6 w-full rounded-xl bg-gray-900/70 overflow-hidden">
+                <div class="h-6 w-full rounded-xl theme-card-inner overflow-hidden">
                     <div class="h-full rounded-full {{ score_bar_class }} flex items-center justify-end"
                         style="width: {{ score_percent }}%;">
                         <span class="pr-2 text-xs uppercase tracking-wider {{ score_text_class }}">{{ score_percent
@@ -58,7 +61,7 @@
                 </div>
             </div>
             <div class="mt-4 flex flex-col sm:grid sm:grid-cols-3 gap-3 text-sm">
-                <div class="rounded-xl bg-gray-900/70 p-3">
+                <div class="rounded-xl theme-card-inner p-3">
                     <p class="text-xs uppercase text-gray-400">enjoyed by</p>
                     {% set appeal_label = "everyone" if rec.appeal|int == 0 else "gamers" %}
                     {% set appeal_icon = "/static/icon/earth.svg" if rec.appeal|int == 0 else "/static/icon/sword.svg"
@@ -68,7 +71,7 @@
                         <span>{{ appeal_label }}</span>
                     </p>
                 </div>
-                <div class="rounded-xl bg-gray-900/70 p-3">
+                <div class="rounded-xl theme-card-inner p-3">
                     <p class="text-xs uppercase text-gray-400">Gamplay is</p>
                     {% set mood_label = "casual" if rec.gaming_mood|int == 0 else "hardcore" %}
                     {% set mood_icon = "/static/icon/house.svg" if rec.gaming_mood|int == 0 else
@@ -78,7 +81,7 @@
                         <span>{{ mood_label }}</span>
                     </p>
                 </div>
-                <div class="rounded-xl bg-gray-900/70 p-3">
+                <div class="rounded-xl theme-card-inner p-3">
                     <p class="text-xs uppercase text-gray-400">best played</p>
                     {% set friend_label = "solo" if rec.friend_or_alone|int == 0 else "with friends" %}
                     {% set friend_icon = "/static/icon/user.svg" if rec.friend_or_alone|int == 0 else
@@ -92,7 +95,7 @@
         </span>
         <div class="mt-5 flex items-center justify-end">
             <button
-                class="px-3 py-2 text-xs uppercase tracking-wider bg-gray-900/70 text-white rounded-lg border border-gray-700 hover:border-gray-500 transition"
+                class="px-3 py-2 text-xs uppercase tracking-wider theme-btn text-white rounded-lg border transition"
                 data-modal-open data-title="{{ rec.title }}" data-game-id="{{ rec.game_id }}"
                 data-cover-url="{{ cover.url }}" data-cover-fallback="{{ cover.fallback }}"
                 data-release-year="{{ rec.release_year or '' }}" data-release-month="{{ rec.release_month or '' }}"

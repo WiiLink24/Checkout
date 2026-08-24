@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/playwright/python:v1.58.0-noble
+FROM python:3.11-slim
 
 WORKDIR /home/ubuntu
 
@@ -8,12 +8,16 @@ COPY requirements.txt .
 RUN pip3 install -r requirements.txt && \
   pip3 install gunicorn
 
-RUN playwright install
+# Fonts required for Pillow tag rendering
+RUN apt-get update && apt-get install -y --no-install-recommends fonts-dejavu-core && \
+  rm -rf /var/lib/apt/lists/*
+
+RUN useradd --create-home --uid 1000 ubuntu
 
 USER ubuntu
 
 # Finally, copy the entire source.
-COPY . .
+COPY --chown=ubuntu:ubuntu . .
 
 ENV FLASK_APP app.py
 ENV CAM_UPLOADS_DIR /home/ubuntu/uploads

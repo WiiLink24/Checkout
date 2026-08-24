@@ -8,7 +8,6 @@ config.py
 /uploads
 /digicam/__pycache__
 /templates/fonts
-/session
 /channels/__pycache__
 /routes/__pycache__
 /utils/__pycache__

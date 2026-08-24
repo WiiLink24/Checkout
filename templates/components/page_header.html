@@ -1,6 +1,12 @@
 {% if not is_unclaimed %}
 <div class="absolute inset-x-0 top-0 h-[500px] bg-center bg-cover blur-lg opacity-30 pointer-events-none"
-    style="background-image: url('{{ viewed_user.profile_picture }}'); -webkit-mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0)); mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0));">
+    style="view-transition-name: vt-bg-blur; background-image: url('{{ viewed_user.profile_picture }}'); -webkit-mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0)); mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0));">
+</div>
+{% endif %}
+{% set user_theme = viewed_user.profile_picture|user_theme %}
+{% if user_theme %}
+<div class="absolute inset-x-0 top-0 h-[400px] pointer-events-none"
+    style="background: radial-gradient(ellipse 90% 100% at 50% 0%, rgba({{ user_theme.rgb }}, 0.16), transparent 70%);">
 </div>
 {% endif %}
 {% set nav_items = [
@@ -17,23 +23,26 @@
         <div class="text-center mb-10">
             <div class="relative w-full mx-auto mb-4 flex items-center justify-center">
                 <img src="{{ viewed_user.profile_picture }}" alt="{{ viewed_user.username }}"
+                    style="view-transition-name: vt-pfp-{{ viewed_user.username|slugify }};"
                     class="w-32 h-32 rounded-2xl mx-auto object-cover relative z-10">
             </div>
-            <h1 class="text-2xl sm:text-4xl font-bold text-white mt-2">
+            <h1 style="view-transition-name: vt-title-{{ page_title|slugify }};"
+                class="text-2xl sm:text-4xl font-bold text-white mt-2">
                 {{ viewed_user.username }}
                 <details class="relative inline-block ml-2 text-left group align-middle">
                     <summary
-                        class="!text-2xl sm:!text-4xl inline-flex items-center gap-2 px-3 py-1 border border-dashed border-gray-600/30 text-gray-500 hover:text-gray-300 transition rounded-lg text-base font-light cursor-pointer select-none min-h-[44px]">
+                        class="!text-2xl sm:!text-4xl inline-flex items-center gap-2 px-3 py-1 border border-dashed border-[var(--user-transparent)] text-white/80 hover:text-white transition rounded-lg text-base font-light cursor-pointer select-none min-h-[44px]">
                         's {{ page_title }}
                     </summary>
                     <div
-                        class="fixed left-1/2 -translate-x-1/2 mt-2 w-[calc(100vw-2rem)] max-w-sm rounded-xl border border-gray-700 bg-gray-800/95 shadow-xl z-30 overflow-hidden sm:absolute sm:left-1/2 sm:-translate-x-1/2 sm:w-56">
+                        class="fixed left-1/2 -translate-x-1/2 mt-2 w-[calc(100vw-2rem)] max-w-sm rounded-xl border border-[var(--user-transparent)] bg-[var(--user-dark)] shadow-xl z-100 overflow-hidden sm:absolute sm:left-1/2 sm:-translate-x-1/2 sm:w-56"
+                        style="z-index: 1000;">
                         {% for item in nav_items %}
                         {% if item.active %}
                         <span class="block px-4 py-3 text-sm text-white-300 bg-gray-500/10">{{ item.name }}</span>
                         {% else %}
                         <a href="{% if base_url %}{{ base_url }}{{ item.path }}{% else %}{{ item.path }}{% endif %}"
-                            class="block px-4 py-3 text-sm text-gray-300 hover:bg-gray-800 transition">{{ item.name
+                            class="block px-4 py-3 text-sm text-gray-300 hover:bg-[var(--user-base)] transition">{{ item.name
                             }}</a>
                         {% endif %}
                         {% endfor %}

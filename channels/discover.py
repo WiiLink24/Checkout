@@ -2,6 +2,24 @@ import config
 import random
 from utils.utils import _build_serial_filter, _run_query
 
+_PREFERRED_TITLES_CTE = """
+    WITH preferred AS (
+        SELECT SUBSTRING(game_id, 1, 4) AS prefix, MIN(game_id) AS disc_id
+        FROM titles
+        WHERE LENGTH(game_id) = 6
+        GROUP BY SUBSTRING(game_id, 1, 4)
+    ),
+    rec_titles AS (
+        SELECT r.serial_number, r.game_id, r.recommendation_percent,
+               CASE WHEN LENGTH(r.game_id) = 4
+                    THEN COALESCE(p.disc_id, r.game_id)
+                    ELSE r.game_id
+               END AS resolved_id
+        FROM recommendations r
+        LEFT JOIN preferred p ON p.prefix = SUBSTRING(r.game_id, 1, 4)
+    )
+"""
+
 
 def find_game_recommendation(serial_prefixes):
     if not serial_prefixes:
@@ -10,14 +28,15 @@ def find_game_recommendation(serial_prefixes):
     where_clause, params = _build_serial_filter("serial_number", serial_prefixes)
 
     # Get user's played genres
-    profile_rows = _run_query(
-        f"SELECT t.genre, t.developer FROM recommendations r "
-        f"LEFT JOIN titles t ON t.game_id LIKE r.game_id || '%%' "
-        f"WHERE {where_clause} AND r.recommendation_percent > 50 "
-        f"LIMIT 100",
-        params,
-        config.db_url,
-    )
+    profile_query = f"""
+        {_PREFERRED_TITLES_CTE}
+        SELECT t.genre, t.developer
+        FROM rec_titles rt
+        LEFT JOIN titles t ON t.game_id = rt.resolved_id
+        WHERE {where_clause} AND rt.recommendation_percent > 50
+        LIMIT 100
+    """
+    profile_rows = _run_query(profile_query, params, config.db_url)
 
     if not profile_rows:
         return None
@@ -39,27 +58,28 @@ def find_game_recommendation(serial_prefixes):
             developer_count[dev] = developer_count.get(dev, 0) + 1
 
     # Get already played games
-    played_rows = _run_query(
-        f"SELECT game_id FROM time_played WHERE {where_clause}",
-        params,
-        config.db_url,
-    )
+    played_query = f"""
+        SELECT game_id
+        FROM time_played
+        WHERE {where_clause}
+    """
+    played_rows = _run_query(played_query, params, config.db_url)
     played_ids = {row.get("game_id") for row in played_rows if row.get("game_id")}
 
     # Fetch candidate games and score them
-    candidates = _run_query(
-        "SELECT t.game_id, t.display_name, t.title_en, t.synopsis_en, t.genre, t.developer, "
-        "t.game_type, t.release_year, t.rating_type, t.rating_value, t.region, "
-        "COALESCE(AVG(r.recommendation_percent), 50) AS avg_rating, COUNT(r.game_id) AS rating_count "
-        "FROM titles t "
-        "LEFT JOIN recommendations r ON t.game_id LIKE r.game_id || '%%' "
-        "WHERE t.display_name IS NOT NULL AND t.genre IS NOT NULL "
-        "GROUP BY t.game_id, t.display_name, t.title_en, t.synopsis_en, t.genre, t.developer, "
-        "t.game_type, t.release_year, t.rating_type, t.rating_value, t.region "
-        "ORDER BY rating_count DESC LIMIT 100",
-        [],
-        config.db_url,
-    )
+    candidates_query = f"""
+        {_PREFERRED_TITLES_CTE}
+        SELECT t.game_id, t.display_name, t.title_en, t.synopsis_en, t.genre, t.developer,
+               t.game_type, t.release_year, t.rating_type, t.rating_value, t.region,
+               COALESCE(AVG(rt.recommendation_percent), 50) AS avg_rating, COUNT(rt.game_id) AS rating_count
+        FROM titles t
+        LEFT JOIN rec_titles rt ON rt.resolved_id = t.game_id
+        WHERE t.display_name IS NOT NULL AND t.genre IS NOT NULL
+        GROUP BY t.game_id, t.display_name, t.title_en, t.synopsis_en, t.genre, t.developer,
+                 t.game_type, t.release_year, t.rating_type, t.rating_value, t.region
+        ORDER BY rating_count DESC LIMIT 100
+    """
+    candidates = _run_query(candidates_query, [], config.db_url)
 
     best_score = -1
     best_game = None

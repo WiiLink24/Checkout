@@ -9,6 +9,7 @@ WiiLink Checkout | Favorites for {{ viewed_user.username }}
 {% include "components/page_header.html" %}
 
 {% if games %}
+{% set vt_seen = namespace(ids=[]) %}
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
     {% for game in games %}
     {% set rec = game %}

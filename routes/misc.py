@@ -25,14 +25,14 @@ def get_oidc():
 def search_games_by_title(search_query, offset=0, limit=15):
     """Search games by title or game_id with pagination"""
     query = """
-        SELECT t.game_id, t.title_en, t.display_name, t.synopsis_en, t.genre, t.developer, 
+        SELECT t.game_id, t.title_en, t.display_name, t.synopsis_en, t.genre, t.developer,
                t.publisher, t.rating_type, t.rating_value, t.release_year, t.release_month, t.release_day,
                t.input_controls, t.wifi_players,
-               COALESCE(b.favorite_count, 0) as favorite_count,
-               COALESCE(b.user_count, 0) as user_count
+               COALESCE(b.favorite_count, 0) AS favorite_count,
+               COALESCE(b.user_count, 0) AS user_count
         FROM titles t
         LEFT JOIN (
-            SELECT game_id, COUNT(*) as favorite_count, COUNT(DISTINCT serial_number) as user_count
+            SELECT game_id, COUNT(*) AS favorite_count, COUNT(DISTINCT serial_number) AS user_count
             FROM bookmarks
             GROUP BY game_id
         ) b ON t.game_id LIKE b.game_id || '%%'
@@ -50,7 +50,7 @@ def search_games_by_title(search_query, offset=0, limit=15):
 def count_games_by_title(search_query):
     """Count total games matching title search"""
     query = """
-        SELECT COUNT(*) as total
+        SELECT COUNT(*) AS total
         FROM titles t
         WHERE LOWER(t.title_en) LIKE %s OR LOWER(t.game_id) LIKE %s
     """
@@ -62,14 +62,14 @@ def count_games_by_title(search_query):
 def search_games_by_publisher(search_query, offset=0, limit=15):
     """Search games by publisher with pagination"""
     query = """
-        SELECT t.game_id, t.title_en, t.display_name, t.synopsis_en, t.genre, t.developer, 
+        SELECT t.game_id, t.title_en, t.display_name, t.synopsis_en, t.genre, t.developer,
                t.publisher, t.rating_type, t.rating_value, t.release_year, t.release_month, t.release_day,
                t.input_controls, t.wifi_players, t.input_players,
-               COALESCE(b.favorite_count, 0) as favorite_count,
-               COALESCE(b.user_count, 0) as user_count
+               COALESCE(b.favorite_count, 0) AS favorite_count,
+               COALESCE(b.user_count, 0) AS user_count
         FROM titles t
         LEFT JOIN (
-            SELECT game_id, COUNT(*) as favorite_count, COUNT(DISTINCT serial_number) as user_count
+            SELECT game_id, COUNT(*) AS favorite_count, COUNT(DISTINCT serial_number) AS user_count
             FROM bookmarks
             GROUP BY game_id
         ) b ON t.game_id LIKE b.game_id || '%%'
@@ -84,7 +84,7 @@ def search_games_by_publisher(search_query, offset=0, limit=15):
 def count_games_by_publisher(search_query):
     """Count total games matching publisher search"""
     query = """
-        SELECT COUNT(*) as total
+        SELECT COUNT(*) AS total
         FROM titles t
         WHERE LOWER(t.publisher) LIKE %s
     """
@@ -96,14 +96,14 @@ def count_games_by_publisher(search_query):
 def search_games_by_developer(search_query, offset=0, limit=15):
     """Search games by developer with pagination"""
     query = """
-        SELECT t.game_id, t.title_en, t.display_name, t.synopsis_en, t.genre, t.developer, 
+        SELECT t.game_id, t.title_en, t.display_name, t.synopsis_en, t.genre, t.developer,
                t.publisher, t.rating_type, t.rating_value, t.release_year, t.release_month, t.release_day,
                t.input_controls, t.wifi_players, t.input_players,
-               COALESCE(b.favorite_count, 0) as favorite_count,
-               COALESCE(b.user_count, 0) as user_count
+               COALESCE(b.favorite_count, 0) AS favorite_count,
+               COALESCE(b.user_count, 0) AS user_count
         FROM titles t
         LEFT JOIN (
-            SELECT game_id, COUNT(*) as favorite_count, COUNT(DISTINCT serial_number) as user_count
+            SELECT game_id, COUNT(*) AS favorite_count, COUNT(DISTINCT serial_number) AS user_count
             FROM bookmarks
             GROUP BY game_id
         ) b ON t.game_id LIKE b.game_id || '%%'
@@ -118,7 +118,7 @@ def search_games_by_developer(search_query, offset=0, limit=15):
 def count_games_by_developer(search_query):
     """Count total games matching developer search"""
     query = """
-        SELECT COUNT(*) as total
+        SELECT COUNT(*) AS total
         FROM titles t
         WHERE LOWER(t.developer) LIKE %s
     """

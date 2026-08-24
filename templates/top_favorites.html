@@ -16,6 +16,7 @@ WiiLink Checkout | Top 30 Most Favorited Games
         {% if cached_games_html %}
         {{ cached_games_html|safe }}
         {% elif games %}
+        {% set vt_seen = namespace(ids=[]) %}
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {% for game in games %}
             {% set score_type = "most_favorited" %}

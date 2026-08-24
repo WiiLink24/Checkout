@@ -2,6 +2,10 @@ import psycopg2
 import config
 import requests
 import hashlib
+import threading
+import copy
+import time
+from flask_caching import Cache
 
 
 def get_serial_prefixes(user_info):
@@ -28,18 +32,113 @@ def _build_serial_filter(column_name, serial_prefixes):
     return clauses, params
 
 
+_connections = threading.local()
+_connection_registry = {}
+_registry_lock = threading.Lock()
+
+_QUERY_CACHE_TTL = 3 * 60 * 60  # 3 hours
+cache = Cache()
+
+
+def _get_connection(db_url):
+    """Return a cached persistent connection for the given db_url, opening one on first use."""
+    conn = getattr(_connections, db_url, None)
+    if conn is None or conn.closed:
+        conn = psycopg2.connect(db_url)
+        setattr(_connections, db_url, conn)
+        with _registry_lock:
+            _connection_registry.setdefault(db_url, set()).add(conn)
+    return conn
+
+
+def close_db_connections():
+    """Close all open database connections (called on server shutdown)."""
+    with _registry_lock:
+        for conns in _connection_registry.values():
+            for conn in conns:
+                try:
+                    if not conn.closed:
+                        conn.close()
+                except Exception:
+                    pass
+        _connection_registry.clear()
+
+
+def _execute_query(query, params, db_url):
+    conn = _get_connection(db_url)
+    cur = conn.cursor()
+    try:
+        cur.execute(query, params)
+        rows = cur.fetchall()
+        columns = [desc[0] for desc in cur.description]
+    finally:
+        cur.close()
+    return [dict(zip(columns, row)) for row in rows]
+
+
+def _drop_connection(db_url):
+    """Close and remove the cached connection for db_url so a fresh one is opened next use."""
+    conn = getattr(_connections, db_url, None)
+    if conn is not None:
+        try:
+            if not conn.closed:
+                conn.close()
+        except Exception:
+            pass
+        delattr(_connections, db_url)
+        with _registry_lock:
+            conns = _connection_registry.get(db_url)
+            if conns:
+                conns.discard(conn)
+                if not conns:
+                    del _connection_registry[db_url]
+
+
+def _short_query(query):
+    return " ".join(query.split())[:80]
+
+
+def _query_cache_key(db_url, query, params_tuple):
+    raw = f"{db_url}|{query}|{params_tuple}"
+    return hashlib.md5(raw.encode("utf-8")).hexdigest()
+
+
+def _sanitize_for_cache(value):
+    """Convert non-picklable types (e.g. psycopg2 memoryview) into picklable ones."""
+    if isinstance(value, memoryview):
+        return value.tobytes()
+    if isinstance(value, dict):
+        return {k: _sanitize_for_cache(v) for k, v in value.items()}
+    if isinstance(value, list):
+        return [_sanitize_for_cache(v) for v in value]
+    return value
+
+
 def _run_query(query, params, db_url=None):
     """Execute a query against a specified database (defaults to config.db_url)."""
     if db_url is None:
         db_url = config.db_url
-    conn = psycopg2.connect(db_url)
-    cur = conn.cursor()
-    cur.execute(query, params)
-    rows = cur.fetchall()
-    columns = [desc[0] for desc in cur.description]
-    cur.close()
-    conn.close()
-    return [dict(zip(columns, row)) for row in rows]
+    params_tuple = tuple(params or [])
+    cache_key = _query_cache_key(db_url, query, params_tuple)
+    start = time.perf_counter()
+
+    cached = cache.get(cache_key)
+    if cached is not None:
+        print(
+            f"[DB] CACHE HIT ({time.perf_counter() - start:.3f}s): {_short_query(query)}"
+        )
+        return copy.deepcopy(cached)
+
+    try:
+        result = _execute_query(query, params, db_url)
+    except psycopg2.OperationalError:
+        _drop_connection(db_url)
+        result = _execute_query(query, params, db_url)
+
+    result = _sanitize_for_cache(result)
+    cache.set(cache_key, result, timeout=_QUERY_CACHE_TTL)
+    print(f"[DB] QUERY ({time.perf_counter() - start:.3f}s): {_short_query(query)}")
+    return copy.deepcopy(result)
 
 
 def find_user_by_wii_number(wii_number, attempt=0):

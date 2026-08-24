@@ -25,6 +25,7 @@ WiiLink Checkout | Time Played for {{ viewed_user.username }}
 {% endif %}
 
 {% if time_played %}
+{% set vt_seen = namespace(ids=[]) %}
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
     {% for rec in time_played %}
     {% include "components/time_played_card.html" %}

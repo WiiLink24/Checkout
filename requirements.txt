@@ -1,8 +1,10 @@
 flask
+flask-caching
 Flask-Session
 flask_oidc
 psycopg2-binary
 black
-playwright
 apscheduler
 pillow
+colorgram.py
+redis

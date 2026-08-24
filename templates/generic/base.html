@@ -14,9 +14,74 @@
     <link rel="icon" href="/static/icon/favicon.png" type="image/png" />
     <title>{% block title %}{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @view-transition {
+            navigation: auto;
+        }
+
+        .theme-menu-btn {
+            background-color: var(--user-base);
+        }
+
+        .theme-menu-btn:hover {
+            background-color: rgba(var(--user-rgb, 55, 65, 81), 0.6);
+        }
+
+        .theme-menu-btn-active,
+        .theme-menu-btn-active:hover {
+            background-color: rgb(var(--user-rgb, 79, 70, 229));
+        }
+
+        .theme-card {
+            background-color: var(--user-dark);
+            border-color: var(--user-transparent);
+        }
+
+        .theme-icon-tile {
+            background-color: var(--user-dark);
+        }
+
+        .theme-card-hover {
+            transition: 0.2s;
+        }
+
+        .theme-card-hover:hover {
+            background-color: var(--user-dark);
+            transition: 0.2s;
+        }
+
+        .theme-chip {
+            background-color: var(--user-dark);
+        }
+
+        .theme-chip:hover {
+            background-color: var(--user-light);
+        }
+
+.theme-pfp-border {
+            border-color: var(--user-light, #374151);
+        }
+
+        .theme-card-inner {
+            background-color: rgba(var(--user-rgb, 17, 24, 39), 0.35);
+        }
+
+        .theme-btn {
+            background-color: rgba(var(--user-rgb, 17, 24, 39), 0.45);
+            border-color: rgba(var(--user-rgb, 55, 65, 81), 0.7);
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+
+        .theme-btn:hover {
+            background-color: rgba(var(--user-rgb, 17, 24, 39), 0.7);
+            border-color: rgba(var(--user-rgb), 0.9);
+        }
+    </style>
 </head>
 
-<body class="bg-gray-900 min-h-screen">
+<body
+    style="{% block body_theme_vars %}{% include "components/body_theme_vars.html" %}{% endblock %}"
+    class="bg-[var(--user-base)] min-h-screen">
     <div class="w-screen md:hidden fixed p-6 flex flex-row items-center justify-between z-30">
         <img src="/static/img/logo.png" alt="Logo" class="h-8" />
         <button id="mobileMenuBtn"
@@ -26,8 +91,9 @@
     </div>
 
     <div class="flex">
-        <div id="sidebar"
-            class="w-full max-w-[300px] h-screen bg-gray-800/80 backdrop-blur-xl border-r border-gray-700 p-6 fixed top-0 left-0 flex flex-col justify-between transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-40 overflow-scroll sm:overflow-visible">
+<div id="sidebar"
+            class="w-full max-w-[300px] h-screen bg-[var(--user-dark)] backdrop-blur-xl border-r border-[var(--user-transparent)] p-6 fixed top-0 left-0 flex flex-col justify-between transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-40 overflow-scroll sm:overflow-visible"
+            style="background-image: linear-gradient(180deg, rgba(var(--user-rgb, 17, 24, 39), 0.28), rgba(var(--user-rgb, 17, 24, 39), 0.08));">
             <div class="overflow-scroll sm:overflow-visible h-full">
                 <div class="mb-3 flex justify-between items-start">
                     <img src="/static/img/logo.png" alt="Logo" class="h-10 mb-6" />
@@ -47,7 +113,7 @@
 
                 {% macro menu_item(name, redirect_func, icon_name) %}
                 <a href="{{ url_for(redirect_func) }}"
-                    class="block w-full px-4 py-2 {% if request.view_args and url_for(request.endpoint, **request.view_args).startswith(url_for(redirect_func)) %}bg-indigo-600 {% else %}bg-gray-700/40 hover:bg-gray-700/60{% endif %} text-white rounded-xl transition duration-200 flex items-center">
+                    class="block w-full px-4 py-2 {% if request.view_args and url_for(request.endpoint, **request.view_args).startswith(url_for(redirect_func)) %}theme-menu-btn-active {% else %}theme-menu-btn{% endif %} text-white rounded-xl transition duration-200 flex items-center">
                     <img src="/static/icon/{{ icon_name }}.svg" alt="{{ name }}" class="w-5 h-5 invert mr-2" />{{ name
                     }}
                 </a>
@@ -64,7 +130,7 @@
 
                 {% macro menu_item_external(name, redirect_func, icon_name) %}
                 <a href="{{ redirect_func }}" target="_blank"
-                    class="block w-full px-4 py-2 bg-gray-700/40 hover:bg-gray-700/60 text-white rounded-xl transition duration-200 flex items-center justify-between">
+                    class="block w-full px-4 py-2 theme-menu-btn text-white rounded-xl transition duration-200 flex items-center justify-between">
                     <span class="flex items-center">
                         <img src="/static/icon/{{ icon_name }}.svg" alt="{{ name }}" class="w-5 h-5 invert mr-2" />{{
                         name
@@ -78,7 +144,7 @@
                 <div class="relative" onmouseenter="openChannel('{{ channel_id }}')"
                     onmouseleave="closeChannel('{{ channel_id }}')">
                     <button
-                        class="block w-full px-4 py-2 bg-gray-700/40 hover:bg-gray-700/95 text-white rounded-xl transition duration-200 flex items-center justify-between text-left"
+                        class="block w-full px-4 py-2 theme-menu-btn text-white rounded-xl transition duration-200 flex items-center justify-between text-left"
                         id="{{ channel_id }}Btn">
                         <span class="flex items-center">
                             {% if channel_icon %}<img src="/static/icon/{{ channel_icon }}.svg" alt="{{ channel_name }}"
@@ -89,12 +155,12 @@
                                 src="/static/icon/chevron-right.svg" alt="Arrow Down" class="w-4 h-4 invert" /></span>
                     </button>
                     <div id="{{ channel_id }}Items"
-                        class="absolute left-full top-0 -ml-4 w-48 bg-gray-700/95 backdrop-blur-md border border-gray-600 rounded-xl shadow-2xl py-2 z-50 pointer-events-none opacity-0 transition-opacity duration-200"
+                        class="absolute left-full top-0 -ml-4 w-48 bg-[var(--user-base)] backdrop-blur-md border border-[var(--user-transparent)] rounded-xl shadow-2xl py-2 z-50 pointer-events-none opacity-0 transition-opacity duration-200"
                         style="visibility: hidden;">
                         {% for item in items %}
                         {% if item['name'] == 'Your Miis' and artisan_ids|length == 0 %}
                         <button onclick="openArtisanModal()"
-                            class="block w-full px-4 py-2 bg-gray-700/40 hover:bg-gray-700/60 text-white rounded-xl transition duration-200 flex items-center justify-between text-left">
+                            class="block w-full px-4 py-2 theme-menu-btn text-white rounded-xl transition duration-200 flex items-center justify-between text-left">
                             <span class="flex items-center">
                                 <img src="/static/icon/{{ item['icon'] }}.svg" alt="{{ item['name'] }}"
                                     class="w-5 h-5 invert mr-2" />{{ item['name'] }}
@@ -102,7 +168,7 @@
                         </button>
                         {% elif item.get('onclick') %}
                         <button onclick="{{ item['onclick'] }}"
-                            class="block w-full px-4 py-2 bg-gray-700/40 hover:bg-gray-700/60 text-white rounded-xl transition duration-200 flex items-center justify-between text-left">
+                            class="block w-full px-4 py-2 theme-menu-btn text-white rounded-xl transition duration-200 flex items-center justify-between text-left">
                             <span class="flex items-center">
                                 <img src="/static/icon/{{ item['icon'] }}.svg" alt="{{ item['name'] }}"
                                     class="w-5 h-5 invert mr-2" />{{ item['name'] }}
@@ -110,7 +176,7 @@
                         </button>
                         {% elif item.get('direct_link') %}
                         <a href="{{ item['direct_link'] }}" target="_blank"
-                            class="block w-full px-4 py-2 bg-gray-700/40 hover:bg-gray-700/60 text-white rounded-xl transition duration-200 flex items-center justify-between">
+                            class="block w-full px-4 py-2 theme-menu-btn text-white rounded-xl transition duration-200 flex items-center justify-between">
                             <span class="flex items-center">
                                 <img src="/static/icon/{{ item['icon'] }}.svg" alt="{{ item['name'] }}"
                                     class="w-5 h-5 invert mr-2" />{{ item['name'] }}
@@ -135,7 +201,7 @@
                         {% for item in channel['items'] %}
                         {% if item['name'] == 'Your Miis' and artisan_ids|length == 0 %}
                         <button onclick="openArtisanModal()"
-                            class="block w-full px-4 py-2 bg-gray-700/40 hover:bg-gray-700/60 text-white rounded-xl transition duration-200 flex items-center justify-between text-left">
+                            class="block w-full px-4 py-2 theme-menu-btn text-white rounded-xl transition duration-200 flex items-center justify-between text-left">
                             <span class="flex items-center">
                                 <img src="/static/icon/{{ item['icon'] }}.svg" alt="{{ item['name'] }}"
                                     class="w-5 h-5 invert mr-2" />{{ item['name'] }}
@@ -143,7 +209,7 @@
                         </button>
                         {% elif item.get('onclick') %}
                         <button onclick="{{ item['onclick'] }}"
-                            class="block w-full px-4 py-2 bg-gray-700/40 hover:bg-gray-700/60 text-white rounded-xl transition duration-200 flex items-center justify-between text-left">
+                            class="block w-full px-4 py-2 theme-menu-btn text-white rounded-xl transition duration-200 flex items-center justify-between text-left">
                             <span class="flex items-center">
                                 <img src="/static/icon/{{ item['icon'] }}.svg" alt="{{ item['name'] }}"
                                     class="w-5 h-5 invert mr-2" />{{ item['name'] }}
@@ -151,7 +217,7 @@
                         </button>
                         {% elif item.get('direct_link') %}
                         <a href="{{ item['direct_link'] }}" target="_blank"
-                            class="block w-full px-4 py-2 bg-gray-700/40 hover:bg-gray-700/60 text-white rounded-xl transition duration-200 flex items-center justify-between">
+                            class="block w-full px-4 py-2 theme-menu-btn text-white rounded-xl transition duration-200 flex items-center justify-between">
                             <span class="flex items-center">
                                 <img src="/static/icon/{{ item['icon'] }}.svg" alt="{{ item['name'] }}"
                                     class="w-5 h-5 invert mr-2" />{{ item['name'] }}
@@ -170,7 +236,7 @@
 
                 <div class="hidden md:block relative" onmouseenter="openYouMenu()" onmouseleave="closeYouMenu()">
                     <button id="youMenuBtn"
-                        class="w-full px-4 py-2 bg-gray-700/40 hover:bg-gray-700/60 text-white rounded-xl transition duration-200 flex items-center justify-between">
+                        class="w-full px-4 py-2 theme-menu-btn text-white rounded-xl transition duration-200 flex items-center justify-between">
                         <span class="flex items-center">
                             <img src="/static/icon/user.svg" alt="You" class="w-5 h-5 invert mr-2" />
                             You
@@ -180,7 +246,7 @@
                     </button>
 
                     <div id="youMenu"
-                        class="absolute left-full top-0 -ml-4 bg-gray-700/90 backdrop-blur-md border border-gray-600 rounded-xl shadow-xl py-2 z-40 pointer-events-none opacity-0 transition-opacity duration-200 min-w-max"
+                        class="absolute left-full top-0 -ml-4 bg-[var(--user-base)] backdrop-blur-md border border-[var(--user-transparent)] rounded-xl shadow-xl py-2 z-40 pointer-events-none opacity-0 transition-opacity duration-200 min-w-max"
                         style="visibility: hidden;">
                         {% for channel in channels %}
                         {{ channel_menu(channel.id, channel.name, channel['items'], channel.get('icon', '')) }}
@@ -252,16 +318,16 @@
                     <span class="mb-3">
                         <div class="space-y-3 mt-8">
                             <a href="{{ url_for('oidc_auth.login') }}"
-                                class="w-full px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition duration-200 flex items-center">
+                                class="w-full px-4 py-2 theme-menu-btn-active hover:bg-[var(--user-dark)] text-white rounded-xl transition duration-200 flex items-center">
                                 <img src="/static/icon/key-round.svg" alt="Login" class="w-5 h-5 invert mr-2" />
                                 Log In with WiiLink
                             </a>
                         </div>
 
-                        <div class="mt-2 p-4 bg-gray-700/40 rounded-xl border border-gray-700">
+                        <div class="mt-2 p-4 bg-[var(--user-base)]/40 rounded-xl border border-[var(--user-transparent)]">
                             <div class="flex items-center mb-2">
                                 <img src="/static/icon/info.svg" alt="Info" class="w-5 h-5 invert mr-2 opacity-70" />
-                                <h3 class="text-sm font-medium text-gray-300">Best Experience</h3>
+                                <h3 class="text-sm font-medium text-[var(--user-soft)]">Best Experience</h3>
                             </div>
                             <p class="text-sm text-gray-400">
                                 Sign in to access personalized recommendations, your gaming stats, and game discovery.
@@ -276,16 +342,16 @@
                 {% if user_info %}
                 <a href="/" class="block">
                     <div
-                        class="flex items-center space-x-4 my-1 pb-4 hover:bg-gray-700/60 rounded-xl p-3 transition duration-200">
+                        class="flex items-center space-x-4 my-1 pb-4 hover:bg-[var(--user-dark)] rounded-xl p-3 transition duration-200">
                         {% if user_info.profile_picture %}
                         <div
-                            class="w-10 h-10 rounded-lg bg-gray-700 overflow-hidden shadow-lg border border-gray-600 flex-shrink-0">
+                            class="w-10 h-10 rounded-lg bg-[var(--user-base)] overflow-hidden shadow-lg border border-[var(--user-transparent)] flex-shrink-0">
                             <img src="{{ user_info.profile_picture }}" alt="{{ user_info.username }}"
                                 class="w-full h-full object-cover" />
                         </div>
                         {% else %}
                         <div
-                            class="w-10 h-10 rounded-lg bg-indigo-600 flex items-center justify-center text-white shadow-lg flex-shrink-0">
+                            class="w-10 h-10 rounded-lg bg-[var(--user-base)] flex items-center justify-center text-white shadow-lg flex-shrink-0">
                             <img src="/static/icon/user.svg" alt="{{ user_info.username }}" class="w-6 h-6 invert" />
                         </div>
                         {% endif %}
@@ -310,9 +376,9 @@
             </div>
         </div>
 
-        <div id="sidebarOverlay" class="fixed inset-0 bg-gray-900/80 z-30 hidden md:hidden"></div>
+        <div id="sidebarOverlay" class="fixed inset-0 bg-[var(--user-transparent)] z-30 hidden md:hidden"></div>
 
-        <div class="mt-10 sm:mt-0 w-full md:ml-[300px] md:w-[calc(100%-300px)] min-h-screen sm:p-6">
+        <div class="mt-10 sm:mt-0 w-full md:ml-[300px] md:w-[calc(100%-300px)] min-h-screen sm:p-6 animate-fade-up">
             {% with messages = get_flashed_messages() %}
             {% for message in messages %}
             <div class="bg-yellow-500/20 border border-yellow-600/30 text-yellow-200 px-4 py-3 rounded-lg mb-6">
@@ -485,6 +551,24 @@
             }
         });
     </script>
+
+    <style>
+        .animate-fade-up {
+            animation: fadeUp 0.2s ease-in-out;
+        }
+
+        @keyframes fadeUp {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
 
 </body>
 

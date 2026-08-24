@@ -29,7 +29,11 @@ def count_user_polls(wii_numbers, db_url=None):
         return 0
 
     placeholders = ",".join(["%s"] * len(wii_numbers))
-    query = f"SELECT COUNT(DISTINCT question_id) AS count FROM votes WHERE wii_no IN ({placeholders}) AND type_cd = 0"
+    query = f"""
+        SELECT COUNT(DISTINCT question_id) AS count
+        FROM votes
+        WHERE wii_no IN ({placeholders}) AND type_cd = 0
+    """
     result = _run_query(query, wii_numbers, db_url)
     return result[0].get("count", 0) if result else 0
 
@@ -42,9 +46,11 @@ def count_user_suggestions(wii_numbers, db_url=None):
         return 0
 
     placeholders = ",".join(["%s"] * len(wii_numbers))
-    query = (
-        f"SELECT COUNT(*) AS count FROM suggestions WHERE wii_no IN ({placeholders})"
-    )
+    query = f"""
+        SELECT COUNT(*) AS count
+        FROM suggestions
+        WHERE wii_no IN ({placeholders})
+    """
     result = _run_query(query, wii_numbers, db_url)
     return result[0].get("count", 0) if result else 0
 
@@ -63,17 +69,17 @@ def fetch_user_polls(wii_numbers, limit=30, offset=0, db_url=None):
     placeholders = ",".join(["%s"] * len(wii_numbers))
     where_clause = f"v.wii_no IN ({placeholders}) AND v.type_cd = 0"
 
-    query = (
-        "SELECT "
-        "v.id, v.wii_no, v.question_id, v.type_cd, v.ans_cnt, "
-        "q.question_id, q.content_english, q.choice1_english, q.choice2_english, "
-        "q.type, q.category, q.date "
-        "FROM votes v "
-        "LEFT JOIN questions q ON v.question_id = q.question_id "
-        f"WHERE {where_clause} "
-        "ORDER BY q.date DESC "
-        f"LIMIT {limit} OFFSET {offset}"
-    )
+    query = f"""
+        SELECT
+            v.id, v.wii_no, v.question_id, v.type_cd, v.ans_cnt,
+            q.question_id, q.content_english, q.choice1_english, q.choice2_english,
+            q.type, q.category, q.date
+        FROM votes v
+        LEFT JOIN questions q ON v.question_id = q.question_id
+        WHERE {where_clause}
+        ORDER BY q.date DESC
+        LIMIT {limit} OFFSET {offset}
+    """
     polls = _run_query(query, wii_numbers, db_url)
 
     # Enrich polls with computed fields
@@ -82,18 +88,16 @@ def fetch_user_polls(wii_numbers, limit=30, offset=0, db_url=None):
         question_id = poll.get("question_id")
         if question_id:
             # Fetch votes and predictions for the same question_id
-            votes_query = (
-                "SELECT ans_cnt FROM votes "
-                "WHERE question_id = %s AND type_cd = 0 AND wii_no IN ("
-                + ",".join(["%s"] * len(wii_numbers))
-                + ")"
-            )
-            predictions_query = (
-                "SELECT ans_cnt FROM votes "
-                "WHERE question_id = %s AND type_cd = 1 AND wii_no IN ("
-                + ",".join(["%s"] * len(wii_numbers))
-                + ")"
-            )
+            votes_query = f"""
+                SELECT ans_cnt
+                FROM votes
+                WHERE question_id = %s AND type_cd = 0 AND wii_no IN ({placeholders})
+            """
+            predictions_query = f"""
+                SELECT ans_cnt
+                FROM votes
+                WHERE question_id = %s AND type_cd = 1 AND wii_no IN ({placeholders})
+            """
             votes_rows = _run_query(votes_query, [question_id] + wii_numbers, db_url)
             predictions_rows = _run_query(
                 predictions_query, [question_id] + wii_numbers, db_url
@@ -145,14 +149,14 @@ def fetch_user_suggestions(wii_numbers, limit=30, offset=0, db_url=None):
     placeholders = ",".join(["%s"] * len(wii_numbers))
     where_clause = f"wii_no IN ({placeholders})"
 
-    query = (
-        "SELECT "
-        "id, country_code, region_code, language_code, content, "
-        "choice1, choice2, wii_no "
-        "FROM suggestions "
-        f"WHERE {where_clause} "
-        "ORDER BY id DESC "
-        f"LIMIT {limit} OFFSET {offset}"
-    )
+    query = f"""
+        SELECT
+            id, country_code, region_code, language_code, content,
+            choice1, choice2, wii_no
+        FROM suggestions
+        WHERE {where_clause}
+        ORDER BY id DESC
+        LIMIT {limit} OFFSET {offset}
+    """
     suggestions = _run_query(query, wii_numbers, db_url)
     return suggestions
