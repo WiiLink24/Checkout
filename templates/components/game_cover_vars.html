@@ -4,14 +4,14 @@ Expected input variable: cover_game
 Expected output namespace: cover
 Outputs on namespace: cover.url, cover.fallback
 #}
+{% set cover_region = cover_game.region or "US" %}
 {% if cover_game.game_type == "DS" %}
-{% set cover.url = "https://art.gametdb.com/ds/coverHQ/EN/" ~ cover_game.game_id ~ ".jpg" %}
+{% set cover.url = "https://art.gametdb.com/ds/coverHQ/" ~ cover_region ~ "/" ~ cover_game.game_id ~ ".jpg" %}
 {% set cover.fallback = "" %}
 {% elif cover_game.game_type == "3DS" %}
-{% set cover.url = "https://art.gametdb.com/3ds/coverHQ/EN/" ~ cover_game.game_id ~ ".jpg" %}
+{% set cover.url = "https://art.gametdb.com/3ds/coverHQ/" ~ cover_region ~ "/" ~ cover_game.game_id ~ ".jpg" %}
 {% set cover.fallback = "" %}
 {% else %}
-{% set cover_region = cover_game.region or "US" %}
 {% set cover.url = "https://art.gametdb.com/wii/cover/" ~ cover_region ~ "/" ~ cover_game.game_id ~ ".png" %}
 {% set cover.fallback = "https://art.gametdb.com/wii/cover/" ~ cover_region ~ "/" ~ cover_game.game_id ~ "01.png" %}
 {% endif %}
