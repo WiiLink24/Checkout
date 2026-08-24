@@ -1,9 +1,9 @@
 {% if latest_digicard %}
-<div class="bg-gray-700/30 rounded-lg overflow-hidden">
+<div class="theme-card-inner rounded-lg overflow-hidden">
     <div class="p-4">
         <span class="flex flex-row items-center justify-between mb-2">
             <h3 class="text-lg font-bold text-white mb-1">{{ latest_digicard.card_info.name }}</h3>
-            <span class="text-xs bg-gray-600 text-white px-3 py-1 rounded-full">
+            <span class="text-xs theme-chip text-white px-3 py-1 rounded-full">
                 {{ latest_digicard.date_created.strftime('%Y-%m-%d') if latest_digicard.date_created else 'Unknown' }}
             </span>
         </span>
@@ -12,7 +12,7 @@
         </p>
     </div>
 
-    <div class="bg-gray-800 p-4 flex items-center justify-center relative group">
+    <div class="theme-card-inner p-4 flex items-center justify-center relative group">
         <img src="data:image/jpeg;base64,{{ latest_digicard.image_base64 }}"
             alt="Digicard for {{ latest_digicard.card_info.name }}" class="w-full h-auto rounded max-w-md" />
 

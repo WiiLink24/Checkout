@@ -16,23 +16,27 @@ WiiLink Checkout | {% if search_query %}{{ search_query }}{% endif %} Search
             <div class="flex flex-wrap gap-1 mb-3">
                 <a href="/search?search={{ search_query }}&type=users"
                     class="group flex items-center gap-2 px-4 py-2 rounded-xl transition duration-200 {% if search_type == 'users' or not search_type %}bg-indigo-700 text-white{% else %}bg-gray-800 text-gray-500 hover:bg-gray-700 hover:text-white{% endif %}">
-                    <img src="/static/icon/users.svg" alt="Users Icon" class="w-5 h-5 mr-2 inline invert {% if search_type == 'users' or not search_type %}opacity-100{% else %}opacity-50 group-hover:opacity-100{% endif %}">
+                    <img src="/static/icon/users.svg" alt="Users Icon"
+                        class="w-5 h-5 mr-2 inline invert {% if search_type == 'users' or not search_type %}opacity-100{% else %}opacity-50 group-hover:opacity-100{% endif %}">
                     Users
                 </a>
                 <span class="border-l border-gray-600 mx-2 h-6 self-center"></span>
                 <a href="/search?search={{ search_query }}&type=title"
                     class="group flex items-center gap-2 px-4 py-2 rounded-l-xl rounded-r-md transition duration-200 {% if search_type == 'title' %}bg-indigo-700 text-white{% else %}bg-gray-800 text-gray-500 hover:bg-gray-700 hover:text-white{% endif %}">
-                    <img src="/static/icon/gamepad.svg" alt="Title Icon" class="w-5 h-5 mr-2 inline invert {% if search_type == 'title' %}opacity-100{% else %}opacity-50 group-hover:opacity-100{% endif %}">
+                    <img src="/static/icon/gamepad.svg" alt="Title Icon"
+                        class="w-5 h-5 mr-2 inline invert {% if search_type == 'title' %}opacity-100{% else %}opacity-50 group-hover:opacity-100{% endif %}">
                     Title / Game ID
                 </a>
                 <a href="/search?search={{ search_query }}&type=publisher"
                     class="group flex items-center gap-2 px-4 py-2 rounded-md transition duration-200 {% if search_type == 'publisher' %}bg-indigo-700 text-white{% else %}bg-gray-800 text-gray-500 hover:bg-gray-700 hover:text-white{% endif %}">
-                    <img src="/static/icon/book-check.svg" alt="Publisher Icon" class="w-5 h-5 mr-2 inline invert {% if search_type == 'publisher' %}opacity-100{% else %}opacity-50 group-hover:opacity-100{% endif %}">
+                    <img src="/static/icon/book-check.svg" alt="Publisher Icon"
+                        class="w-5 h-5 mr-2 inline invert {% if search_type == 'publisher' %}opacity-100{% else %}opacity-50 group-hover:opacity-100{% endif %}">
                     Publisher
                 </a>
                 <a href="/search?search={{ search_query }}&type=developer"
                     class="group flex items-center gap-2 px-4 py-2 rounded-l-md rounded-r-xl transition duration-200 {% if search_type == 'developer' %}bg-indigo-700 text-white{% else %}bg-gray-800 text-gray-500 hover:bg-gray-700 hover:text-white{% endif %}">
-                    <img src="/static/icon/code.svg" alt="Developer Icon" class="w-5 h-5 mr-2 inline invert {% if search_type == 'developer' %}opacity-100{% else %}opacity-50 group-hover:opacity-100{% endif %}">
+                    <img src="/static/icon/code.svg" alt="Developer Icon"
+                        class="w-5 h-5 mr-2 inline invert {% if search_type == 'developer' %}opacity-100{% else %}opacity-50 group-hover:opacity-100{% endif %}">
                     Developer
                 </a>
             </div>
@@ -170,15 +174,13 @@ WiiLink Checkout | {% if search_query %}{{ search_query }}{% endif %} Search
         {% endif %}
 
         {% else %}
+                    {% if search_query %}
         <div class="border-2 border-dashed border-gray-700 rounded-xl p-12 text-center">
-            {% if search_query %}
             <img src="/static/icon/circle-alert.svg" alt="No Results" class="w-12 h-12 mx-auto mb-4 opacity-30 invert">
-            <p class="text-white/30 text-lg mb-4">No results match "<strong>{{ search_query }}</strong>",<br>perhaps you didn't mean to filter by <b>{{ search_type }}</b></p>
-            {% else %}
-            <p class="text-white/30 text-lg mb-2">No results found</p>
-            <p class="text-white/20 text-sm">Use the search bar above to find players or games</p>
-            {% endif %}
+            <p class="text-white/30 text-lg mb-4">No results match "<strong>{{ search_query }}</strong>",<br>perhaps you
+                didn't mean to filter by <b>{{ search_type }}</b></p>
         </div>
+                    {% endif %}
         {% endif %}
     </div>
 </div>

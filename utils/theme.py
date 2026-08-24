@@ -43,23 +43,23 @@ def _build_theme(pfp_url):
     except Exception:
         return None
 
-    # Darken the average color
-    dark_base = _mix_with(base_rgb, (0, 0, 0), 0.65)
+    # Darken the average color so page and sidebar backgrounds stay dark-mode safe
+    base = _mix_with(base_rgb, (0, 0, 0), 0.65)
+    dark = _mix_with(base, (0, 0, 0), 0.45)
 
-    print(
-        f"Generated theme for {pfp_url}: base={dark_base}, light={_mix_with(dark_base, (255, 255, 255), 0.35)}, dark={_mix_with(dark_base, (0, 0, 0), 0.3)}, soft={_mix_with(dark_base, (255, 255, 255), 0.55)}"
-    )
     return {
-        "base": _rgb_to_hex(dark_base),
-        "light": _rgb_to_hex(_mix_with(dark_base, (255, 255, 255), 0.35)),
-        "dark": _rgb_to_hex(_mix_with(dark_base, (0, 0, 0), 0.3)),
-        "soft": _rgb_to_hex(_mix_with(dark_base, (255, 255, 255), 0.55)),
-        "rgb": "{}, {}, {}".format(*dark_base),
-        "transparent": "rgba({}, {}, {}, 0.6)".format(*dark_base),
+        "base": _rgb_to_hex(base),
+        "dark": _rgb_to_hex(dark),
+        "light": _rgb_to_hex(_mix_with(base, (255, 255, 255), 0.35)),
+        "soft": _rgb_to_hex(_mix_with(base, (255, 255, 255), 0.55)),
+        "transparent": "rgba({}, {}, {}, 0.14)".format(*base),
+        "rgb": "{}, {}, {}".format(*base),
+        "dark_rgb": "{}, {}, {}".format(*dark),
     }
 
 
 def get_user_theme(pfp_url):
+    """Return theme dict {base, dark, light, transparent, rgb} for a profile picture URL (cached)."""
     if not pfp_url:
         return None
 

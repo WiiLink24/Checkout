@@ -190,7 +190,12 @@
         synopsisEl.textContent = data.synopsis || "No synopsis available.";
         currentGameId = data.gameId || "";
         currentSource = data.source || "recommendations";
-        currentFavoriteCount = data.favoriteCount ? parseInt(data.favoriteCount) : 0;
+        currentFavoriteCount =
+            data.favoriteCount !== undefined &&
+            data.favoriteCount !== null &&
+            data.favoriteCount !== ""
+                ? parseInt(data.favoriteCount)
+                : null;
 
         coverEl.dataset.tried = "";
         coverEl.dataset.fallback = data.coverFallback || "";

@@ -167,11 +167,6 @@ def search():
             # Paginate users
             total_count = len(users)
             users = users[offset : offset + limit]
-    else:
-        users = fetch_authentik_users()
-        users = [user for user in users if user.get("attributes", {}).get("wiis")]
-        total_count = len(users)
-        users = users[offset : offset + limit]
 
     total_pages = (total_count + limit - 1) // limit if total_count > 0 else 0
     random.shuffle(users)

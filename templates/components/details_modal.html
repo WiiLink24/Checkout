@@ -1,7 +1,7 @@
 <div id="detailsModal" class="fixed inset-0 z-50 hidden">
     <div class="absolute inset-0 bg-black/70 backdrop-blur-sm animate-opaque" data-modal-close></div>
     <div
-        class="absolute right-0 top-0 bottom-0 w-full max-w-2xl bg-gray-900 border-l border-gray-700 shadow-2xl overflow-y-auto animate-slideIn">
+        class="absolute right-0 top-0 bottom-0 w-full max-w-2xl bg-[var(--user-dark)] border-l border-[var(--user-transparent)] shadow-2xl overflow-y-auto animate-slideIn">
         <div class="flex flex-col gap-8">
             <div class="relative overflow-hidden">
                 <div id="modalCoverBackdrop"
@@ -29,9 +29,9 @@
                         </div>
                         <div class="flex flex-wrap items-center gap-2 text-xs text-gray-200">
                             <img id="modalRatingImg" src="" alt="Rating" class="h-8 object-contain hidden">
-                            <span id="modalGenreTag" class="px-3 py-1 rounded-full bg-gray-600/60 hidden"></span>
-                            <span id="modalPublisherTag" class="px-3 py-1 rounded-full bg-gray-600/60 hidden"></span>
-                            <span id="modalDeveloperTag" class="px-3 py-1 rounded-full bg-gray-600/60 hidden"></span>
+                            <span id="modalGenreTag" class="px-3 py-1 rounded-full theme-chip hidden"></span>
+                            <span id="modalPublisherTag" class="px-3 py-1 rounded-full theme-chip hidden"></span>
+                            <span id="modalDeveloperTag" class="px-3 py-1 rounded-full theme-chip hidden"></span>
                         </div>
                     </div>
                 </div>
@@ -44,21 +44,21 @@
                     </div>
                     <div class="flex flex-wrap gap-2 text-xs">
                         <select id="avgGender"
-                            class="bg-gray-900 border border-gray-700 text-gray-200 rounded-lg px-3 py-2">
+                            class="theme-btn border text-gray-200 rounded-lg px-3 py-2">
                             <option value="">All genders</option>
                             <option value="1">Boys</option>
                             <option value="2">Girls</option>
                         </select>
                         <input id="avgAgeMin" type="number" min="0" placeholder="Min age"
-                            class="w-24 bg-gray-900 border border-gray-700 text-gray-200 rounded-lg px-3 py-2" />
+                            class="w-24 theme-btn border text-gray-200 rounded-lg px-3 py-2" />
                         <input id="avgAgeMax" type="number" min="0" placeholder="Max age"
-                            class="w-24 bg-gray-900 border border-gray-700 text-gray-200 rounded-lg px-3 py-2" />
+                            class="w-24 theme-btn border text-gray-200 rounded-lg px-3 py-2" />
                     </div>
                 </div>
                 <div class="mt-4 flex flex-col gap-3 text-sm">
                     <div class="rounded-lg theme-card-inner">
                         <p class="text-xs uppercase text-gray-400">Avg Score</p>
-                        <div class="mt-2 h-8 w-full rounded-xl bg-gray-800/70 overflow-hidden">
+                        <div class="mt-2 h-8 w-full rounded-xl theme-card-inner overflow-hidden">
                             <div id="avgScoreBar" class="h-full rounded-xl flex items-center justify-end"
                                 style="width: 0%">
                                 <span id="avgScoreText" class="pr-2 text-xs uppercase tracking-wider">-</span>
@@ -71,7 +71,7 @@
                                 class="ml-2 mr-1 w-3.5 h-3.5 invert">
                             <span class="text-white" id="avgAppealLabel">-</span>
                         </p>
-                        <div class="mt-2 h-5 w-full rounded-full bg-gray-800 overflow-hidden">
+                        <div class="mt-2 h-5 w-full rounded-full theme-card-inner overflow-hidden">
                             <div id="avgAppealBar"
                                 class="h-full rounded-full bg-indigo-400 flex items-center justify-end"
                                 style="width: 0%">
@@ -86,7 +86,7 @@
                                 class="ml-2 mr-1 w-3.5 h-3.5 invert">
                             <span class="text-white" id="avgMoodLabel">-</span>
                         </p>
-                        <div class="mt-2 h-5 w-full rounded-full bg-gray-800 overflow-hidden">
+                        <div class="mt-2 h-5 w-full rounded-full theme-card-inner overflow-hidden">
                             <div id="avgMoodBar" class="h-full rounded-full bg-indigo-400 flex items-center justify-end"
                                 style="width: 0%">
                                 <span id="avgMoodText"
@@ -100,7 +100,7 @@
                                 class="ml-2 mr-1 w-3.5 h-3.5 invert">
                             <span class="text-white" id="avgFriendLabel">-</span>
                         </p>
-                        <div class="mt-2 h-5 w-full rounded-full bg-gray-800 overflow-hidden">
+                        <div class="mt-2 h-5 w-full rounded-full theme-card-inner overflow-hidden">
                             <div id="avgFriendBar"
                                 class="h-full rounded-full bg-indigo-400 flex items-center justify-end"
                                 style="width: 0%">
@@ -114,15 +114,15 @@
             <div id="timePlayedStatsSection" class="px-6">
                 <p class="text-xs uppercase tracking-widest text-gray-400 mb-4">Community Playtime</p>
                 <div class="grid grid-cols-3 gap-3 text-sm">
-                    <div class="rounded-lg bg-gray-800/70 p-3">
+                    <div class="rounded-lg theme-card-inner p-3">
                         <p class="text-xs uppercase text-gray-400">Total Players</p>
                         <p class="text-lg font-semibold text-emerald-300" id="totalPlayersText">-</p>
                     </div>
-                    <div class="rounded-lg bg-gray-800/70 p-3">
+                    <div class="rounded-lg theme-card-inner p-3">
                         <p class="text-xs uppercase text-gray-400">Total Time</p>
                         <p class="text-lg font-semibold text-emerald-300" id="totalTimeText">-</p>
                     </div>
-                    <div class="rounded-lg bg-gray-800/70 p-3">
+                    <div class="rounded-lg theme-card-inner p-3">
                         <p class="text-xs uppercase text-gray-400">Avg per Player</p>
                         <p class="text-lg font-semibold text-emerald-300" id="avgTimePerPlayerText">-</p>
                     </div>
@@ -131,7 +131,7 @@
             <div id="favoritesStatsSection" class="px-6">
                 <p class="text-xs uppercase tracking-widest text-gray-400 mb-4">Community Favorites</p>
                 <div class="grid gap-3 text-sm">
-                    <div class="rounded-lg bg-gray-800/70 p-3">
+                    <div class="rounded-lg theme-card-inner p-3">
                         <p class="text-xs uppercase text-gray-400">Favorites</p>
                         <p class="text-lg font-semibold text-rose-300" id="favoriteCountText">-</p>
                     </div>
@@ -143,7 +143,7 @@
             </div>
         </div>
         <button data-modal-close
-            class="w-[calc(100%-37px)] m-4 py-4 text-sm uppercase tracking-wider font-semibold bg-gray-700 rounded-xl text-white hover:bg-gray-600 transition">
+            class="w-[calc(100%-37px)] m-4 py-4 text-sm uppercase tracking-wider font-semibold theme-btn rounded-xl text-white transition">
             Close</button>
     </div>
 </div>
