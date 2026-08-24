@@ -12,7 +12,7 @@
     data-synopsis="{{ rec.synopsis_en or '' }}" {%- if rec.input_controls %}
     data-input-controls='{{ rec.input_controls | tojson }}' {% endif %} data-wifi-players="{{ rec.wifi_players or 0 }}"
     data-input-players="{{ rec.input_players or 0 }}"
-    class="relative rounded-2xl border border-gray-700 bg-gray-800/80 shadow-xl overflow-hidden hover:border-gray-500 transition duration-200 text-left w-full">
+    class="relative rounded-2xl theme-card border shadow-xl overflow-hidden transition duration-200 text-left w-full">
     <div class="absolute inset-x-0 top-0 h-44 bg-center bg-cover blur-lg opacity-10"
         style="background-image: url('{{ cover.url }}'); -webkit-mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0)); mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0));">
     </div>

@@ -12,16 +12,21 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
 
 {% block content %}
 {% set vt_seen = namespace(ids=[]) %}
+{% if user_theme %}
+<div class="absolute inset-x-0 top-0 h-[400px] pointer-events-none"
+    style="background: radial-gradient(ellipse 90% 100% at 50% 0%, rgba({{ user_theme.rgb }}, 0.16), transparent 70%);">
+</div>
+{% endif %}
 <div class="absolute inset-x-0 top-0 h-[500px] bg-center bg-cover blur-lg opacity-30 pointer-events-none"
     style="view-transition-name: vt-bg-blur; background-image: url('{{ viewed_user.profile_picture }}'); -webkit-mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0)); mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0));">
 </div>
-<div class="px-4 sm:px-6 lg:px-8 py-8">
+<div class="mt-8 px-4 sm:px-6 lg:px-8 py-8">
     <div class="max-w-6xl mx-auto">
         <div class="flex flex-col sm:flex-row sm:items-center gap-6 mb-10">
             <div class="relative w-32 h-32 flex items-center justify-center group flex-shrink-0">
 <img src="{{ viewed_user.profile_picture }}" alt="{{ viewed_user.username }}"
                         style="view-transition-name: vt-pfp-{{ viewed_user.username|slugify }};"
-                        class="w-32 h-32 rounded-2xl object-cover relative z-10 shadow-lg border border-gray-700">
+                        class="w-32 h-32 rounded-2xl object-cover relative z-10 shadow-lg border theme-pfp-border">
                 <a href="{% if viewed_user.linked_wii_no %}/{{ viewed_user.linked_wii_no[0] }}.png{% else %}#{% endif %}"
                     title="View Tag"
                     class="absolute inset-0 rounded-2xl bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center z-20">
@@ -35,7 +40,7 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                 <div class="flex flex-wrap items-center gap-2">
                     {% for linked_wii in viewed_user.linked_wii_no %}
                     <button
-                        class="px-3 py-1 bg-gray-700 rounded-md text-gray-300 hover:bg-gray-600 active:bg-indigo-300 transition-colors duration-200 cursor-pointer border-0 text-left"
+                        class="px-3 py-1 theme-chip rounded-md text-gray-300 transition-colors duration-200 cursor-pointer border-0 text-left"
                         data-wii-number="{{ linked_wii }}" onclick="copyToClipboard(this, '{{ linked_wii }}')">
                         {{ linked_wii|format_serial }}
                     </button>
@@ -90,73 +95,73 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
         {% if not serial_not_linked %}
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-10">
             <a href="{% if base_url %}{{ base_url }}/time_played{% else %}/time_played{% endif %}"
-                class="group hover:bg-gray-300/10 rounded-2xl p-3 flex items-center gap-3 transition duration-200">
-                <div class="w-11 h-11 rounded-xl bg-indigo-300/20 flex items-center justify-center flex-shrink-0">
+                class="group theme-card-hover rounded-2xl p-3 flex items-center gap-3">
+                <div class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
                     <img src="/static/icon/clock.svg" alt="" class="w-6 h-6 invert">
                 </div>
                 <div class="min-w-0">
                     <p class="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1 truncate">Total Time
                         Played</p>
-                    <p class="text-xl font-bold text-white transition duration-200">{{
+                    <p class="text-xl font-bold text-white">{{
                         user_stats.total_minutes|format_playtime }}</p>
                 </div>
             </a>
             <a href="{% if base_url %}{{ base_url }}/recommendations{% else %}/recommendations{% endif %}"
-                class="group hover:bg-gray-300/10 rounded-2xl p-3 flex items-center gap-3 transition duration-200">
-                <div class="w-11 h-11 rounded-xl bg-indigo-300/20 flex items-center justify-center flex-shrink-0">
+                class="group theme-card-hover rounded-2xl p-3 flex items-center gap-3">
+                <div class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
                     <img src="/static/icon/star.svg" alt="" class="w-6 h-6 invert">
                 </div>
                 <div class="min-w-0">
                     <p class="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1 truncate">Reviews Given
                     </p>
-                    <p class="text-xl font-bold text-white transition duration-200">{{
+                    <p class="text-xl font-bold text-white">{{
                         user_stats.total_reviews|int }}</p>
                 </div>
             </a>
             <a href="{% if base_url %}{{ base_url }}/favorites{% else %}/favorites{% endif %}"
-                class="group hover:bg-gray-300/10 rounded-2xl p-3 flex items-center gap-3 transition duration-200">
-                <div class="w-11 h-11 rounded-xl bg-indigo-300/20 flex items-center justify-center flex-shrink-0">
+                class="group theme-card-hover rounded-2xl p-3 flex items-center gap-3">
+                <div class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
                     <img src="/static/icon/heart.svg" alt="" class="w-6 h-6 invert">
                 </div>
                 <div class="min-w-0">
                     <p class="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1 truncate">Favorites</p>
-                    <p class="text-xl font-bold text-white transition duration-200">{{
+                    <p class="text-xl font-bold text-white">{{
                         user_counts.favorites }}</p>
                 </div>
             </a>
             <a href="{% if base_url %}{{ base_url }}/time_played{% else %}/time_played{% endif %}"
-                class="group hover:bg-gray-300/10 rounded-2xl p-3 flex items-center gap-3 transition duration-200">
-                <div class="w-11 h-11 rounded-xl bg-indigo-300/20 flex items-center justify-center flex-shrink-0">
+                class="group theme-card-hover rounded-2xl p-3 flex items-center gap-3">
+                <div class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
                     <img src="/static/icon/gamepad.svg" alt="" class="w-6 h-6 invert">
                 </div>
                 <div class="min-w-0">
                     <p class="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1 truncate">Games Played
                     </p>
-                    <p class="text-xl font-bold text-white transition duration-200">{{
+                    <p class="text-xl font-bold text-white">{{
                         user_counts.games_played }}</p>
                 </div>
             </a>
             <a href="{% if base_url %}{{ base_url }}/polls{% else %}/polls{% endif %}"
-                class="group hover:bg-gray-300/10 rounded-2xl p-3 flex items-center gap-3 transition duration-200">
-                <div class="w-11 h-11 rounded-xl bg-indigo-300/20 flex items-center justify-center flex-shrink-0">
+                class="group theme-card-hover rounded-2xl p-3 flex items-center gap-3">
+                <div class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
                     <img src="/static/icon/chart-line.svg" alt="" class="w-6 h-6 invert">
                 </div>
                 <div class="min-w-0">
                     <p class="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1 truncate">Polls Voted
                     </p>
-                    <p class="text-xl font-bold text-white transition duration-200">{{
+                    <p class="text-xl font-bold text-white">{{
                         user_counts.polls }}</p>
                 </div>
             </a>
             <a href="{% if base_url %}{{ base_url }}/contest_submissions{% else %}/contest_submissions{% endif %}"
-                class="group hover:bg-gray-300/10 rounded-2xl p-3 flex items-center gap-3 transition duration-200">
-                <div class="w-11 h-11 rounded-xl bg-indigo-300/20 flex items-center justify-center flex-shrink-0">
+                class="group theme-card-hover rounded-2xl p-3 flex items-center gap-3">
+                <div class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
                     <img src="/static/icon/send-horizontal.svg" alt="" class="w-6 h-6 invert">
                 </div>
                 <div class="min-w-0">
                     <p class="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1 truncate">Contest
                         Submissions</p>
-                    <p class="text-xl font-bold text-white transition duration-200">{{
+                    <p class="text-xl font-bold text-white">{{
                         user_counts.contest_submissions }}</p>
                 </div>
             </a>
@@ -165,7 +170,7 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
 
         <div class="flex flex-col gap-8">
             {% if not serial_not_linked %}
-            <section class="bg-gray-800/40 border border-gray-700/60 rounded-2xl p-5 sm:p-6">
+            <section class="theme-card border rounded-2xl p-5 sm:p-6">
                 <div class="flex items-center justify-between mb-6">
                     <h2 style="view-transition-name: vt-title-favorites;"
                         class="text-xl sm:text-2xl font-bold text-white flex items-center gap-3">
@@ -214,7 +219,7 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                     {% endfor %}
                 </div>
                 {% else %}
-                <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-8 text-center">
+                <div class="theme-card border rounded-xl p-8 text-center">
                     <p class="!mb-0 text-gray-400">No favorites yet</p>
                 </div>
                 {% endif %}
@@ -225,7 +230,7 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                 {% if not serial_not_linked %}
                 <div {% if recent_contests or recent_polls or (not base_url and latest_digicard) %} class="w-full md:w-1/2 space-y-6"
                     {% else %} class="w-full" {% endif %}>
-                    <section class="bg-gray-800/40 border border-gray-700/60 rounded-2xl p-5 sm:p-6">
+                    <section class="theme-card border rounded-2xl p-5 sm:p-6">
                         <div class="flex items-center justify-between mb-6">
                             <h2 style="view-transition-name: vt-title-time-played;"
                                 class="text-xl sm:text-2xl font-bold text-white flex items-center gap-3">
@@ -284,13 +289,13 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                             {% endfor %}
                         </div>
                         {% else %}
-                        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-8 text-center">
+                        <div class="theme-card border rounded-xl p-8 text-center">
                             <p class="!mb-0 text-gray-400">No games played yet</p>
                         </div>
                         {% endif %}
                     </section>
 
-                    <section class="bg-gray-800/40 border border-gray-700/60 rounded-2xl p-5 mt-8 sm:p-6">
+                    <section class="theme-card border rounded-2xl p-5 mt-8 sm:p-6">
                         <div class="flex items-center justify-between mb-6">
                             <h2 style="view-transition-name: vt-title-recommendations;"
                                 class="text-xl sm:text-2xl font-bold text-white flex items-center gap-3">
@@ -367,7 +372,7 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                             {% endfor %}
                         </div>
                         {% else %}
-                        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-8 text-center">
+                        <div class="theme-card border rounded-xl p-8 text-center">
                             <p class="!mb-0 text-gray-400">No reviews yet</p>
                         </div>
                         {% endif %}
@@ -377,7 +382,7 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                 {% if recent_contests or recent_polls or (not base_url and latest_digicard) %}
                 <div class="{% if serial_not_linked %}w-full{% else %}w-full md:w-1/2{% endif %} space-y-6">
                     {% if not base_url and latest_digicard %}
-                    <section class="bg-gray-800/40 border border-gray-700/60 rounded-2xl p-5 sm:p-6">
+                    <section class="theme-card border rounded-2xl p-5 sm:p-6">
                         <h2 style="view-transition-name: vt-title-digicard;"
                             class="text-xl sm:text-2xl font-bold text-white flex items-center gap-3 mb-6">
                             <img src="/static/icon/id-card.svg" alt="" class="w-6 h-6 invert opacity-70">
@@ -388,7 +393,7 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                     {% endif %}
 
                     {% if recent_contests %}
-                    <section class="bg-gray-800/40 border border-gray-700/60 rounded-2xl p-5 sm:p-6">
+                    <section class="theme-card border rounded-2xl p-5 sm:p-6">
                         <div class="flex items-center justify-between mb-6">
                             <h2 style="view-transition-name: vt-title-contest-submissions;"
                                 class="text-xl sm:text-2xl font-bold text-white flex items-center gap-3">
@@ -418,7 +423,7 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                     {% endif %}
 
                     {% if recent_polls %}
-                    <section class="bg-gray-800/40 border border-gray-700/60 rounded-2xl p-5 sm:p-6">
+                    <section class="theme-card border rounded-2xl p-5 sm:p-6">
                         <div class="flex items-center justify-between mb-6">
                             <h2 style="view-transition-name: vt-title-polls;"
                                 class="text-xl sm:text-2xl font-bold text-white flex items-center gap-3">

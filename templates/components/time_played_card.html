@@ -1,4 +1,4 @@
-<div class="relative rounded-2xl border border-gray-700 bg-gray-800/80 shadow-xl overflow-hidden">
+<div class="relative rounded-2xl theme-card border shadow-xl overflow-hidden">
     {% set cover = namespace(url='', fallback='') %}
     {% set vt_name = namespace(name='') %}
     {% set cover_game = rec %}
@@ -41,11 +41,11 @@
                 <div class="hidden"></div>
             </div>
             <span class="grid grid-cols-2 gap-4 mt-5">
-                <div class="rounded-xl bg-gray-900/70 p-3 flex flex-col gap-3">
+                <div class="rounded-xl theme-card-inner p-3 flex flex-col gap-3">
                     <p class="text-xs uppercase text-gray-400">Times Played</p>
                     <p class="text-lg font-semibold text-emerald-300">{{ rec.times_played }}</p>
                 </div>
-                <div class="rounded-xl bg-gray-900/70 p-3 flex flex-col gap-3">
+                <div class="rounded-xl theme-card-inner p-3 flex flex-col gap-3">
                     <p class="text-xs uppercase text-gray-400">Time Played</p>
                     <p class="text-lg font-semibold text-emerald-300">{{ rec.time_played|format_playtime }}</p>
                 </div>
@@ -53,7 +53,7 @@
         </span>
         <div class="mt-5 flex items-center justify-end gap-4">
             <button
-                class="px-4 py-2 text-xs uppercase tracking-wider font-semibold bg-gray-900/70 text-white rounded-lg border border-gray-700 hover:border-gray-500 transition"
+                class="px-4 py-2 text-xs uppercase tracking-wider font-semibold theme-btn text-white rounded-lg border transition"
                 data-modal-open data-source="time_played" data-title="{{ rec.title_en or rec.title }}"
                 data-game-id="{{ rec.game_id }}" data-cover-url="{{ cover.url }}"
                 data-cover-fallback="{{ cover.fallback }}" data-release-year="{{ rec.release_year or '' }}"

@@ -2,6 +2,24 @@ import config
 import random
 from utils.utils import _build_serial_filter, _run_query
 
+_PREFERRED_TITLES_CTE = """
+    WITH preferred AS (
+        SELECT SUBSTRING(game_id, 1, 4) AS prefix, MIN(game_id) AS disc_id
+        FROM titles
+        WHERE LENGTH(game_id) = 6
+        GROUP BY SUBSTRING(game_id, 1, 4)
+    ),
+    rec_titles AS (
+        SELECT r.serial_number, r.game_id, r.recommendation_percent,
+               CASE WHEN LENGTH(r.game_id) = 4
+                    THEN COALESCE(p.disc_id, r.game_id)
+                    ELSE r.game_id
+               END AS resolved_id
+        FROM recommendations r
+        LEFT JOIN preferred p ON p.prefix = SUBSTRING(r.game_id, 1, 4)
+    )
+"""
+
 
 def find_game_recommendation(serial_prefixes):
     if not serial_prefixes:
@@ -11,15 +29,11 @@ def find_game_recommendation(serial_prefixes):
 
     # Get user's played genres
     profile_query = f"""
+        {_PREFERRED_TITLES_CTE}
         SELECT t.genre, t.developer
-        FROM recommendations r
-        LEFT JOIN LATERAL (
-            SELECT * FROM titles t
-            WHERE t.game_id = r.game_id OR SUBSTRING(t.game_id, 1, 4) = SUBSTRING(r.game_id, 1, 4)
-            ORDER BY LENGTH(t.game_id) DESC, t.game_id
-            LIMIT 1
-        ) t ON true
-        WHERE {where_clause} AND r.recommendation_percent > 50
+        FROM rec_titles rt
+        LEFT JOIN titles t ON t.game_id = rt.resolved_id
+        WHERE {where_clause} AND rt.recommendation_percent > 50
         LIMIT 100
     """
     profile_rows = _run_query(profile_query, params, config.db_url)
@@ -53,24 +67,13 @@ def find_game_recommendation(serial_prefixes):
     played_ids = {row.get("game_id") for row in played_rows if row.get("game_id")}
 
     # Fetch candidate games and score them
-    candidates_query = """
-        WITH preferred AS (
-            SELECT SUBSTRING(game_id, 1, 4) AS prefix, MIN(game_id) AS disc_id
-            FROM titles
-            WHERE LENGTH(game_id) = 6
-            GROUP BY SUBSTRING(game_id, 1, 4)
-        )
+    candidates_query = f"""
+        {_PREFERRED_TITLES_CTE}
         SELECT t.game_id, t.display_name, t.title_en, t.synopsis_en, t.genre, t.developer,
                t.game_type, t.release_year, t.rating_type, t.rating_value, t.region,
-               COALESCE(AVG(r.recommendation_percent), 50) AS avg_rating, COUNT(r.game_id) AS rating_count
+               COALESCE(AVG(rt.recommendation_percent), 50) AS avg_rating, COUNT(rt.game_id) AS rating_count
         FROM titles t
-        LEFT JOIN recommendations r
-            ON (LENGTH(r.game_id) = 4
-                AND t.game_id = COALESCE(
-                    (SELECT disc_id FROM preferred WHERE prefix = r.game_id),
-                    r.game_id
-                ))
-            OR (LENGTH(r.game_id) > 4 AND r.game_id = t.game_id)
+        LEFT JOIN rec_titles rt ON rt.resolved_id = t.game_id
         WHERE t.display_name IS NOT NULL AND t.genre IS NOT NULL
         GROUP BY t.game_id, t.display_name, t.title_en, t.synopsis_en, t.genre, t.developer,
                  t.game_type, t.release_year, t.rating_type, t.rating_value, t.region

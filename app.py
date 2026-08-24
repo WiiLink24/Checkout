@@ -14,6 +14,7 @@ from utils.utils import (
     close_db_connections,
     cache as query_cache,
 )
+from utils.theme import get_user_theme
 from channels.cmoc import get_artisan_ids_from_wii_number
 
 # Import blueprint modules
@@ -58,6 +59,7 @@ app.jinja_env.filters["format_playtime"] = format_playtime
 app.jinja_env.filters["slugify"] = lambda value: re.sub(
     r"[^a-z0-9-]", "", str(value).lower().replace(" ", "-")
 )
+app.jinja_env.filters["user_theme"] = get_user_theme
 
 
 @app.context_processor

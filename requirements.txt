@@ -6,3 +6,4 @@ psycopg2-binary
 black
 apscheduler
 pillow
+colorgram.py

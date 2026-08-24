@@ -1,4 +1,4 @@
-<div class="relative rounded-2xl border border-gray-700 bg-gray-800/80 shadow-xl overflow-hidden">
+<div class="relative rounded-2xl theme-card border shadow-xl overflow-hidden">
     {% set cover = namespace(url='', fallback='') %}
     {% set vt_name = namespace(name='') %}
     {% set cover_game = game %}
@@ -59,7 +59,7 @@
             {% set score_bar_class = "bg-red-400" %}
             {% endif %}
             <div class="mt-5">
-                <div class="h-6 w-full rounded-xl bg-gray-900/70 overflow-hidden">
+                <div class="h-6 w-full rounded-xl theme-card-inner overflow-hidden">
                     <div class="h-full rounded-full {{ score_bar_class }} flex items-center justify-end"
                         style="width: {{ score_percent }}%;">
                         <span class="pr-2 text-xs uppercase tracking-wider {{ score_text_class }}">{{ score_percent
@@ -68,33 +68,33 @@
                 </div>
             </div>
             <div class="mt-4 grid grid-cols-2 gap-3 text-sm">
-                <div class="rounded-xl bg-gray-900/70 p-3">
+                <div class="rounded-xl theme-card-inner p-3">
                     <p class="text-xs uppercase text-gray-400">Avg Score</p>
                     <p class="text-2xl font-bold text-green-400 mt-1">{{ "%.1f"|format(game.avg_recommendation) }}%</p>
                 </div>
-                <div class="rounded-xl bg-gray-900/70 p-3">
+                <div class="rounded-xl theme-card-inner p-3">
                     <p class="text-xs uppercase text-gray-400">Reviewers</p>
                     <p class="text-2xl font-bold text-blue-400 mt-1">{{ game.reviewer_count }}</p>
                 </div>
             </div>
             {% elif score_type == "most_played" %}
             <div class="mt-5 flex flex-col sm:grid sm:grid-cols-3 gap-3 text-sm">
-                <div class="rounded-xl bg-gray-900/70 p-3">
+                <div class="rounded-xl theme-card-inner p-3">
                     <p class="text-xs uppercase text-gray-400">Total Time</p>
                     <p class="text-lg font-bold text-indigo-400 mt-1">{{ game.total_time_played|format_playtime }}</p>
                 </div>
-                <div class="rounded-xl bg-gray-900/70 p-3">
+                <div class="rounded-xl theme-card-inner p-3">
                     <p class="text-xs uppercase text-gray-400">Players</p>
                     <p class="text-2xl font-bold text-purple-400 mt-1">{{ game.player_count }}</p>
                 </div>
-                <div class="rounded-xl bg-gray-900/70 p-3">
+                <div class="rounded-xl theme-card-inner p-3">
                     <p class="text-xs uppercase text-gray-400">Avg per Player</p>
                     <p class="text-lg font-bold text-pink-400 mt-1">{{ game.avg_time_per_player|format_playtime }}</p>
                 </div>
             </div>
             {% elif score_type == "most_favorited" %}
             <div class="mt-5 grid grid-cols-2 gap-3 text-sm">
-                <div class="rounded-xl bg-gray-900/70 p-3">
+                <div class="rounded-xl theme-card-inner p-3">
                     <p class="text-xs uppercase text-gray-400">Favorites</p>
                     <p class="text-2xl font-bold text-rose-400 mt-1">{{ game.favorite_count }}</p>
                 </div>
@@ -103,7 +103,7 @@
         </span>
         <div class="mt-5 flex items-center justify-end">
             <button
-                class="px-3 py-2 text-xs uppercase tracking-wider bg-gray-900/70 text-white rounded-lg border border-gray-700 hover:border-gray-500 transition"
+                class="px-3 py-2 text-xs uppercase tracking-wider theme-btn text-white rounded-lg border transition"
                 data-modal-open data-source="{{ modal_source }}" data-title="{{ game.title_en or game.title }}"
                 data-game-id="{{ game.game_id }}" data-cover-url="{{ cover.url }}"
                 data-cover-fallback="{{ cover.fallback }}" data-release-year="{{ game.release_year or '' }}"
