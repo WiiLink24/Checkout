@@ -46,7 +46,9 @@ def _build_theme(pfp_url):
     # Darken the average color
     dark_base = _mix_with(base_rgb, (0, 0, 0), 0.65)
 
-    print(f"Generated theme for {pfp_url}: base={dark_base}, light={_mix_with(dark_base, (255, 255, 255), 0.35)}, dark={_mix_with(dark_base, (0, 0, 0), 0.3)}, soft={_mix_with(dark_base, (255, 255, 255), 0.55)}")
+    print(
+        f"Generated theme for {pfp_url}: base={dark_base}, light={_mix_with(dark_base, (255, 255, 255), 0.35)}, dark={_mix_with(dark_base, (0, 0, 0), 0.3)}, soft={_mix_with(dark_base, (255, 255, 255), 0.55)}"
+    )
     return {
         "base": _rgb_to_hex(dark_base),
         "light": _rgb_to_hex(_mix_with(dark_base, (255, 255, 255), 0.35)),
