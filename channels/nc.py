@@ -23,7 +23,7 @@ def serial_has_time_played(serial_prefixes):
 # Count functions for pagination
 
 
-def count_bookmarks(serial_prefixes):
+def count_bookmarks(serial_prefixes, use_cache=True):
     """Count total bookmarked games for given serial prefixes."""
     where_clause, params = _build_serial_filter("b.serial_number", serial_prefixes)
     if not where_clause:
@@ -34,11 +34,11 @@ def count_bookmarks(serial_prefixes):
         FROM bookmarks b
         WHERE {where_clause}
     """
-    result = _run_query(query, params, config.db_url)
+    result = _run_query(query, params, config.db_url, use_cache=use_cache)
     return result[0].get("count", 0) if result else 0
 
 
-def count_recommendations(serial_prefixes):
+def count_recommendations(serial_prefixes, use_cache=True):
     """Count total recommendations for given serial prefixes."""
     where_clause, params = _build_serial_filter("serial_number", serial_prefixes)
     if not where_clause:
@@ -49,11 +49,11 @@ def count_recommendations(serial_prefixes):
         FROM recommendations
         WHERE {where_clause}
     """
-    result = _run_query(query, params, config.db_url)
+    result = _run_query(query, params, config.db_url, use_cache=use_cache)
     return result[0].get("count", 0) if result else 0
 
 
-def count_time_played(serial_prefixes):
+def count_time_played(serial_prefixes, use_cache=True):
     """Count total time played entries for given serial prefixes."""
     where_clause, params = _build_serial_filter("serial_number", serial_prefixes)
     if not where_clause:
@@ -64,7 +64,7 @@ def count_time_played(serial_prefixes):
         FROM time_played
         WHERE {where_clause}
     """
-    result = _run_query(query, params, config.db_url)
+    result = _run_query(query, params, config.db_url, use_cache=use_cache)
     return result[0].get("count", 0) if result else 0
 
 
@@ -413,7 +413,7 @@ def fetch_user_latest_reviews(serial_prefixes, limit=5):
     return reviews[:limit]
 
 
-def fetch_user_stats(serial_prefixes):
+def fetch_user_stats(serial_prefixes, use_cache=True):
     """Fetch user's aggregate statistics (total playtime and review count)."""
     if not serial_prefixes:
         return {"total_minutes": 0, "total_reviews": 0}
@@ -426,7 +426,9 @@ def fetch_user_stats(serial_prefixes):
         FROM time_played tp
         WHERE {where_clause}
     """
-    playtime_result = _run_query(playtime_query, params, config.db_url)
+    playtime_result = _run_query(
+        playtime_query, params, config.db_url, use_cache=use_cache
+    )
     total_minutes = playtime_result[0]["total_minutes"] if playtime_result else 0
 
     # Total reviews/recommendations
@@ -438,7 +440,9 @@ def fetch_user_stats(serial_prefixes):
         FROM recommendations r
         WHERE {reviews_where_clause}
     """
-    reviews_result = _run_query(reviews_query, reviews_params, config.db_url)
+    reviews_result = _run_query(
+        reviews_query, reviews_params, config.db_url, use_cache=use_cache
+    )
     total_reviews = reviews_result[0]["total_reviews"] if reviews_result else 0
 
     return {"total_minutes": total_minutes, "total_reviews": total_reviews}
