@@ -1,10 +1,11 @@
 {# Emits theme CSS vars for the body element.
    Priority: explicit user_theme param -> viewed_user theme -> gray-900/950 defaults. #}
+{% set active_theme_id = viewed_user.achievements.themes.active if viewed_user and viewed_user.achievements and viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'default' else None %}
 {% if user_theme is defined and user_theme %}
 {% set theme = user_theme %}
 {% elif viewed_user %}
-{% set theme = viewed_user.profile_picture|user_theme %}
+{% set theme = viewed_user.profile_picture|user_theme(active_theme_id) %}
 {% else %}
 {% set theme = None %}
 {% endif %}
-{% if theme %}--user-base: {{ theme.base }}; --user-dark: {{ theme.dark }}; --user-light: {{ theme.light }}; --user-soft: {{ theme.soft or theme.light }}; --user-transparent: {{ theme.transparent }}; --user-rgb: {{ theme.rgb }}; --user-dark-rgb: {{ theme.dark_rgb or theme.rgb }};{% else %}--user-base: #111827; --user-dark: #030712; --user-light: #646873; --user-soft: #646873; --user-transparent: rgba(17, 24, 39, 0.14); --user-rgb: 17, 24, 39; --user-dark-rgb: 3, 7, 18;{% endif %}
+{% if theme %}--user-base: {{ theme.base }}; --user-dark: {{ theme.dark }}; --user-light: {{ theme.light }}; --user-soft: {{ theme.soft or theme.light }}; --user-transparent: {{ theme.transparent }}; --user-rgb: {{ theme.rgb }}; --user-dark-rgb: {{ theme.dark_rgb or theme.rgb }}; --user-font-family: {{ theme.font or 'inherit' }}; {% if theme.background %}--user-background-image: url('{{ theme.background }}');{% else %}--user-background-image: none;{% endif %}{% else %}--user-base: #111827; --user-dark: #030712; --user-light: #646873; --user-soft: #646873; --user-transparent: rgba(17, 24, 39, 0.14); --user-rgb: 17, 24, 39; --user-dark-rgb: 3, 7, 18; --user-font-family: inherit; --user-background-image: none;{% endif %}

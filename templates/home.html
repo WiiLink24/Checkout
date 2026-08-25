@@ -1,3 +1,4 @@
+            <span class="flex items-center gap-3 text-gray-300"><img src="/static/icon/settings.svg" alt="" class="w-5 h-5 invert"> Theme Shop</span>
 {% extends "generic/base.html" %}
 
 {% block title %}
@@ -156,15 +157,26 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
     }
 </style>
 {% set vt_seen = namespace(ids=[]) %}
-{% set user_theme = viewed_user.profile_picture|user_theme %}
+{% set active_theme_id = viewed_user.achievements.themes.active if viewed_user.achievements and viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'default' else None %}
+{% set user_theme = viewed_user.profile_picture|user_theme(active_theme_id) %}
 {% if user_theme %}
 <div class="absolute inset-x-0 top-0 h-[400px] pointer-events-none"
     style="background: radial-gradient(ellipse 90% 100% at 50% 0%, rgba({{ user_theme.rgb }}, 0.16), transparent 70%);">
 </div>
+{% if user_theme.bgm %}
+<audio id="themeBgm" src="{{ user_theme.bgm }}" autoplay loop preload="auto"></audio>
+{% endif %}
 {% endif %}
 <div class="absolute inset-x-0 top-0 h-[500px] bg-center bg-cover blur-lg opacity-30 pointer-events-none"
-    style="view-transition-name: vt-bg-blur; background-image: url('{{ viewed_user.profile_picture }}'); -webkit-mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0)); mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0));">
+    style="view-transition-name: vt-bg-blur; background-image: {% if user_theme and user_theme.background %}url('{{ user_theme.background }}'){% else %}url('{{ viewed_user.profile_picture }}'){% endif %}; -webkit-mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0)); mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0));">
 </div>
+{% if active_theme_id %}
+<button id="themeEffectsToggle" type="button" title="Toggle theme font and music"
+    aria-pressed="false"
+    class="fixed top-4 right-4 md:top-6 md:right-6 z-40 theme-btn border rounded-xl p-3 text-white shadow-lg">
+    <img src="/static/icon/accessibility.svg" alt="Toggle theme font and music" class="w-5 h-5">
+</button>
+{% endif %}
 <div id="scrollHeader"
     class="hidden md:flex fixed top-0 left-0 md:left-[300px] right-0 z-40 bg-[var(--user-base)] border-b border-[var(--user-transparent)] backdrop-blur-xl px-4 py-4 items-center gap-3 transform -translate-y-full opacity-0 transition-all duration-300 pointer-events-none">
     <img src="{{ viewed_user.profile_picture }}" alt="{{ viewed_user.username }}"
@@ -187,7 +199,7 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
     {% endfor %}
     {% endif %}
 </div>
-<div class="mt-8 px-4 sm:px-6 lg:px-8 py-8">
+<div id="pageContent" class="mt-8 px-4 sm:px-6 lg:px-8 py-8">
     <div class="max-w-6xl mx-auto">
         <div class="flex flex-col sm:flex-row sm:items-center gap-6 mb-10">
             <div class="relative w-32 h-32 flex items-center justify-center group flex-shrink-0">
@@ -364,6 +376,12 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
             </section>
             {% endif %}
         </span>
+        {% if not base_url and viewed_user.achievements and viewed_user.achievements.points %}
+        <a href="{{ url_for('auth_routes.themes') }}" class="home-reveal flex items-center justify-between gap-4 theme-card-hover border rounded-xl px-4 py-3 mb-6">
+            <span class="flex items-center gap-3 text-gray-300"><img src="/static/icon/palette.svg" alt="" class="w-5 h-5 invert"> Theme Shop</span>
+            <span class="text-sm font-semibold text-white">{{ viewed_user.achievements.points.balance|default(0) }} points</span>
+        </a>
+        {% endif %}
         {% endif %}
         {% if not serial_not_linked %}
         <section class="home-reveal theme-card border rounded-2xl p-5 mb-5 sm:p-6">
@@ -688,6 +706,43 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
             date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
             const expires = "expires=" + date.toUTCString();
             document.cookie = name + "=" + encodeURIComponent(value) + ";" + expires + ";path=/;domain=.wiilink.ca;Secure";
+        }
+
+        const themeEffectsToggle = document.getElementById("themeEffectsToggle");
+        const themeBgm = document.getElementById("themeBgm");
+        const pageContent = document.getElementById("pageContent");
+        const themeEffectsDisabledKey = "wiilink_theme_effects_disabled";
+
+        function setThemeEffectsDisabled(disabled) {
+            if (pageContent) {
+                pageContent.style.setProperty("font-family", disabled ? "sans-serif" : "var(--user-font-family, inherit)", "important");
+            }
+            if (themeBgm) {
+                themeBgm.muted = disabled;
+                if (disabled) {
+                    themeBgm.pause();
+                } else {
+                    themeBgm.play().catch(function () {});
+                }
+            }
+            if (themeEffectsToggle) {
+                themeEffectsToggle.setAttribute("aria-pressed", String(disabled));
+                themeEffectsToggle.title = disabled ? "Enable theme font and music" : "Disable theme font and music";
+            }
+        }
+
+        if (themeEffectsToggle) {
+            const effectsDisabled = localStorage.getItem(themeEffectsDisabledKey) === "true";
+            setThemeEffectsDisabled(effectsDisabled);
+            themeEffectsToggle.addEventListener("click", function () {
+                const disabled = localStorage.getItem(themeEffectsDisabledKey) !== "true";
+                if (disabled) {
+                    localStorage.setItem(themeEffectsDisabledKey, "true");
+                } else {
+                    localStorage.removeItem(themeEffectsDisabledKey);
+                }
+                setThemeEffectsDisabled(disabled);
+            });
         }
 
         if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {

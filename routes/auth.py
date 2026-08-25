@@ -18,6 +18,7 @@ from utils.auth import get_user_profile, build_user_info
 from utils.helpers import parse_int
 from utils.utils import get_serial_prefixes, find_user_by_wii_number
 from utils.achievements import refresh_achievements_for_user
+from utils.theme import get_theme_catalog
 from channels.nc import (
     fetch_recommendations,
     fetch_time_played,
@@ -50,6 +51,70 @@ from channels.digi import fetch_orders_by_email, render_card_to_image, get_card_
 
 auth_routes_bp = Blueprint("auth_routes", __name__)
 oidc = None
+
+
+def _get_owned_user():
+    user_info = get_logged_in_user_info()
+    linked_wii = (user_info or {}).get("linked_wii_no", [])
+    return find_user_by_wii_number(linked_wii[0]) if linked_wii else None
+
+
+@auth_routes_bp.route("/themes", methods=["GET", "POST"], endpoint="themes")
+def themes():
+    if not oidc or not oidc.user_loggedin:
+        return redirect(url_for("auth_routes.index"))
+
+    user = _get_owned_user()
+    if not user:
+        return render_template("errors/not_linked.html", user_info=None), 400
+
+    payload, _ = refresh_achievements_for_user(user)
+    payload = payload or {
+        "points": {"balance": 0, "spent": 0, "earned": 0},
+        "themes": {"unlocked": [], "active": None},
+    }
+    catalog = get_theme_catalog()
+    theme_state = payload.setdefault("themes", {"unlocked": [], "active": None})
+    theme_state.setdefault("unlocked", [])
+    points = payload.setdefault("points", {"balance": 0, "spent": 0, "earned": 0})
+
+    if request.method == "POST":
+        theme_id = request.form.get("theme_id", "")
+        action = request.form.get("action", "")
+        theme = catalog.get(theme_id)
+        if not theme:
+            flash("That theme does not exist.", "error")
+        elif action == "unlock" and theme_id not in theme_state["unlocked"]:
+            price = max(0, int(theme.get("price", 0)))
+            if points.get("balance", 0) < price:
+                flash("You do not have enough points for that theme.", "error")
+            else:
+                theme_state["unlocked"].append(theme_id)
+                points["spent"] = points.get("spent", 0) + price
+                points["balance"] = max(0, points.get("earned", 0) - points["spent"])
+                flash("Theme unlocked.", "success")
+        elif action == "activate" and theme_id in theme_state["unlocked"]:
+            theme_state["active"] = theme_id
+            flash("Theme activated.", "success")
+        elif action == "deactivate":
+            theme_state["active"] = None
+
+        attributes = (user.get("attributes") or {}).copy()
+        attributes["achievements"] = payload
+        from utils.utils import update_user_attributes
+
+        update_user_attributes(user, attributes)
+
+    user_info = get_logged_in_user_info()
+    if user_info is not None:
+        user_info["achievements"] = payload
+    return render_template(
+        "themes.html",
+        user_info=user_info,
+        viewed_user=user_info,
+        themes=list(catalog.values()),
+        theme_data=payload,
+    )
 
 
 def set_oidc(oidc_instance):
