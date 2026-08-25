@@ -1,4 +1,3 @@
-            <span class="flex items-center gap-3 text-gray-300"><img src="/static/icon/settings.svg" alt="" class="w-5 h-5 invert"> Theme Shop</span>
 {% extends "generic/base.html" %}
 
 {% block title %}
@@ -173,7 +172,7 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
 {% if active_theme_id %}
 <button id="themeEffectsToggle" type="button" title="Toggle theme font and music"
     aria-pressed="false"
-    class="fixed top-4 right-4 md:top-6 md:right-6 z-40 theme-btn border rounded-xl p-3 text-white shadow-lg">
+    class="hidden md:flex fixed top-4 right-4 md:top-6 md:right-6 z-40 theme-btn border rounded-xl p-3 text-white shadow-lg">
     <img src="/static/icon/accessibility.svg" alt="Toggle theme font and music" class="w-5 h-5">
 </button>
 {% endif %}
@@ -709,6 +708,7 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
         }
 
         const themeEffectsToggle = document.getElementById("themeEffectsToggle");
+        const mobileThemeEffectsToggle = document.getElementById("mobileThemeEffectsToggle");
         const themeBgm = document.getElementById("themeBgm");
         const pageContent = document.getElementById("pageContent");
         const themeEffectsDisabledKey = "wiilink_theme_effects_disabled";
@@ -729,19 +729,30 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                 themeEffectsToggle.setAttribute("aria-pressed", String(disabled));
                 themeEffectsToggle.title = disabled ? "Enable theme font and music" : "Disable theme font and music";
             }
+            if (mobileThemeEffectsToggle) {
+                mobileThemeEffectsToggle.setAttribute("aria-pressed", String(disabled));
+                mobileThemeEffectsToggle.title = disabled ? "Enable theme font and music" : "Disable theme font and music";
+            }
         }
 
         if (themeEffectsToggle) {
             const effectsDisabled = localStorage.getItem(themeEffectsDisabledKey) === "true";
             setThemeEffectsDisabled(effectsDisabled);
-            themeEffectsToggle.addEventListener("click", function () {
-                const disabled = localStorage.getItem(themeEffectsDisabledKey) !== "true";
-                if (disabled) {
-                    localStorage.setItem(themeEffectsDisabledKey, "true");
-                } else {
-                    localStorage.removeItem(themeEffectsDisabledKey);
-                }
-                setThemeEffectsDisabled(disabled);
+            if (mobileThemeEffectsToggle) {
+                mobileThemeEffectsToggle.classList.remove("hidden");
+            }
+            const themeEffectToggles = [themeEffectsToggle, mobileThemeEffectsToggle];
+            themeEffectToggles.forEach(function (toggle) {
+                if (!toggle) return;
+                toggle.addEventListener("click", function () {
+                    const disabled = localStorage.getItem(themeEffectsDisabledKey) !== "true";
+                    if (disabled) {
+                        localStorage.setItem(themeEffectsDisabledKey, "true");
+                    } else {
+                        localStorage.removeItem(themeEffectsDisabledKey);
+                    }
+                    setThemeEffectsDisabled(disabled);
+                });
             });
         }
 

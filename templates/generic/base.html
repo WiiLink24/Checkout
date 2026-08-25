@@ -88,10 +88,16 @@
     style="background-color: var(--user-base, #111827); {% block body_theme_vars %}{% include "components/body_theme_vars.html" %}{% endblock %}">
     <div class="w-screen md:hidden fixed p-6 flex flex-row items-center justify-between z-30">
         <img src="/static/img/logo.png" alt="Logo" class="h-8" />
-        <button id="mobileMenuBtn"
-            class="p-2 theme-btn rounded-lg text-white shadow-lg border focus:outline-none">
-            <img src="/static/icon/menu.svg" alt="Menu" class="w-6 h-6 invert" />
-        </button>
+        <span class="flex flex-row items-center gap-2">
+            <button id="mobileThemeEffectsToggle" type="button" title="Toggle theme font and music"
+                aria-pressed="false" class="hidden theme-btn border rounded-lg p-2 text-white shadow-lg">
+                <img src="/static/icon/accessibility.svg" alt="Toggle theme font and music" class="w-6 h-6" />
+            </button>
+            <button id="mobileMenuBtn"
+                class="p-2 theme-btn rounded-lg text-white shadow-lg border focus:outline-none">
+                <img src="/static/icon/menu.svg" alt="Menu" class="w-6 h-6 invert" />
+            </button>
+        </span>
     </div>
 
     <div class="flex">
