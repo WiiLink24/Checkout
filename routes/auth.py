@@ -109,8 +109,11 @@ def themes():
     if user_info is not None:
         user_info["achievements"] = payload
     return render_template(
-        "themes.html", user_info=user_info, viewed_user=user_info,
-        themes=list(catalog.values()), theme_data=payload,
+        "themes.html",
+        user_info=user_info,
+        viewed_user=user_info,
+        themes=list(catalog.values()),
+        theme_data=payload,
     )
 
 

@@ -174,12 +174,23 @@ def _build_points(metrics, achieved_ids, previous):
 
     previous_achievements = set(old_milestones.get("achievements", []))
     new_achievements = set(achieved_ids) - previous_achievements
-    play_minutes = max(0, metrics.get("total_minutes", 0) - old_milestones.get("total_minutes", 0))
+    play_minutes = max(
+        0, metrics.get("total_minutes", 0) - old_milestones.get("total_minutes", 0)
+    )
     new_reviews = max(0, metrics.get("reviews", 0) - old_milestones.get("reviews", 0))
     new_polls = max(0, metrics.get("polls", 0) - old_milestones.get("polls", 0))
-    new_contests = max(0, metrics.get("contest_submissions", 0) - old_milestones.get("contest_submissions", 0))
+    new_contests = max(
+        0,
+        metrics.get("contest_submissions", 0)
+        - old_milestones.get("contest_submissions", 0),
+    )
     rank_points = sum(
-        max(0, metrics.get(f"contest_rank_{rank}", 0) - old_milestones.get(f"contest_rank_{rank}", 0)) * points
+        max(
+            0,
+            metrics.get(f"contest_rank_{rank}", 0)
+            - old_milestones.get(f"contest_rank_{rank}", 0),
+        )
+        * points
         for rank, points in ((1, 50), (2, 40), (3, 30))
     )
     earned = old_points.get("earned", 0) + (
@@ -197,7 +208,8 @@ def _build_points(metrics, achieved_ids, previous):
         "balance": max(0, earned - spent),
         "milestones": {
             **old_milestones,
-            "total_minutes": old_milestones.get("total_minutes", 0) + (play_minutes // 60) * 60,
+            "total_minutes": old_milestones.get("total_minutes", 0)
+            + (play_minutes // 60) * 60,
             "reviews": metrics.get("reviews", 0),
             "polls": metrics.get("polls", 0),
             "contest_submissions": metrics.get("contest_submissions", 0),
@@ -209,7 +221,9 @@ def _build_points(metrics, achieved_ids, previous):
     }
 
 
-def build_payload(achieved_ids, achievement_counts, total_users, metrics=None, previous=None) -> Dict:
+def build_payload(
+    achieved_ids, achievement_counts, total_users, metrics=None, previous=None
+) -> Dict:
     """Build the JSON payload stored in the user's Authentik attributes."""
 
     def percent(count):
@@ -355,7 +369,9 @@ def refresh_achievements_for_user(user):
 
     Returns (payload, wrote): the payload to display, and whether a write happened.
     """
-    print(f"[ACHIEVEMENTS] Refreshing payload for user {user.get('username')} ({user.get('uuid')})")
+    print(
+        f"[ACHIEVEMENTS] Refreshing payload for user {user.get('username')} ({user.get('uuid')})"
+    )
     try:
         fresh_user = get_authentik_user(user)
     except Exception as e:
@@ -364,7 +380,12 @@ def refresh_achievements_for_user(user):
 
     attributes = (fresh_user or {}).get("attributes") or {}
     previous = parse_achievements(attributes)
-    if previous and is_fresh(previous) and "points" in previous and "themes" in previous:
+    if (
+        previous
+        and is_fresh(previous)
+        and "points" in previous
+        and "themes" in previous
+    ):
         return previous, False
 
     serial_prefixes, wii_numbers = _extract_user_identifiers(attributes)
@@ -459,8 +480,11 @@ def sync_achievements():
         attributes = dict(fresh_attributes)
         previous = parse_achievements(fresh_attributes)
         attributes["achievements"] = build_payload(
-            achieved_by_user[uuid], achievement_counts, eligible,
-            metrics_by_user[uuid], previous
+            achieved_by_user[uuid],
+            achievement_counts,
+            eligible,
+            metrics_by_user[uuid],
+            previous,
         )
         try:
             update_user_attributes(user, attributes)
