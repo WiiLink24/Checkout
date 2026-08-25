@@ -1,0 +1,101 @@
+{% extends "generic/base.html" %}
+
+{% block title %}WiiLink Checkout | Themes{% endblock %}
+
+{% block content %}
+<div class="min-h-screen px-4 sm:px-6 lg:px-8 py-12">
+    <div class="max-w-6xl mx-auto">
+        <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
+            <div>
+                <h1 class="text-4xl font-bold text-white">Theme Shop</h1>
+                <p class="text-gray-400 mt-2">Unlock a look for your profile and make it yours.</p>
+            </div>
+            <div class="theme-card border rounded-xl px-5 py-3 text-right">
+                <p class="text-xs uppercase tracking-widest text-gray-400">Your balance</p>
+                <p class="text-2xl font-bold text-white">{{ theme_data.points.balance|default(0) }} <span
+                        class="text-sm text-gray-400">points</span></p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {% for theme in themes %}
+            {% set owned = theme.id in theme_data.themes.unlocked %}
+            {% set active = (theme.id == 'default' and not theme_data.themes.active) or (theme_data.themes.active == theme.id) %}
+            <article class="theme-card border rounded-2xl overflow-hidden">
+                <div class="flex flex-row items-start h-[200px] overflow-hidden relative"
+                    style="background-color: {{ theme.base }}; color: {{ theme.soft }}; font-family: {{ theme.font or 'inherit' }};">
+                    {% if theme.bgm %}
+                    <img src="/static/icon/audio-lines.svg" alt="BGM" class="w-5 h-5 mt-3 absolute top-0 right-4 invert">
+                    {% endif %}
+                    {% if theme.background %}<img src="{{ theme.background }}" alt="{{ theme.name }}"
+                        class="absolute inset-x-0 top-0 left-0 w-full h-[200px] bg-center bg-cover -translate-y-[50px] blur-sm opacity-30 pointer-events-none z-0"
+                        style=" -webkit-mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0)); mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0));">{%
+                    endif %}
+                    <div class="h-full w-[100px] p-4 min-h-[150px] z-10 relative" style="background: {{ theme.dark }};">
+                    </div>
+                    <div class="w-full h-full p-4 flex flex-col justify-end translate-y-5 z-10 relative">
+                        <span class="flex flex-row items-center gap-3 z-10 relative">
+                            <div class="w-10 h-10 rounded-md" style="background-color: {{ theme.soft }};"></div>
+                            <span class="flex flex-col gap-1">
+                                <p class="text-md font-semibold text-white"
+                                    style="font-family: {{ theme.font or 'inherit' }};">{{ theme.name }}</p>
+                                <div class="w-20 h-2 rounded-full" style="background-color: {{ theme.soft }};"></div>
+                            </span>
+                        </span>
+                        <span class="flex flex-row items-center gap-3 mt-2 z-10 relative">
+                            <div class="w-2/3 h-10 rounded-md" style="background-color: {{ theme.transparent }};"></div>
+                            <div class="w-1/3 h-10 rounded-md" style="background-color: {{ theme.dark }};"></div>
+                        </span>
+                        <div class="w-full h-20 rounded-md"
+                            style="background-color: {{ theme.dark }}; margin-top: 0.5rem;"></div>
+                    </div>
+                </div>
+                <div class="p-5">
+                    <div class="flex items-start justify-between gap-3">
+                        <div>
+                            <h2 class="text-xl font-bold text-white">{{ theme.name }}</h2>
+                            <p class="text-sm text-gray-400 mt-1">{{ theme.description }}</p>
+                        </div>
+                        {% if theme.id != 'default' %}
+                        <span class="text-sm font-semibold px-3 py-1 bg-[var(--user-base)] rounded-md text-gray-300 whitespace-nowrap">{{ theme.price }} pts</span>
+                        {% endif %}
+                    </div>
+                    <div class="mt-5 flex items-center justify-between gap-3">
+                        {% if active %}
+                        <span class="flex flex-row items-center gap-3 text-sm text-emerald-300"><img src="/static/icon/badge-check.svg" alt="Active" class="w-5 h-5 invert"> Active</span>
+                        {% elif owned %}
+                        <span class="flex flex-row items-center gap-3 text-sm text-gray-400"><img src="/static/icon/lock-open.svg" alt="Unlocked" class="w-5 h-5 invert"> Unlocked</span>
+                        {% elif not owned and not theme.id == 'default' %}
+                        <span class="flex flex-row items-center gap-3 text-sm text-gray-500"><img src="/static/icon/lock.svg" alt="Locked" class="w-5 h-5 invert"> Locked</span>
+                        {% endif %}
+                        {% if active and theme.id != 'default' %}
+                        <form method="post"><input type="hidden" name="action" value="deactivate"><input type="hidden"
+                            name="theme_id" value="default"><button
+                            class="theme-btn border rounded-lg px-4 py-2 text-sm text-white">Use default</button>
+                        </form>
+                        {% elif active and theme.id == 'default' %}
+                        {% elif not active and theme.id == 'default' %}
+                        <form method="post"><input type="hidden" name="action" value="deactivate"><input type="hidden"
+                            name="theme_id" value="default"><button
+                            class="theme-btn border rounded-lg px-4 py-2 text-sm text-white">Use default</button>
+                        </form>
+                        {% elif owned %}
+                        <form method="post"><input type="hidden" name="action" value="activate"><input type="hidden"
+                                name="theme_id" value="{{ theme.id }}"><button
+                                class="theme-btn bg-[var(--user-soft)] border rounded-lg px-4 py-2 text-sm text-white">Activate</button>
+                        </form>
+                        {% else %}
+                        <form method="post"><input type="hidden" name="action" value="unlock"><input type="hidden"
+                                name="theme_id" value="{{ theme.id }}"><button
+                                class="theme-btn border rounded-lg px-4 py-2 text-sm text-white" {% if
+                                theme_data.points.balance|default(0) < theme.price %}disabled{% endif %}>Unlock</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

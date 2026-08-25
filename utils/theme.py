@@ -1,10 +1,58 @@
 from io import BytesIO
+import json
+from pathlib import Path
 
 import requests
 
 from utils.utils import cache
 
 _THEME_CACHE_TTL = 24 * 60 * 60
+_THEME_CATALOG_PATH = Path(__file__).resolve().parent.parent / "static" / "themes.json"
+
+
+def _catalog_asset_url(directory, filename):
+    if not filename:
+        return ""
+    return f"/static/themes/{directory}/{filename}"
+
+
+def get_theme_catalog():
+    try:
+        with _THEME_CATALOG_PATH.open(encoding="utf-8") as theme_file:
+            themes = json.load(theme_file)
+        normalized = {}
+        normalized["default"] = {
+            "id": "default",
+            "name": "Default",
+            "description": "Use the original profile theme.",
+            "price": 0,
+            "base": "#111827",
+            "dark": "#030712",
+            "light": "#646873",
+            "soft": "#9ca3af",
+            "rgb": "17, 24, 39",
+            "dark_rgb": "3, 7, 18",
+            "transparent": "rgba(17, 24, 39, 0.14)",
+            "font": "",
+            "background": "",
+            "bgm": "",
+        }
+        for theme in themes:
+            if not theme.get("id"):
+                continue
+            theme = dict(theme)
+            theme["background"] = _catalog_asset_url("backgrounds", theme.get("background", ""))
+            theme["bgm"] = _catalog_asset_url("audio", theme.get("bgm", ""))
+            font = theme.get("font", "")
+            theme["font"] = (
+                "'Minecraft', sans-serif"
+                if font == "minecraft"
+                else font
+            )
+            normalized[theme["id"]] = theme
+        return normalized
+    except (OSError, ValueError, TypeError):
+        return {}
 
 
 def _download_image(url):
@@ -58,8 +106,12 @@ def _build_theme(pfp_url):
     }
 
 
-def get_user_theme(pfp_url):
+def get_user_theme(pfp_url, theme_id=None):
     """Return theme dict {base, dark, light, transparent, rgb} for a profile picture URL (cached)."""
+    if theme_id:
+        catalog_theme = get_theme_catalog().get(theme_id)
+        if catalog_theme:
+            return catalog_theme
     if not pfp_url:
         return None
 

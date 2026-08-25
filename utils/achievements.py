@@ -13,6 +13,7 @@ from utils.utils import (
 _ACHIEVEMENTS_VERSION = 1
 _ACHIEVEMENTS_REFRESH_HOURS = 2
 _GLOBAL_TALLY_TTL = 24 * 60 * 60
+_ACHIEVEMENT_POINTS = 50
 
 
 @dataclass(frozen=True)
@@ -110,6 +111,18 @@ def collect_metrics(serial_prefixes=None, wii_numbers=None):
 
     user_stats = fetch_user_stats(serial_prefixes) if serial_prefixes else {}
 
+    contest_wins = 0
+    contest_ranks = {1: 0, 2: 0, 3: 0}
+    if wii_numbers:
+        from channels.cmoc import fetch_contest_submissions
+
+        for submission in fetch_contest_submissions(wii_numbers):
+            rank = submission.get("rank")
+            if str(rank) in ("1", "2", "3"):
+                contest_ranks[int(rank)] += 1
+            if str(rank) == "1":
+                contest_wins += 1
+
     return {
         "reviews": count_recommendations(serial_prefixes) if serial_prefixes else 0,
         "games_played": count_time_played(serial_prefixes) if serial_prefixes else 0,
@@ -120,6 +133,10 @@ def collect_metrics(serial_prefixes=None, wii_numbers=None):
         "contest_submissions": (
             count_contest_submissions(wii_numbers) if wii_numbers else 0
         ),
+        "contest_wins": contest_wins,
+        "contest_rank_1": contest_ranks[1],
+        "contest_rank_2": contest_ranks[2],
+        "contest_rank_3": contest_ranks[3],
     }
 
 
@@ -127,16 +144,87 @@ def evaluate(metrics) -> Set[str]:
     return {ach.id for ach in ACHIEVEMENTS if ach.condition(metrics)}
 
 
-def build_payload(achieved_ids, achievement_counts, total_users) -> Dict:
+def _achievement_ids(payload):
+    return {
+        item.get("id")
+        for item in (payload or {}).get("achievements", [])
+        if item.get("achieved")
+    }
+
+
+def _build_points(metrics, achieved_ids, previous):
+    old_points = (previous or {}).get("points") or {}
+    old_milestones = old_points.get("milestones")
+    if not isinstance(old_milestones, dict):
+        return {
+            "earned": 0,
+            "spent": old_points.get("spent", 0),
+            "balance": 0,
+            "milestones": {
+                "total_minutes": metrics.get("total_minutes", 0),
+                "reviews": metrics.get("reviews", 0),
+                "polls": metrics.get("polls", 0),
+                "contest_submissions": metrics.get("contest_submissions", 0),
+                "contest_rank_1": metrics.get("contest_rank_1", 0),
+                "contest_rank_2": metrics.get("contest_rank_2", 0),
+                "contest_rank_3": metrics.get("contest_rank_3", 0),
+                "achievements": list(achieved_ids),
+            },
+        }
+
+    previous_achievements = set(old_milestones.get("achievements", []))
+    new_achievements = set(achieved_ids) - previous_achievements
+    play_minutes = max(0, metrics.get("total_minutes", 0) - old_milestones.get("total_minutes", 0))
+    new_reviews = max(0, metrics.get("reviews", 0) - old_milestones.get("reviews", 0))
+    new_polls = max(0, metrics.get("polls", 0) - old_milestones.get("polls", 0))
+    new_contests = max(0, metrics.get("contest_submissions", 0) - old_milestones.get("contest_submissions", 0))
+    rank_points = sum(
+        max(0, metrics.get(f"contest_rank_{rank}", 0) - old_milestones.get(f"contest_rank_{rank}", 0)) * points
+        for rank, points in ((1, 50), (2, 40), (3, 30))
+    )
+    earned = old_points.get("earned", 0) + (
+        (play_minutes // 60)
+        + new_reviews * 5
+        + new_polls * 5
+        + new_contests * 5
+        + rank_points
+        + len(new_achievements) * _ACHIEVEMENT_POINTS
+    )
+    spent = old_points.get("spent", 0)
+    return {
+        "earned": earned,
+        "spent": spent,
+        "balance": max(0, earned - spent),
+        "milestones": {
+            **old_milestones,
+            "total_minutes": old_milestones.get("total_minutes", 0) + (play_minutes // 60) * 60,
+            "reviews": metrics.get("reviews", 0),
+            "polls": metrics.get("polls", 0),
+            "contest_submissions": metrics.get("contest_submissions", 0),
+            "contest_rank_1": metrics.get("contest_rank_1", 0),
+            "contest_rank_2": metrics.get("contest_rank_2", 0),
+            "contest_rank_3": metrics.get("contest_rank_3", 0),
+            "achievements": list(previous_achievements | set(achieved_ids)),
+        },
+    }
+
+
+def build_payload(achieved_ids, achievement_counts, total_users, metrics=None, previous=None) -> Dict:
     """Build the JSON payload stored in the user's Authentik attributes."""
 
     def percent(count):
         return round(count / total_users * 100, 1) if total_users else 0.0
 
+    metrics = metrics or {}
+    previous = previous or {}
+    points = _build_points(metrics, achieved_ids, previous)
+    themes = previous.get("themes") or {"unlocked": [], "active": None}
     return {
         "version": _ACHIEVEMENTS_VERSION,
         "generated_at": datetime.now().isoformat(timespec="seconds"),
         "total_users": total_users,
+        "points": points,
+        "themes": themes,
         "achievements": [
             {
                 "id": ach.id,
@@ -235,13 +323,19 @@ def _percentages(tally) -> Dict:
     }
 
 
-def _build_refresh_payload(achieved_ids) -> Dict:
+def _build_refresh_payload(achieved_ids, metrics=None, previous=None) -> Dict:
     tally = _get_global_tally()
     pcts = _percentages(tally)
+    metrics = metrics or {}
+    previous = previous or {}
+    points = _build_points(metrics, achieved_ids, previous)
+    themes = previous.get("themes") or {"unlocked": [], "active": None}
     return {
         "version": _ACHIEVEMENTS_VERSION,
         "generated_at": datetime.now().isoformat(timespec="seconds"),
         "total_users": tally["eligible"],
+        "points": points,
+        "themes": themes,
         "achievements": [
             {
                 "id": ach.id,
@@ -261,6 +355,7 @@ def refresh_achievements_for_user(user):
 
     Returns (payload, wrote): the payload to display, and whether a write happened.
     """
+    print(f"[ACHIEVEMENTS] Refreshing payload for user {user.get('username')} ({user.get('uuid')})")
     try:
         fresh_user = get_authentik_user(user)
     except Exception as e:
@@ -269,7 +364,7 @@ def refresh_achievements_for_user(user):
 
     attributes = (fresh_user or {}).get("attributes") or {}
     previous = parse_achievements(attributes)
-    if previous and is_fresh(previous):
+    if previous and is_fresh(previous) and "points" in previous and "themes" in previous:
         return previous, False
 
     serial_prefixes, wii_numbers = _extract_user_identifiers(attributes)
@@ -277,12 +372,13 @@ def refresh_achievements_for_user(user):
         return previous, False
 
     try:
-        achieved = evaluate(collect_metrics(serial_prefixes, wii_numbers))
+        metrics = collect_metrics(serial_prefixes, wii_numbers)
+        achieved = evaluate(metrics)
     except Exception as e:
         print(f"[ACHIEVEMENTS] Refresh failed for {user.get('username')}: {e}")
         return previous, False
 
-    payload = _build_refresh_payload(achieved)
+    payload = _build_refresh_payload(achieved, metrics, previous)
     try:
         attributes["achievements"] = payload
         update_user_attributes(user, attributes)
@@ -309,6 +405,7 @@ def sync_achievements():
         users = fetch_all_authentik_users()
 
     achieved_by_user = {}
+    metrics_by_user = {}
     achievement_counts = Counter()
     eligible = 0
 
@@ -333,6 +430,7 @@ def sync_achievements():
             continue
 
         achieved_by_user[uuid] = achieved
+        metrics_by_user[uuid] = metrics
         for ach_id in achieved:
             achievement_counts[ach_id] += 1
 
@@ -359,8 +457,10 @@ def sync_achievements():
             continue
 
         attributes = dict(fresh_attributes)
+        previous = parse_achievements(fresh_attributes)
         attributes["achievements"] = build_payload(
-            achieved_by_user[uuid], achievement_counts, eligible
+            achieved_by_user[uuid], achievement_counts, eligible,
+            metrics_by_user[uuid], previous
         )
         try:
             update_user_attributes(user, attributes)
