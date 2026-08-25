@@ -199,8 +199,8 @@ def fetch_recommendations(
 
 
 def fetch_recommendation_averages(game_id, gender=None, age_min=None, age_max=None):
-    """Fetch average recommendation stats for a game, optionally filtered by demographics"""
-    conditions = ["game_id = %s"]
+    """Fetch aggregated recommendation and favorite stats for a title family."""
+    conditions = ["LEFT(game_id, 3) = %s"]
     params = [game_id]
     if gender in (1, 2):
         conditions.append("gender = %s")
@@ -218,11 +218,12 @@ def fetch_recommendation_averages(game_id, gender=None, age_min=None, age_max=No
             AVG(recommendation_percent) AS avg_score,
             AVG(appeal) AS avg_appeal,
             AVG(gaming_mood) AS avg_mood,
-            AVG(friend_or_alone) AS avg_friend
+            AVG(friend_or_alone) AS avg_friend,
+            (SELECT COUNT(*) FROM bookmarks WHERE LEFT(game_id, 3) = %s) AS favorite_count
         FROM recommendations
         WHERE {where_clause}
     """
-    rows = _run_query(query, params, config.db_url)
+    rows = _run_query(query, [game_id] + params, config.db_url)
     return rows[0] if rows else None
 
 
@@ -325,14 +326,14 @@ def fetch_time_played(serial_prefixes, sort_by="time_played", limit=30, offset=0
 
 
 def fetch_time_played_stats(game_id):
-    """Fetch time played stats for a given game"""
+    """Fetch aggregated time played stats for a title family."""
     query = """
         SELECT
             COUNT(DISTINCT serial_number) AS total_players,
             SUM(time_played) AS total_minutes,
             ROUND(AVG(time_played)::numeric, 2) AS avg_minutes_per_player
         FROM time_played
-        WHERE game_id = %s
+        WHERE LEFT(game_id, 3) = %s
     """
     rows = _run_query(query, [game_id], config.db_url)
     return rows[0] if rows else None
