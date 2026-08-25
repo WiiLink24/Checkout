@@ -101,7 +101,7 @@ ACHIEVEMENTS = [
 _ACHIEVEMENT_BY_ID = {ach.id: ach for ach in ACHIEVEMENTS}
 
 
-def collect_metrics(serial_prefixes=None, wii_numbers=None):
+def collect_metrics(serial_prefixes=None, wii_numbers=None, use_cache=True):
     from channels.nc import count_recommendations, count_time_played, fetch_user_stats
     from channels.evc import count_user_polls
     from channels.cmoc import count_contest_submissions
@@ -109,14 +109,18 @@ def collect_metrics(serial_prefixes=None, wii_numbers=None):
     serial_prefixes = serial_prefixes or []
     wii_numbers = wii_numbers or []
 
-    user_stats = fetch_user_stats(serial_prefixes) if serial_prefixes else {}
+    user_stats = (
+        fetch_user_stats(serial_prefixes, use_cache=use_cache)
+        if serial_prefixes
+        else {}
+    )
 
     contest_wins = 0
     contest_ranks = {1: 0, 2: 0, 3: 0}
     if wii_numbers:
         from channels.cmoc import fetch_contest_submissions
 
-        for submission in fetch_contest_submissions(wii_numbers):
+        for submission in fetch_contest_submissions(wii_numbers, use_cache=use_cache):
             rank = submission.get("rank")
             if str(rank) in ("1", "2", "3"):
                 contest_ranks[int(rank)] += 1
@@ -124,14 +128,26 @@ def collect_metrics(serial_prefixes=None, wii_numbers=None):
                 contest_wins += 1
 
     return {
-        "reviews": count_recommendations(serial_prefixes) if serial_prefixes else 0,
-        "games_played": count_time_played(serial_prefixes) if serial_prefixes else 0,
+        "reviews": (
+            count_recommendations(serial_prefixes, use_cache=use_cache)
+            if serial_prefixes
+            else 0
+        ),
+        "games_played": (
+            count_time_played(serial_prefixes, use_cache=use_cache)
+            if serial_prefixes
+            else 0
+        ),
         "total_minutes": (
             (user_stats or {}).get("total_minutes", 0) if serial_prefixes else 0
         ),
-        "polls": count_user_polls(wii_numbers) if wii_numbers else 0,
+        "polls": (
+            count_user_polls(wii_numbers, use_cache=use_cache) if wii_numbers else 0
+        ),
         "contest_submissions": (
-            count_contest_submissions(wii_numbers) if wii_numbers else 0
+            count_contest_submissions(wii_numbers, use_cache=use_cache)
+            if wii_numbers
+            else 0
         ),
         "contest_wins": contest_wins,
         "contest_rank_1": contest_ranks[1],
@@ -364,8 +380,8 @@ def _build_refresh_payload(achieved_ids, metrics=None, previous=None) -> Dict:
     }
 
 
-def refresh_achievements_for_user(user):
-    """Refresh one user's achievements when their stored payload is stale (> 2h).
+def refresh_achievements_for_user(user, force=False):
+    """Refresh one user's achievements when stale, or immediately when forced.
 
     Returns (payload, wrote): the payload to display, and whether a write happened.
     """
@@ -382,6 +398,7 @@ def refresh_achievements_for_user(user):
     previous = parse_achievements(attributes)
     if (
         previous
+        and not force
         and is_fresh(previous)
         and "points" in previous
         and "themes" in previous
@@ -393,13 +410,23 @@ def refresh_achievements_for_user(user):
         return previous, False
 
     try:
-        metrics = collect_metrics(serial_prefixes, wii_numbers)
+        metrics = collect_metrics(serial_prefixes, wii_numbers, use_cache=not force)
         achieved = evaluate(metrics)
     except Exception as e:
         print(f"[ACHIEVEMENTS] Refresh failed for {user.get('username')}: {e}")
         return previous, False
 
     payload = _build_refresh_payload(achieved, metrics, previous)
+    if previous:
+        current_data = {
+            key: value for key, value in payload.items() if key != "generated_at"
+        }
+        previous_data = {
+            key: value for key, value in previous.items() if key != "generated_at"
+        }
+        if current_data == previous_data:
+            return previous, False
+
     try:
         attributes["achievements"] = payload
         update_user_attributes(user, attributes)

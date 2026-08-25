@@ -68,7 +68,7 @@ def themes():
     if not user:
         return render_template("errors/not_linked.html", user_info=None), 400
 
-    payload, _ = refresh_achievements_for_user(user)
+    payload, _ = refresh_achievements_for_user(user, force=True)
     payload = payload or {
         "points": {"balance": 0, "spent": 0, "earned": 0},
         "themes": {"unlocked": [], "active": None},
@@ -77,6 +77,7 @@ def themes():
     theme_state = payload.setdefault("themes", {"unlocked": [], "active": None})
     theme_state.setdefault("unlocked", [])
     points = payload.setdefault("points", {"balance": 0, "spent": 0, "earned": 0})
+    points_error = None
 
     if request.method == "POST":
         theme_id = request.form.get("theme_id", "")
@@ -87,7 +88,11 @@ def themes():
         elif action == "unlock" and theme_id not in theme_state["unlocked"]:
             price = max(0, int(theme.get("price", 0)))
             if points.get("balance", 0) < price:
-                flash("You do not have enough points for that theme.", "error")
+                points_error = {
+                    "theme": theme.get("name", theme_id),
+                    "price": price,
+                    "missing": price - points.get("balance", 0),
+                }
             else:
                 theme_state["unlocked"].append(theme_id)
                 points["spent"] = points.get("spent", 0) + price
@@ -95,7 +100,6 @@ def themes():
                 flash("Theme unlocked.", "success")
         elif action == "activate" and theme_id in theme_state["unlocked"]:
             theme_state["active"] = theme_id
-            flash("Theme activated.", "success")
         elif action == "deactivate":
             theme_state["active"] = None
 
@@ -114,6 +118,7 @@ def themes():
         viewed_user=user_info,
         themes=list(catalog.values()),
         theme_data=payload,
+        points_error=points_error,
     )
 
 
@@ -642,11 +647,11 @@ def index():
         if not serial_prefixes:
             return render_template("errors/not_linked.html", user_info=user_info), 400
 
-        # Refresh the logged-in user's achievements if their stored payload is stale
+        # Refresh the logged-in user's points and achievements from live metrics.
         if user_info and user_info.get("linked_wii_no"):
             own_user = find_user_by_wii_number(user_info["linked_wii_no"][0])
             if own_user:
-                fresh_payload, _ = refresh_achievements_for_user(own_user)
+                fresh_payload, _ = refresh_achievements_for_user(own_user, force=True)
                 if fresh_payload:
                     user_info["achievements"] = fresh_payload
 

@@ -17,6 +17,14 @@
             </div>
         </div>
 
+        {% if points_error %}
+        <div class="flex items-center gap-3 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 mb-6">
+            <img src="/static/icon/triangle-alert.svg" alt="Error" class="w-5 h-5 invert flex-shrink-0">
+            <p class="!mb-0 text-red-200">Not enough points. You need {{ points_error.missing }} more to unlock {{
+                points_error.theme }} ({{ points_error.price }} pts).</p>
+        </div>
+        {% endif %}
+
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {% for theme in themes %}
             {% set owned = theme.id in theme_data.themes.unlocked %}
@@ -85,10 +93,11 @@
                                 class="theme-btn bg-[var(--user-soft)] border rounded-lg px-4 py-2 text-sm text-white">Activate</button>
                         </form>
                         {% else %}
-                        <form method="post"><input type="hidden" name="action" value="unlock"><input type="hidden"
+                        <form method="post"
+                            onsubmit="return confirm('Unlock ' + {{ theme.name|tojson }} + ' for {{ theme.price }} points?');"><input
+                                type="hidden" name="action" value="unlock"><input type="hidden"
                                 name="theme_id" value="{{ theme.id }}"><button
-                                class="theme-btn border rounded-lg px-4 py-2 text-sm text-white" {% if
-                                theme_data.points.balance|default(0) < theme.price %}disabled{% endif %}>Unlock</button>
+                                class="theme-btn border rounded-lg px-4 py-2 text-sm text-white">Unlock</button>
                         </form>
                         {% endif %}
                     </div>

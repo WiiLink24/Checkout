@@ -21,7 +21,7 @@ def format_ans_cnt(ans_cnt):
 # Count functions for pagination
 
 
-def count_user_polls(wii_numbers, db_url=None):
+def count_user_polls(wii_numbers, db_url=None, use_cache=True):
     """Count total polls for given Wii numbers."""
     if db_url is None:
         db_url = getattr(config, "evc_db_url", None)
@@ -34,7 +34,7 @@ def count_user_polls(wii_numbers, db_url=None):
         FROM votes
         WHERE wii_no IN ({placeholders}) AND type_cd = 0
     """
-    result = _run_query(query, wii_numbers, db_url)
+    result = _run_query(query, wii_numbers, db_url, use_cache=use_cache)
     return result[0].get("count", 0) if result else 0
 
 

@@ -85,7 +85,7 @@
 </head>
 
 <body class="bg-[var(--user-base)] min-h-screen"
-    style="{% block body_theme_vars %}{% include "components/body_theme_vars.html" %}{% endblock %}">
+    style="background-color: var(--user-base, #111827); {% block body_theme_vars %}{% include "components/body_theme_vars.html" %}{% endblock %}">
     <div class="w-screen md:hidden fixed p-6 flex flex-row items-center justify-between z-30">
         <img src="/static/img/logo.png" alt="Logo" class="h-8" />
         <button id="mobileMenuBtn"
