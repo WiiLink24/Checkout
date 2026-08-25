@@ -114,20 +114,21 @@ def _sanitize_for_cache(value):
     return value
 
 
-def _run_query(query, params, db_url=None):
-    """Execute a query against a specified database (defaults to config.db_url)."""
+def _run_query(query, params, db_url=None, use_cache=True):
+    """Execute a query, optionally bypassing the result cache."""
     if db_url is None:
         db_url = config.db_url
     params_tuple = tuple(params or [])
     cache_key = _query_cache_key(db_url, query, params_tuple)
     start = time.perf_counter()
 
-    cached = cache.get(cache_key)
-    if cached is not None:
-        print(
-            f"[DB] CACHE HIT ({time.perf_counter() - start:.3f}s): {_short_query(query)}"
-        )
-        return copy.deepcopy(cached)
+    if use_cache:
+        cached = cache.get(cache_key)
+        if cached is not None:
+            print(
+                f"[DB] CACHE HIT ({time.perf_counter() - start:.3f}s): {_short_query(query)}"
+            )
+            return copy.deepcopy(cached)
 
     try:
         result = _execute_query(query, params, db_url)
@@ -136,7 +137,8 @@ def _run_query(query, params, db_url=None):
         result = _execute_query(query, params, db_url)
 
     result = _sanitize_for_cache(result)
-    cache.set(cache_key, result, timeout=_QUERY_CACHE_TTL)
+    if use_cache:
+        cache.set(cache_key, result, timeout=_QUERY_CACHE_TTL)
     print(f"[DB] QUERY ({time.perf_counter() - start:.3f}s): {_short_query(query)}")
     return copy.deepcopy(result)
 

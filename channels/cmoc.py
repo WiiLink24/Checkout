@@ -81,7 +81,9 @@ def get_artisan_ids_from_wii_number(wii_number, db_url=None):
     return result if result else []
 
 
-def fetch_contest_submissions(wii_numbers, db_url=None, limit=None, offset=None):
+def fetch_contest_submissions(
+    wii_numbers, db_url=None, limit=None, offset=None, use_cache=True
+):
     """Fetch contest submissions (Miis) for given Wii numbers."""
     if db_url is None:
         db_url = getattr(config, "cmoc_db_url", None)
@@ -124,11 +126,11 @@ def fetch_contest_submissions(wii_numbers, db_url=None, limit=None, offset=None)
     if limit is not None and offset is not None:
         query += f" LIMIT {limit} OFFSET {offset}"
 
-    result = _run_query(query, wii_numbers, db_url)
+    result = _run_query(query, wii_numbers, db_url, use_cache=use_cache)
     return result if result else []
 
 
-def count_contest_submissions(wii_numbers, db_url=None):
+def count_contest_submissions(wii_numbers, db_url=None, use_cache=True):
     """Count total contest submissions for given Wii numbers."""
     if db_url is None:
         db_url = getattr(config, "cmoc_db_url", None)
@@ -151,5 +153,5 @@ def count_contest_submissions(wii_numbers, db_url=None):
         FROM contest_miis
         WHERE {where_clause}
     """
-    result = _run_query(query, wii_numbers, db_url)
+    result = _run_query(query, wii_numbers, db_url, use_cache=use_cache)
     return result[0].get("count", 0) if result else 0

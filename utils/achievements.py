@@ -101,7 +101,7 @@ ACHIEVEMENTS = [
 _ACHIEVEMENT_BY_ID = {ach.id: ach for ach in ACHIEVEMENTS}
 
 
-def collect_metrics(serial_prefixes=None, wii_numbers=None):
+def collect_metrics(serial_prefixes=None, wii_numbers=None, use_cache=True):
     from channels.nc import count_recommendations, count_time_played, fetch_user_stats
     from channels.evc import count_user_polls
     from channels.cmoc import count_contest_submissions
@@ -109,14 +109,18 @@ def collect_metrics(serial_prefixes=None, wii_numbers=None):
     serial_prefixes = serial_prefixes or []
     wii_numbers = wii_numbers or []
 
-    user_stats = fetch_user_stats(serial_prefixes) if serial_prefixes else {}
+    user_stats = (
+        fetch_user_stats(serial_prefixes, use_cache=use_cache)
+        if serial_prefixes
+        else {}
+    )
 
     contest_wins = 0
     contest_ranks = {1: 0, 2: 0, 3: 0}
     if wii_numbers:
         from channels.cmoc import fetch_contest_submissions
 
-        for submission in fetch_contest_submissions(wii_numbers):
+        for submission in fetch_contest_submissions(wii_numbers, use_cache=use_cache):
             rank = submission.get("rank")
             if str(rank) in ("1", "2", "3"):
                 contest_ranks[int(rank)] += 1
@@ -124,14 +128,26 @@ def collect_metrics(serial_prefixes=None, wii_numbers=None):
                 contest_wins += 1
 
     return {
-        "reviews": count_recommendations(serial_prefixes) if serial_prefixes else 0,
-        "games_played": count_time_played(serial_prefixes) if serial_prefixes else 0,
+        "reviews": (
+            count_recommendations(serial_prefixes, use_cache=use_cache)
+            if serial_prefixes
+            else 0
+        ),
+        "games_played": (
+            count_time_played(serial_prefixes, use_cache=use_cache)
+            if serial_prefixes
+            else 0
+        ),
         "total_minutes": (
             (user_stats or {}).get("total_minutes", 0) if serial_prefixes else 0
         ),
-        "polls": count_user_polls(wii_numbers) if wii_numbers else 0,
+        "polls": (
+            count_user_polls(wii_numbers, use_cache=use_cache) if wii_numbers else 0
+        ),
         "contest_submissions": (
-            count_contest_submissions(wii_numbers) if wii_numbers else 0
+            count_contest_submissions(wii_numbers, use_cache=use_cache)
+            if wii_numbers
+            else 0
         ),
         "contest_wins": contest_wins,
         "contest_rank_1": contest_ranks[1],
@@ -174,12 +190,23 @@ def _build_points(metrics, achieved_ids, previous):
 
     previous_achievements = set(old_milestones.get("achievements", []))
     new_achievements = set(achieved_ids) - previous_achievements
-    play_minutes = max(0, metrics.get("total_minutes", 0) - old_milestones.get("total_minutes", 0))
+    play_minutes = max(
+        0, metrics.get("total_minutes", 0) - old_milestones.get("total_minutes", 0)
+    )
     new_reviews = max(0, metrics.get("reviews", 0) - old_milestones.get("reviews", 0))
     new_polls = max(0, metrics.get("polls", 0) - old_milestones.get("polls", 0))
-    new_contests = max(0, metrics.get("contest_submissions", 0) - old_milestones.get("contest_submissions", 0))
+    new_contests = max(
+        0,
+        metrics.get("contest_submissions", 0)
+        - old_milestones.get("contest_submissions", 0),
+    )
     rank_points = sum(
-        max(0, metrics.get(f"contest_rank_{rank}", 0) - old_milestones.get(f"contest_rank_{rank}", 0)) * points
+        max(
+            0,
+            metrics.get(f"contest_rank_{rank}", 0)
+            - old_milestones.get(f"contest_rank_{rank}", 0),
+        )
+        * points
         for rank, points in ((1, 50), (2, 40), (3, 30))
     )
     earned = old_points.get("earned", 0) + (
@@ -197,7 +224,8 @@ def _build_points(metrics, achieved_ids, previous):
         "balance": max(0, earned - spent),
         "milestones": {
             **old_milestones,
-            "total_minutes": old_milestones.get("total_minutes", 0) + (play_minutes // 60) * 60,
+            "total_minutes": old_milestones.get("total_minutes", 0)
+            + (play_minutes // 60) * 60,
             "reviews": metrics.get("reviews", 0),
             "polls": metrics.get("polls", 0),
             "contest_submissions": metrics.get("contest_submissions", 0),
@@ -209,7 +237,9 @@ def _build_points(metrics, achieved_ids, previous):
     }
 
 
-def build_payload(achieved_ids, achievement_counts, total_users, metrics=None, previous=None) -> Dict:
+def build_payload(
+    achieved_ids, achievement_counts, total_users, metrics=None, previous=None
+) -> Dict:
     """Build the JSON payload stored in the user's Authentik attributes."""
 
     def percent(count):
@@ -350,12 +380,14 @@ def _build_refresh_payload(achieved_ids, metrics=None, previous=None) -> Dict:
     }
 
 
-def refresh_achievements_for_user(user):
-    """Refresh one user's achievements when their stored payload is stale (> 2h).
+def refresh_achievements_for_user(user, force=False):
+    """Refresh one user's achievements when stale, or immediately when forced.
 
     Returns (payload, wrote): the payload to display, and whether a write happened.
     """
-    print(f"[ACHIEVEMENTS] Refreshing payload for user {user.get('username')} ({user.get('uuid')})")
+    print(
+        f"[ACHIEVEMENTS] Refreshing payload for user {user.get('username')} ({user.get('uuid')})"
+    )
     try:
         fresh_user = get_authentik_user(user)
     except Exception as e:
@@ -364,7 +396,13 @@ def refresh_achievements_for_user(user):
 
     attributes = (fresh_user or {}).get("attributes") or {}
     previous = parse_achievements(attributes)
-    if previous and is_fresh(previous) and "points" in previous and "themes" in previous:
+    if (
+        previous
+        and not force
+        and is_fresh(previous)
+        and "points" in previous
+        and "themes" in previous
+    ):
         return previous, False
 
     serial_prefixes, wii_numbers = _extract_user_identifiers(attributes)
@@ -372,13 +410,23 @@ def refresh_achievements_for_user(user):
         return previous, False
 
     try:
-        metrics = collect_metrics(serial_prefixes, wii_numbers)
+        metrics = collect_metrics(serial_prefixes, wii_numbers, use_cache=not force)
         achieved = evaluate(metrics)
     except Exception as e:
         print(f"[ACHIEVEMENTS] Refresh failed for {user.get('username')}: {e}")
         return previous, False
 
     payload = _build_refresh_payload(achieved, metrics, previous)
+    if previous:
+        current_data = {
+            key: value for key, value in payload.items() if key != "generated_at"
+        }
+        previous_data = {
+            key: value for key, value in previous.items() if key != "generated_at"
+        }
+        if current_data == previous_data:
+            return previous, False
+
     try:
         attributes["achievements"] = payload
         update_user_attributes(user, attributes)
@@ -459,8 +507,11 @@ def sync_achievements():
         attributes = dict(fresh_attributes)
         previous = parse_achievements(fresh_attributes)
         attributes["achievements"] = build_payload(
-            achieved_by_user[uuid], achievement_counts, eligible,
-            metrics_by_user[uuid], previous
+            achieved_by_user[uuid],
+            achievement_counts,
+            eligible,
+            metrics_by_user[uuid],
+            previous,
         )
         try:
             update_user_attributes(user, attributes)
