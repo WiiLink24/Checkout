@@ -152,7 +152,13 @@ def fetch_top_favorites(limit=30):
         LEFT JOIN LATERAL (
             SELECT * FROM titles t
             WHERE LEFT(t.game_id, 3) = bg.title_prefix
-            ORDER BY LENGTH(t.game_id) DESC, t.game_id
+            ORDER BY CASE
+                WHEN SUBSTRING(t.game_id, 4, 1) = 'E' THEN 1
+                WHEN SUBSTRING(t.game_id, 4, 1) = 'P' THEN 2
+                WHEN SUBSTRING(t.game_id, 4, 1) = 'J' THEN 3
+                WHEN SUBSTRING(t.game_id, 4, 1) = 'K' THEN 4
+                WHEN SUBSTRING(t.game_id, 4, 1) = 'C' THEN 5
+            END, LENGTH(t.game_id) DESC, t.game_id
             LIMIT 1
         ) t ON true
         ORDER BY favorite_count DESC, user_count DESC
@@ -196,7 +202,7 @@ def fetch_recommendations(
         LEFT JOIN LATERAL (
             SELECT * FROM titles t
             WHERE t.game_id = r.game_id OR SUBSTRING(t.game_id, 1, 4) = SUBSTRING(r.game_id, 1, 4)
-            ORDER BY CASE WHEN t.game_id = r.game_id THEN 0 ELSE 1 END, LENGTH(t.game_id) DESC, t.game_id
+            ORDER BY LENGTH(t.game_id) DESC, t.game_id
             LIMIT 1
         ) t ON true
         ORDER BY {order_by}
@@ -261,7 +267,13 @@ def fetch_top_best_games(limit=30):
         LEFT JOIN LATERAL (
             SELECT * FROM titles t
             WHERE LEFT(t.game_id, 3) = pg.title_prefix
-            ORDER BY LENGTH(t.game_id) DESC, t.game_id
+            ORDER BY CASE
+                WHEN SUBSTRING(t.game_id, 4, 1) = 'E' THEN 1
+                WHEN SUBSTRING(t.game_id, 4, 1) = 'P' THEN 2
+                WHEN SUBSTRING(t.game_id, 4, 1) = 'J' THEN 3
+                WHEN SUBSTRING(t.game_id, 4, 1) = 'K' THEN 4
+                WHEN SUBSTRING(t.game_id, 4, 1) = 'C' THEN 5
+            END, LENGTH(t.game_id) DESC, t.game_id
             LIMIT 1
         ) t ON true
         ORDER BY
@@ -321,7 +333,7 @@ def fetch_time_played(serial_prefixes, sort_by="time_played", limit=30, offset=0
             LEFT JOIN LATERAL (
                 SELECT * FROM titles t
                 WHERE t.game_id = r.game_id OR SUBSTRING(t.game_id, 1, 4) = SUBSTRING(r.game_id, 1, 4)
-                ORDER BY CASE WHEN t.game_id = r.game_id THEN 0 ELSE 1 END, LENGTH(t.game_id) DESC, t.game_id
+                ORDER BY LENGTH(t.game_id) DESC, t.game_id
                 LIMIT 1
             ) t ON true
         )
@@ -371,7 +383,13 @@ def fetch_top_most_played(limit=30):
         LEFT JOIN LATERAL (
             SELECT * FROM titles t
             WHERE LEFT(t.game_id, 3) = pg.title_prefix
-            ORDER BY LENGTH(t.game_id) DESC, t.game_id
+            ORDER BY CASE
+                WHEN SUBSTRING(t.game_id, 4, 1) = 'E' THEN 1
+                WHEN SUBSTRING(t.game_id, 4, 1) = 'P' THEN 2
+                WHEN SUBSTRING(t.game_id, 4, 1) = 'J' THEN 3
+                WHEN SUBSTRING(t.game_id, 4, 1) = 'K' THEN 4
+                WHEN SUBSTRING(t.game_id, 4, 1) = 'C' THEN 5
+            END, LENGTH(t.game_id) DESC, t.game_id
             LIMIT 1
         ) t ON true
         ORDER BY total_time_played DESC
