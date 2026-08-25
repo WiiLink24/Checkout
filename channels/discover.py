@@ -64,7 +64,9 @@ def find_game_recommendation(serial_prefixes):
         WHERE {where_clause}
     """
     played_rows = _run_query(played_query, params, config.db_url)
-    played_ids = {row.get("game_id") for row in played_rows if row.get("game_id")}
+    played_prefixes = {
+        row.get("game_id")[:3] for row in played_rows if row.get("game_id")
+    }
 
     # Fetch candidate games and score them
     candidates_query = f"""
@@ -87,13 +89,7 @@ def find_game_recommendation(serial_prefixes):
 
     for candidate in candidates:
         game_id = candidate.get("game_id")
-        if not game_id or game_id in played_ids:
-            continue
-
-        # Skip if game_id matches any played game_id
-        if any(
-            game_id.startswith(pid) or pid.startswith(game_id) for pid in played_ids
-        ):
+        if not game_id or game_id[:3] in played_prefixes:
             continue
 
         # How many times this game's genre appears in user games

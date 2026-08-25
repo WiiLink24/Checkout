@@ -27,7 +27,7 @@ def search_games_by_title(search_query, offset=0, limit=15):
     query = """
         SELECT t.game_id, t.title_en, t.display_name, t.synopsis_en, t.genre, t.developer,
                t.publisher, t.rating_type, t.rating_value, t.release_year, t.release_month, t.release_day,
-               t.input_controls, t.wifi_players,
+             t.region, t.input_controls, t.wifi_players,
                COALESCE(b.favorite_count, 0) AS favorite_count,
                COALESCE(b.user_count, 0) AS user_count
         FROM titles t
@@ -64,7 +64,7 @@ def search_games_by_publisher(search_query, offset=0, limit=15):
     query = """
         SELECT t.game_id, t.title_en, t.display_name, t.synopsis_en, t.genre, t.developer,
                t.publisher, t.rating_type, t.rating_value, t.release_year, t.release_month, t.release_day,
-               t.input_controls, t.wifi_players, t.input_players,
+             t.region, t.input_controls, t.wifi_players, t.input_players,
                COALESCE(b.favorite_count, 0) AS favorite_count,
                COALESCE(b.user_count, 0) AS user_count
         FROM titles t
@@ -98,7 +98,7 @@ def search_games_by_developer(search_query, offset=0, limit=15):
     query = """
         SELECT t.game_id, t.title_en, t.display_name, t.synopsis_en, t.genre, t.developer,
                t.publisher, t.rating_type, t.rating_value, t.release_year, t.release_month, t.release_day,
-               t.input_controls, t.wifi_players, t.input_players,
+             t.region, t.input_controls, t.wifi_players, t.input_players,
                COALESCE(b.favorite_count, 0) AS favorite_count,
                COALESCE(b.user_count, 0) AS user_count
         FROM titles t

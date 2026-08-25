@@ -26,8 +26,9 @@ WiiLink Checkout | Contest Submissions
 
         {% include "components/pagination.html" %}
         {% else %}
-        <div class="text-center text-gray-400 py-12">No contest submissions found...
-        </div>
+        {% set empty_icon = "send-horizontal" %}
+        {% set empty_title = "No contest submissions found." %}
+        {% include "components/empty_state.html" %}
         {% endif %}
     </div>
 </div>

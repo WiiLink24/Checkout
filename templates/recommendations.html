@@ -31,7 +31,10 @@ WiiLink Checkout | Recommendations for {{ viewed_user.username }}
 </div>
 {% include "components/pagination.html" %}
 {% else %}
-<div class="text-center text-gray-300">Recommend titles on the Nintendo Channel to get started!</div>
+{% set empty_icon = "star" %}
+{% set empty_title = "No recommendations yet" %}
+{% set empty_message = "Recommend titles on the Nintendo Channel to get started!" %}
+{% include "components/empty_state.html" %}
 {% endif %}
 </div>
 </div>

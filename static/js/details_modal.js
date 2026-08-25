@@ -57,6 +57,9 @@
         try {
             const response = await fetch(`/recommendations/averages?${params.toString()}`);
             const data = await response.json();
+            if (data && data.favorite_count !== undefined && data.favorite_count !== null) {
+                currentFavoriteCount = Number(data.favorite_count);
+            }
             if (!data || !data.total) {
                 summary.textContent = "No community data for this game.";
                 document.getElementById("avgScoreText").textContent = "-";
