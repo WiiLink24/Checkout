@@ -171,11 +171,21 @@ def _achievement_ids(payload):
 def _build_points(metrics, achieved_ids, previous):
     old_points = (previous or {}).get("points") or {}
     old_milestones = old_points.get("milestones")
-    if not isinstance(old_milestones, dict):
+    if not isinstance(old_milestones, dict) or old_points.get("earned", 0) == 0:
+        earned = (
+            metrics.get("total_minutes", 0) // 60
+            + metrics.get("reviews", 0) * 5
+            + metrics.get("polls", 0) * 5
+            + metrics.get("contest_submissions", 0) * 5
+            + metrics.get("contest_rank_1", 0) * 50
+            + metrics.get("contest_rank_2", 0) * 40
+            + metrics.get("contest_rank_3", 0) * 30
+            + len(achieved_ids) * _ACHIEVEMENT_POINTS
+        )
         return {
-            "earned": 0,
+            "earned": earned,
             "spent": old_points.get("spent", 0),
-            "balance": 0,
+            "balance": max(0, earned - old_points.get("spent", 0)),
             "milestones": {
                 "total_minutes": metrics.get("total_minutes", 0),
                 "reviews": metrics.get("reviews", 0),
