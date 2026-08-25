@@ -43,12 +43,7 @@ def get_theme_catalog():
             theme = dict(theme)
             theme["background"] = _catalog_asset_url("backgrounds", theme.get("background", ""))
             theme["bgm"] = _catalog_asset_url("audio", theme.get("bgm", ""))
-            font = theme.get("font", "")
-            theme["font"] = (
-                "'Minecraft', sans-serif"
-                if font == "minecraft"
-                else font
-            )
+            theme["font"] = (theme.get("font", ""))
             normalized[theme["id"]] = theme
         return normalized
     except (OSError, ValueError, TypeError):

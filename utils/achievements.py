@@ -176,7 +176,7 @@ def _build_points(metrics, achieved_ids, previous):
             metrics.get("total_minutes", 0) // 60
             + metrics.get("reviews", 0) * 5
             + metrics.get("polls", 0) * 5
-            + metrics.get("contest_submissions", 0) * 5
+            + metrics.get("contest_submissions", 0) * 10
             + metrics.get("contest_rank_1", 0) * 50
             + metrics.get("contest_rank_2", 0) * 40
             + metrics.get("contest_rank_3", 0) * 30
@@ -223,7 +223,7 @@ def _build_points(metrics, achieved_ids, previous):
         (play_minutes // 60)
         + new_reviews * 5
         + new_polls * 5
-        + new_contests * 5
+        + new_contests * 10
         + rank_points
         + len(new_achievements) * _ACHIEVEMENT_POINTS
     )
