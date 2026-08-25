@@ -33,7 +33,9 @@ WiiLink Checkout | Time Played for {{ viewed_user.username }}
 </div>
 {% include "components/pagination.html" %}
 {% else %}
-<div class="text-center text-gray-300">No time played data found for this serial prefix.</div>
+{% set empty_icon = "clock" %}
+{% set empty_title = "No time played data found for this serial prefix." %}
+{% include "components/empty_state.html" %}
 {% endif %}
 </div>
 </div>

@@ -23,9 +23,45 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
     }
 
     .ach-icon-box:hover {
-        transform: rotateX(12deg) rotateY(-12deg) scale(1.8);
+        transform: rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg)) scale(1.8);
         filter: drop-shadow(0 0 10px rgba(var(--user-rgb, 99, 102, 241), 0.8));
         z-index: 20;
+    }
+
+    .home-game-card {
+        transform: perspective(900px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg)) scale(var(--card-scale, 1));
+        transform-style: preserve-3d;
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .home-game-card:hover {
+        --card-scale: 1.03;
+    }
+
+    .home-game-card-back {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        transform: translateZ(-28px);
+        filter: blur(28px) saturate(1.25);
+        transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .home-game-card:hover .home-game-card-back {
+        opacity: 0.3;
+        transform: translateZ(-18px) scale(1.12);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .ach-icon-box,
+        .home-game-card,
+        .home-game-card-back {
+            transition: none;
+        }
     }
 
     .ach-strip {
@@ -60,6 +96,27 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
 
     .home-reveal {
         transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+    }
+
+    .home-empty-state {
+        min-height: 132px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        background: var(--user-dark);
+        border: 1px dashed var(--user-base);
+        border-radius: 0.75rem;
+        color: rgb(156 163 175);
+        text-align: center;
+    }
+
+    .home-empty-state img {
+        width: 1.75rem;
+        height: 1.75rem;
+        opacity: 0.55;
+        filter: invert(1);
     }
 
     @supports (animation-timeline: view()) {
@@ -323,7 +380,7 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                 {% include "components/game_cover_vars.html" %}
                 {% include "components/vt_cover_name.html" %}
                 <button
-                    class="flex flex-col items-end justify-end rounded-xl hover:scale-[1.03] hover:shadow-2xl transition duration-200 relative w-full text-left bg-transparent border-0 cursor-pointer aspect-[2/2.8]"
+                    class="home-game-card flex flex-col items-end justify-end rounded-xl hover:shadow-2xl relative w-full text-left bg-transparent border-0 cursor-pointer aspect-[2/2.8]"
                     data-modal-open data-source="favorites" data-title="{{ game.title_en or game.title }}"
                     data-game-id="{{ game.game_id }}" data-cover-url="{{ cover.url }}"
                     data-cover-fallback="{{ cover.fallback }}" data-release-year="{{ game.release_year or '' }}"
@@ -336,22 +393,24 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                     data-favorite-user-count="{{ game.user_count or 0 }}" {%- if game.input_controls %}
                     data-input-controls='{{ game.input_controls | tojson }}' {% endif %}
                     data-wifi-players="{{ game.wifi_players or 0 }}">
+                    <img src="{{ cover.url }}" alt="" aria-hidden="true" class="home-game-card-back pointer-events-none"
+                        onerror="this.style.display = 'none';">
                     <img src="{{ cover.url }}" alt="{{ game.title }} Cover" data-fallback="{{ cover.fallback }}"
                         {% if vt_name.name %}style="view-transition-name: {{ vt_name.name }};"{% endif %}
                         onerror="if (!this.dataset.tried && this.dataset.fallback) { this.dataset.tried = '1'; this.src = this.dataset.fallback; } else { this.style.display = 'none'; }"
-                        class="w-full h-full object-contain object-bottom rounded">
-                    <div class="bottom-0 p-3 z-10 absolute w-full">
+                        class="relative z-10 w-full h-full object-contain object-bottom rounded">
+                    <div class="bottom-0 p-3 z-30 absolute w-full">
                         <p class="text-white font-semibold break-words">{{ game.title_en or game.title }}</p>
                     </div>
                     <div
-                        class="bottom-0 absolute bg-gradient-to-t from-black/70 to-transparent w-full h-40 rounded">
+                        class="bottom-0 absolute z-20 bg-gradient-to-t from-black/70 to-transparent w-full h-40 rounded">
                     </div>
                 </button>
                 {% endfor %}
             </div>
             {% else %}
-            <div class="theme-card border rounded-xl p-8 text-center">
-                <p class="!mb-0 text-gray-400">No favorites yet</p>
+            <div class="home-empty-state">
+                <p class="!mb-0">No favorites yet</p>
             </div>
             {% endif %}
         </section>
@@ -388,7 +447,7 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                         {% include "components/game_cover_vars.html" %}
                         {% include "components/vt_cover_name.html" %}
                         <button
-                            class="flex flex-col items-end justify-end rounded-xl hover:scale-[1.03] hover:shadow-2xl transition duration-200 relative w-full text-left bg-transparent border-0 cursor-pointer aspect-[2/2.8]"
+                            class="home-game-card flex flex-col items-end justify-end rounded-xl hover:shadow-2xl relative w-full text-left bg-transparent border-0 cursor-pointer aspect-[2/2.8]"
                             data-modal-open data-title="{{ game.title_en or game.title }}"
                             data-game-id="{{ game.game_id }}" data-cover-url="{{ cover.url }}"
                             data-cover-fallback="{{ cover.fallback }}"
@@ -401,26 +460,28 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                             data-synopsis="{{ game.synopsis_en or '' }}" {%- if game.input_controls %}
                             data-input-controls='{{ game.input_controls | tojson }}' {% endif %}
                             data-wifi-players="{{ game.wifi_players or 0 }}">
+                            <img src="{{ cover.url }}" alt="" aria-hidden="true" class="home-game-card-back pointer-events-none"
+                                onerror="this.style.display = 'none';">
                             <img src="{{ cover.url }}" alt="{{ game.title }} Cover"
                                 data-fallback="{{ cover.fallback }}"
                                 {% if vt_name.name %}style="view-transition-name: {{ vt_name.name }};"{% endif %}
                                 onerror="if (!this.dataset.tried && this.dataset.fallback) { this.dataset.tried = '1'; this.src = this.dataset.fallback; } else { var placeholder = document.createElement('div'); placeholder.className = 'w-full h-auto theme-card-inner rounded flex-shrink-0'; this.parentNode.replaceChild(placeholder, this); }"
-                                class="w-full h-full object-contain object-bottom rounded">
-                            <div class="bottom-0 p-3 z-10 absolute w-full">
+                                class="relative z-10 w-full h-full object-contain object-bottom rounded">
+                            <div class="bottom-0 p-3 z-30 absolute w-full">
                                 <p class="text-white font-semibold break-words">{{ game.title_en or game.title }}
                                 </p>
                                 <p class="text-sm text-gray-300">{{
                                     game.time_played|format_playtime }} played</p>
                             </div>
                             <div
-                                class="bottom-0 absolute bg-gradient-to-t from-black/70 to-transparent w-full h-40 rounded">
+                                class="bottom-0 absolute z-20 bg-gradient-to-t from-black/70 to-transparent w-full h-40 rounded">
                             </div>
                         </button>
                         {% endfor %}
                     </div>
                     {% else %}
-                    <div class="theme-card border rounded-xl p-8 text-center">
-                        <p class="!mb-0 text-gray-400">No games played yet</p>
+                    <div class="home-empty-state">
+                        <p class="!mb-0">No games played yet</p>
                     </div>
                     {% endif %}
                 </section>
@@ -453,7 +514,7 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                         {% include "components/game_cover_vars.html" %}
                         {% include "components/vt_cover_name.html" %}
                         <button
-                            class="flex flex-col items-end justify-end rounded-xl hover:scale-[1.03] hover:shadow-2xl transition duration-200 relative w-full text-left bg-transparent border-0 cursor-pointer aspect-[2/2.8]"
+                            class="home-game-card flex flex-col items-end justify-end rounded-xl hover:shadow-2xl relative w-full text-left bg-transparent border-0 cursor-pointer aspect-[2/2.8]"
                             data-modal-open data-title="{{ game.title_en or game.title }}"
                             data-game-id="{{ game.game_id }}" data-cover-url="{{ cover.url }}"
                             data-cover-fallback="{{ cover.fallback }}"
@@ -466,12 +527,14 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                             data-synopsis="{{ game.synopsis_en or '' }}" {%- if game.input_controls %}
                             data-input-controls='{{ game.input_controls | tojson }}' {% endif %}
                             data-wifi-players="{{ game.wifi_players or 0 }}">
+                            <img src="{{ cover.url }}" alt="" aria-hidden="true" class="home-game-card-back pointer-events-none"
+                                onerror="this.style.display = 'none';">
                             <img src="{{ cover.url }}" alt="{{ game.title }} Cover"
                                 data-fallback="{{ cover.fallback }}"
                                 {% if vt_name.name %}style="view-transition-name: {{ vt_name.name }};"{% endif %}
                                 onerror="if (!this.dataset.tried && this.dataset.fallback) { this.dataset.tried = '1'; this.src = this.dataset.fallback; } else { this.style.display = 'none'; }"
-                                class="w-full h-full object-contain object-bottom rounded">
-                            <div class="bottom-0 p-3 z-10 absolute w-full">
+                                class="relative z-10 w-full h-full object-contain object-bottom rounded">
+                            <div class="bottom-0 p-3 z-30 absolute w-full">
                                 <p class="text-white font-semibold break-words">{{ game.title_en or game.title }}
                                 </p>
                                 {% set score_percent = game.recommendation_percent or 0 %}
@@ -496,14 +559,14 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                                 </div>
                             </div>
                             <div
-                                class="bottom-0 absolute bg-gradient-to-t from-black/70 to-transparent w-full h-40 rounded">
+                                class="bottom-0 absolute z-20 bg-gradient-to-t from-black/70 to-transparent w-full h-40 rounded">
                             </div>
                         </button>
                         {% endfor %}
                     </div>
                     {% else %}
-                    <div class="theme-card border rounded-xl p-8 text-center">
-                        <p class="!mb-0 text-gray-400">No reviews yet</p>
+                    <div class="home-empty-state">
+                        <p class="!mb-0">No reviews yet</p>
                     </div>
                     {% endif %}
                 </section>
@@ -622,6 +685,31 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
             date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
             const expires = "expires=" + date.toUTCString();
             document.cookie = name + "=" + encodeURIComponent(value) + ";" + expires + ";path=/;domain=.wiilink.ca;Secure";
+        }
+
+        if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            function addPointerTilt(selector, targetSelector) {
+                document.querySelectorAll(selector).forEach(function (tile) {
+                    const target = targetSelector ? tile.querySelector(targetSelector) : tile;
+                    if (!target) return;
+
+                    tile.addEventListener("pointermove", function (event) {
+                        const bounds = tile.getBoundingClientRect();
+                    const x = (event.clientX - bounds.left) / bounds.width - 0.5;
+                    const y = (event.clientY - bounds.top) / bounds.height - 0.5;
+                        target.style.setProperty("--tilt-x", `${-y * (targetSelector ? 100 : 12)}deg`);
+                        target.style.setProperty("--tilt-y", `${x * (targetSelector ? 100 : 12)}deg`);
+                    });
+
+                    tile.addEventListener("pointerleave", function () {
+                        target.style.setProperty("--tilt-x", "0deg");
+                        target.style.setProperty("--tilt-y", "0deg");
+                    });
+                });
+            }
+
+            addPointerTilt(".ach-tile-cell", ".ach-icon-box");
+            addPointerTilt(".home-game-card", null);
         }
 
         setCookie("wiilink_user", JSON.stringify({ username: "{{ user_info.username }}", pfp: "{{ user_info.profile_picture }}" }), 7);

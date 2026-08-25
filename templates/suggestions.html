@@ -54,8 +54,9 @@ WiiLink Checkout | Suggestions
         </div>
         {% include "components/pagination.html" %}
         {% else %}
-        <div class="text-center text-gray-300">You haven't suggested any polls just yet...
-        </div>
+        {% set empty_icon = "lightbulb" %}
+        {% set empty_title = "You haven't suggested any polls just yet." %}
+        {% include "components/empty_state.html" %}
         {% endif %}
     </div>
 </div>

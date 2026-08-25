@@ -18,11 +18,10 @@ WiiLink Checkout | Polls
         </div>
         {% include "components/pagination.html" %}
         {% else %}
-        <div class="text-center text-gray-300">
-            <p>You haven't participated in any polls yet.</p>
-            <p class="mt-2 text-sm text-gray-500">Polls are sent through the Everybody Votes Channel and appear here
-                once you vote!</p>
-        </div>
+        {% set empty_icon = "chart-line" %}
+        {% set empty_title = "You haven't participated in any polls yet." %}
+        {% set empty_message = "Polls are sent through the Everybody Votes Channel and appear here once you vote!" %}
+        {% include "components/empty_state.html" %}
         {% endif %}
     </div>
 </div>
