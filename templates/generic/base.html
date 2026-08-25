@@ -20,11 +20,11 @@
         }
 
         .theme-menu-btn {
-            background-color: var(--user-base);
+            background-color: var(--user-base, #111827);
         }
 
         .theme-menu-btn:hover {
-            background-color: rgba(var(--user-rgb, 55, 65, 81), 0.6);
+            background-color: rgba(var(--user-rgb, 17, 24, 39), 0.6);
         }
 
         .theme-menu-btn-active,
@@ -32,22 +32,27 @@
             background-color: rgb(var(--user-rgb, 79, 70, 229));
         }
 
-        .theme-card {
-            background-color: var(--user-dark);
+        .theme-card, .theme-card-faint, .theme-icon-tile {
+            background-color: rgba(var(--user-dark-rgb, 3, 7, 18), 0.6);
             border-color: var(--user-transparent);
         }
 
-        .theme-icon-tile {
-            background-color: var(--user-dark);
-        }
-
         .theme-card-hover {
-            transition: 0.2s;
+            border-color: rgba(var(--user-rgb, 17, 24, 39), 0.45);
+            transition: background-color 0.2s, border-color 0.2s;
         }
 
         .theme-card-hover:hover {
             background-color: var(--user-dark);
-            transition: 0.2s;
+            border-color: rgba(var(--user-rgb, 17, 24, 39), 0.7);
+        }
+
+        .theme-stat-value {
+            transition: color 0.2s;
+        }
+
+        .theme-card-hover:hover .theme-stat-value {
+            color: var(--user-light, #a5b4fc);
         }
 
         .theme-chip {
@@ -58,7 +63,7 @@
             background-color: var(--user-light);
         }
 
-.theme-pfp-border {
+        .theme-pfp-border {
             border-color: var(--user-light, #374151);
         }
 
@@ -68,32 +73,31 @@
 
         .theme-btn {
             background-color: rgba(var(--user-rgb, 17, 24, 39), 0.45);
-            border-color: rgba(var(--user-rgb, 55, 65, 81), 0.7);
+            border-color: rgba(var(--user-rgb, 17, 24, 39), 0.7);
             transition: background-color 0.2s, border-color 0.2s;
         }
 
         .theme-btn:hover {
-            background-color: rgba(var(--user-rgb, 17, 24, 39), 0.7);
+            background-color: var(--user-light);
             border-color: rgba(var(--user-rgb), 0.9);
         }
     </style>
 </head>
 
-<body
-    style="{% block body_theme_vars %}{% include "components/body_theme_vars.html" %}{% endblock %}"
-    class="bg-[var(--user-base)] min-h-screen">
+<body class="bg-[var(--user-base)] min-h-screen"
+    style="{% block body_theme_vars %}{% include "components/body_theme_vars.html" %}{% endblock %}">
     <div class="w-screen md:hidden fixed p-6 flex flex-row items-center justify-between z-30">
         <img src="/static/img/logo.png" alt="Logo" class="h-8" />
         <button id="mobileMenuBtn"
-            class="p-2 bg-gray-800 rounded-lg text-white shadow-lg border border-gray-700 focus:outline-none">
+            class="p-2 theme-btn rounded-lg text-white shadow-lg border focus:outline-none">
             <img src="/static/icon/menu.svg" alt="Menu" class="w-6 h-6 invert" />
         </button>
     </div>
 
     <div class="flex">
-<div id="sidebar"
-            class="w-full max-w-[300px] h-screen bg-[var(--user-dark)] backdrop-blur-xl border-r border-[var(--user-transparent)] p-6 fixed top-0 left-0 flex flex-col justify-between transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-40 overflow-scroll sm:overflow-visible"
-            style="background-image: linear-gradient(180deg, rgba(var(--user-rgb, 17, 24, 39), 0.28), rgba(var(--user-rgb, 17, 24, 39), 0.08));">
+        <div id="sidebar"
+            class="w-full max-w-[300px] h-screen backdrop-blur-xl border-r p-6 fixed top-0 left-0 flex flex-col justify-between transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-40 overflow-scroll sm:overflow-visible"
+            style="background-color: var(--user-dark); background-image: linear-gradient(180deg, rgba(var(--user-rgb, 17, 24, 39), 0.4), rgba(var(--user-rgb, 17, 24, 39), 0.1)); border-color: var(--user-transparent, rgba(17, 24, 39, 0.14));">
             <div class="overflow-scroll sm:overflow-visible h-full">
                 <div class="mb-3 flex justify-between items-start">
                     <img src="/static/img/logo.png" alt="Logo" class="h-10 mb-6" />
@@ -155,7 +159,7 @@
                                 src="/static/icon/chevron-right.svg" alt="Arrow Down" class="w-4 h-4 invert" /></span>
                     </button>
                     <div id="{{ channel_id }}Items"
-                        class="absolute left-full top-0 -ml-4 w-48 bg-[var(--user-base)] backdrop-blur-md border border-[var(--user-transparent)] rounded-xl shadow-2xl py-2 z-50 pointer-events-none opacity-0 transition-opacity duration-200"
+                        class="absolute left-full top-0 flex flex-col gap-1 -ml-4 w-48 bg-[var(--user-dark)] backdrop-blur-md rounded-xl shadow-2xl p-1 z-50 pointer-events-none opacity-0 transition-opacity duration-200"
                         style="visibility: hidden;">
                         {% for item in items %}
                         {% if item['name'] == 'Your Miis' and artisan_ids|length == 0 %}
@@ -246,7 +250,7 @@
                     </button>
 
                     <div id="youMenu"
-                        class="absolute left-full top-0 -ml-4 bg-[var(--user-base)] backdrop-blur-md border border-[var(--user-transparent)] rounded-xl shadow-xl py-2 z-40 pointer-events-none opacity-0 transition-opacity duration-200 min-w-max"
+                        class="flex flex-col gap-1 absolute left-full top-0 -ml-4 bg-[var(--user-dark)] backdrop-blur-md rounded-xl shadow-xl p-1 z-40 pointer-events-none opacity-0 transition-opacity duration-200 min-w-max"
                         style="visibility: hidden;">
                         {% for channel in channels %}
                         {{ channel_menu(channel.id, channel.name, channel['items'], channel.get('icon', '')) }}
@@ -324,7 +328,7 @@
                             </a>
                         </div>
 
-                        <div class="mt-2 p-4 bg-[var(--user-base)]/40 rounded-xl border border-[var(--user-transparent)]">
+                        <div class="mt-2 p-4 theme-card rounded-xl border">
                             <div class="flex items-center mb-2">
                                 <img src="/static/icon/info.svg" alt="Info" class="w-5 h-5 invert mr-2 opacity-70" />
                                 <h3 class="text-sm font-medium text-[var(--user-soft)]">Best Experience</h3>
@@ -394,13 +398,13 @@
     {% if artisan_ids|length > 1 %}
     <div id="artisanModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50"
         style="display: none;">
-        <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 max-w-md w-full mx-4">
+        <div class="bg-[var(--user-dark)] border border-[var(--user-transparent)] rounded-xl p-6 max-w-md w-full mx-4">
             <h2 class="text-xl font-bold text-white mb-4">Select Your Mii Artisan</h2>
             <p class="text-gray-400 mb-4">You have multiple artisan profiles. Which one would you like to open?</p>
             <div class="space-y-2 mb-6">
                 {% for artisan in artisan_ids %}
                 <button onclick="navigateToArtisan('{{ artisan.artisan_id }}')"
-                    class="flex flex-row items-center justify-between w-full px-4 py-3 bg-gray-700/40 hover:bg-gray-700/60 text-white rounded-lg transition duration-200">
+                    class="flex flex-row items-center justify-between w-full px-4 py-3 theme-menu-btn text-white rounded-lg transition duration-200">
                     <div class="flex items-center justify-between">
                         <span class="flex items-center">
                             <img src="/static/icon/user.svg" alt="User" class="w-5 h-5 invert mr-3" />
@@ -421,7 +425,7 @@
                 {% endfor %}
             </div>
             <button onclick="closeArtisanModal()"
-                class="w-full px-4 py-2 bg-gray-700/40 hover:bg-gray-700/60 text-gray-300 rounded-lg transition duration-200">
+                class="w-full px-4 py-2 theme-menu-btn text-gray-300 rounded-lg transition duration-200">
                 Cancel
             </button>
         </div>

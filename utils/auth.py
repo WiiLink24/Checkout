@@ -1,4 +1,5 @@
 from flask import session
+from utils.achievements import parse_achievements
 from utils.utils import generate_gravatar_url
 
 
@@ -32,4 +33,7 @@ def build_user_info(profile):
         "profile_picture": generate_gravatar_url(email),
         "linked_wii_no": wii_numbers,
         "serial_number": serial_numbers if serial_numbers else [],
+        "achievements": parse_achievements(
+            {"achievements": profile.get("achievements")}
+        ),
     }

@@ -1,3 +1,5 @@
+{# Emits theme CSS vars for the body element.
+   Priority: explicit user_theme param -> viewed_user theme -> gray-900/950 defaults. #}
 {% if user_theme is defined and user_theme %}
 {% set theme = user_theme %}
 {% elif viewed_user %}
@@ -5,4 +7,4 @@
 {% else %}
 {% set theme = None %}
 {% endif %}
-{% if theme %}--user-base: {{ theme.base }}; --user-light: {{ theme.light }}; --user-dark: {{ theme.dark }}; --user-soft: {{ theme.soft }}; --user-rgb: {{ theme.rgb }}; --user-transparent: {{ theme.transparent }};{% else %}--user-base: #202b31; --user-light: #374151; --user-dark: #111827; --user-soft: #4b5563; --user-rgb: 55, 65, 81; --user-transparent: rgba(255, 255, 255, 0.1);{% endif %}
+{% if theme %}--user-base: {{ theme.base }}; --user-dark: {{ theme.dark }}; --user-light: {{ theme.light }}; --user-soft: {{ theme.soft or theme.light }}; --user-transparent: {{ theme.transparent }}; --user-rgb: {{ theme.rgb }}; --user-dark-rgb: {{ theme.dark_rgb or theme.rgb }};{% else %}--user-base: #111827; --user-dark: #030712; --user-light: #646873; --user-soft: #646873; --user-transparent: rgba(17, 24, 39, 0.14); --user-rgb: 17, 24, 39; --user-dark-rgb: 3, 7, 18;{% endif %}

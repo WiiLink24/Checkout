@@ -177,7 +177,8 @@ def fetch_recommendations(
             COALESCE(t.game_id, r.game_id) AS game_id,
             COALESCE(t.display_name, t.title_en, r.game_id) AS title,
             t.title_en, t.display_name, t.synopsis_en, t.genre, t.developer, t.publisher, t.region, t.game_type,
-            t.release_year, t.rating_type, t.rating_value, t.input_controls, t.wifi_players, t.input_players
+            t.release_year, t.rating_type, t.rating_value, t.input_controls, t.wifi_players, t.input_players,
+            (SELECT COUNT(*) FROM bookmarks bf WHERE bf.game_id = r.game_id) AS favorite_count
         FROM recommendations r
         JOIN (
             SELECT game_id, MAX(id) AS latest_id
@@ -188,7 +189,7 @@ def fetch_recommendations(
         LEFT JOIN LATERAL (
             SELECT * FROM titles t
             WHERE t.game_id = r.game_id OR SUBSTRING(t.game_id, 1, 4) = SUBSTRING(r.game_id, 1, 4)
-            ORDER BY LENGTH(t.game_id) DESC, t.game_id
+            ORDER BY CASE WHEN t.game_id = r.game_id THEN 0 ELSE 1 END, LENGTH(t.game_id) DESC, t.game_id
             LIMIT 1
         ) t ON true
         ORDER BY {order_by}
@@ -245,13 +246,14 @@ def fetch_top_best_games(limit=30):
             t.title_en, t.display_name, t.synopsis_en, t.genre, t.developer, t.publisher, t.game_type,
             t.release_year, t.rating_type, t.rating_value, t.region, t.input_controls, t.wifi_players, t.input_players,
             pg.avg_recommendation,
-            pg.reviewer_count
+            pg.reviewer_count,
+            (SELECT COUNT(*) FROM bookmarks bf WHERE bf.game_id = pg.game_id) AS favorite_count
         FROM per_game pg
         CROSS JOIN global_stats gs
         LEFT JOIN LATERAL (
             SELECT * FROM titles t
             WHERE t.game_id = pg.game_id OR SUBSTRING(t.game_id, 1, 4) = SUBSTRING(pg.game_id, 1, 4)
-            ORDER BY LENGTH(t.game_id) DESC, t.game_id
+            ORDER BY CASE WHEN t.game_id = pg.game_id THEN 0 ELSE 1 END, LENGTH(t.game_id) DESC, t.game_id
             LIMIT 1
         ) t ON true
         ORDER BY
@@ -305,12 +307,13 @@ def fetch_time_played(serial_prefixes, sort_by="time_played", limit=30, offset=0
                 COALESCE(t.display_name, t.title_en, r.game_id) AS title,
                 t.title_en, t.display_name, t.synopsis_en, t.genre, t.developer, t.publisher, t.game_type,
                 t.release_year, t.rating_type, t.rating_value, t.region, t.input_controls, t.wifi_players, t.input_players,
+                (SELECT COUNT(*) FROM bookmarks bf WHERE bf.game_id = r.game_id) AS favorite_count,
                 r.sort_rank
             FROM ranked r
             LEFT JOIN LATERAL (
                 SELECT * FROM titles t
                 WHERE t.game_id = r.game_id OR SUBSTRING(t.game_id, 1, 4) = SUBSTRING(r.game_id, 1, 4)
-                ORDER BY LENGTH(t.game_id) DESC, t.game_id
+                ORDER BY CASE WHEN t.game_id = r.game_id THEN 0 ELSE 1 END, LENGTH(t.game_id) DESC, t.game_id
                 LIMIT 1
             ) t ON true
         )
@@ -345,12 +348,13 @@ def fetch_top_most_played(limit=30):
             t.release_year, t.rating_type, t.rating_value, t.region, t.input_controls, t.wifi_players, t.input_players,
             SUM(tp.time_played) AS total_time_played,
             COUNT(DISTINCT tp.serial_number) AS player_count,
-            ROUND(AVG(tp.time_played)::numeric, 2) AS avg_time_per_player
+            ROUND(AVG(tp.time_played)::numeric, 2) AS avg_time_per_player,
+            (SELECT COUNT(*) FROM bookmarks bf WHERE bf.game_id = tp.game_id) AS favorite_count
         FROM time_played tp
         LEFT JOIN LATERAL (
             SELECT * FROM titles t
             WHERE t.game_id = tp.game_id OR SUBSTRING(t.game_id, 1, 4) = SUBSTRING(tp.game_id, 1, 4)
-            ORDER BY LENGTH(t.game_id) DESC, t.game_id
+            ORDER BY CASE WHEN t.game_id = tp.game_id THEN 0 ELSE 1 END, LENGTH(t.game_id) DESC, t.game_id
             LIMIT 1
         ) t ON true
         GROUP BY COALESCE(t.game_id, tp.game_id), t.display_name, t.title_en, t.synopsis_en, t.genre, t.developer, t.publisher, t.game_type, t.release_year, t.rating_type, t.rating_value, t.region, t.input_controls, t.wifi_players, t.input_players

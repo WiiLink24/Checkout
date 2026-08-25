@@ -29,13 +29,14 @@ from routes.trending import trending_bp
 from routes.digicard import digicard_bp, set_oidc as set_oidc_digicard
 from routes.misc import misc_routes_bp
 from utils.cache import init_cache, generate_top_page_cache
+from utils.achievements import sync_achievements
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = config.db_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SECRET_KEY"] = config.secret_key
 app.config["OIDC_CLIENT_SECRETS"] = config.oidc_client_secrets_json
-app.config["OIDC_SCOPES"] = "openid profile email offline_access"
+app.config["OIDC_SCOPES"] = "openid profile email offline_access achievements"
 app.config["OIDC_OVERWRITE_REDIRECT_URI"] = config.oidc_redirect_uri
 app.config["SESSION_TYPE"] = "redis"
 app.config["SESSION_REDIS"] = Redis(

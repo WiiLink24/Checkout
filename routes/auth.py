@@ -16,7 +16,8 @@ import zipfile
 from datetime import datetime, timedelta
 from utils.auth import get_user_profile, build_user_info
 from utils.helpers import parse_int
-from utils.utils import get_serial_prefixes
+from utils.utils import get_serial_prefixes, find_user_by_wii_number
+from utils.achievements import refresh_achievements_for_user
 from channels.nc import (
     fetch_recommendations,
     fetch_time_played,
@@ -576,6 +577,14 @@ def index():
         if not serial_prefixes:
             return render_template("errors/not_linked.html", user_info=user_info), 400
 
+        # Refresh the logged-in user's achievements if their stored payload is stale
+        if user_info and user_info.get("linked_wii_no"):
+            own_user = find_user_by_wii_number(user_info["linked_wii_no"][0])
+            if own_user:
+                fresh_payload, _ = refresh_achievements_for_user(own_user)
+                if fresh_payload:
+                    user_info["achievements"] = fresh_payload
+
         latest_games = fetch_user_latest_games(serial_prefixes, 6)
         latest_favorites = fetch_favorites(serial_prefixes, 5)
         latest_reviews = fetch_user_latest_reviews(serial_prefixes, 6)
@@ -590,6 +599,15 @@ def index():
         wii_numbers = user_info.get("linked_wii_no", [])
         if isinstance(wii_numbers, str):
             wii_numbers = [wii_numbers]
+
+        if wii_numbers:
+            user_counts["polls"] = count_user_polls(wii_numbers)
+            user_counts["suggestions"] = count_user_suggestions(wii_numbers)
+            user_counts["contest_submissions"] = count_contest_submissions(wii_numbers)
+        else:
+            user_counts["polls"] = 0
+            user_counts["suggestions"] = 0
+            user_counts["contest_submissions"] = 0
 
         recent_contests = (
             fetch_contest_submissions(wii_numbers, limit=3) if wii_numbers else []

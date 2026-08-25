@@ -36,7 +36,7 @@ _connections = threading.local()
 _connection_registry = {}
 _registry_lock = threading.Lock()
 
-_QUERY_CACHE_TTL = 3 * 60 * 60  # 3 hours
+_QUERY_CACHE_TTL = 3 * 60 * 60
 cache = Cache()
 
 
@@ -203,6 +203,88 @@ def fetch_authentik_users():
     return users
 
 
+def fetch_all_authentik_users():
+    base_url = config.authentik_api_url.rstrip("/")
+    url = f"{base_url}/core/users/?page_size=50"
+    headers = {
+        "Accept": "application/json",
+        "Authorization": f"Bearer {config.authentik_service_account_token}",
+    }
+
+    users = []
+
+    try:
+        while url:
+            response = requests.get(url, headers=headers, timeout=15)
+            response.raise_for_status()
+            data = response.json()
+            users.extend(data.get("results", []))
+            next_url = data.get("pagination", {}).get("next")
+
+            if isinstance(next_url, str) and (
+                next_url.startswith("http://") or next_url.startswith("https://")
+            ):
+                url = next_url
+            else:
+                url = None
+
+    except requests.RequestException as e:
+        print(f"Authentik API error: {e}")
+        return []
+
+    return users
+
+
+def get_authentik_user(user):
+    """Fetch a single Authentik user's fresh data (detail endpoint is keyed by pk)."""
+    user_id = user.get("pk") or user.get("uuid")
+    if not user_id:
+        raise ValueError("User has neither pk nor uuid")
+    base_url = config.authentik_api_url.rstrip("/")
+    url = f"{base_url}/core/users/{user_id}/"
+    headers = {
+        "Accept": "application/json",
+        "Authorization": f"Bearer {config.authentik_service_account_token}",
+    }
+    response = requests.get(url, headers=headers, timeout=15)
+    response.raise_for_status()
+    return response.json()
+
+
+def fetch_authentik_user_by_username(username):
+    """Fetch a single Authentik user by username."""
+    base_url = config.authentik_api_url.rstrip("/")
+    url = f"{base_url}/core/users/"
+    headers = {
+        "Accept": "application/json",
+        "Authorization": f"Bearer {config.authentik_service_account_token}",
+    }
+    response = requests.get(
+        url, headers=headers, params={"username": username, "page_size": 1}, timeout=15
+    )
+    response.raise_for_status()
+    results = response.json().get("results", [])
+    return results[0] if results else None
+
+
+def update_user_attributes(user, attributes):
+    user_id = user.get("pk") or user.get("uuid")
+    if not user_id:
+        raise ValueError("User has neither pk nor uuid")
+    base_url = config.authentik_api_url.rstrip("/")
+    url = f"{base_url}/core/users/{user_id}/"
+    headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {config.authentik_service_account_token}",
+    }
+    response = requests.patch(
+        url, json={"attributes": attributes}, headers=headers, timeout=15
+    )
+    response.raise_for_status()
+    return response.json()
+
+
 def search_authentik_users_by_name(search_query):
     """
     Search Authentik users by username.
@@ -262,6 +344,8 @@ def generate_gravatar_url(email):
 
 def build_viewed_user_info(authentik_user):
     """Build viewed_user info dict from an Authentik user object"""
+    from utils.achievements import parse_achievements
+
     if isinstance(authentik_user, list):
         authentik_user = authentik_user[0] if authentik_user else {}
 
@@ -285,6 +369,7 @@ def build_viewed_user_info(authentik_user):
         "profile_picture": picture_url,
         "linked_wii_no": wii_numbers,
         "serial_number": wii_numbers,
+        "achievements": parse_achievements(authentik_user.get("attributes", {})),
     }
 
 

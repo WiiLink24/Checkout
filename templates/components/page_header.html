@@ -20,14 +20,14 @@
 <div class="min-h-screen px-4 sm:px-6 lg:px-8 py-12">
     <div class="max-w-6xl mx-auto">
         {% if not is_unclaimed %}
-        <div class="text-center mb-10">
+        <div class="text-center mb-10 z-10 relative">
             <div class="relative w-full mx-auto mb-4 flex items-center justify-center">
                 <img src="{{ viewed_user.profile_picture }}" alt="{{ viewed_user.username }}"
                     style="view-transition-name: vt-pfp-{{ viewed_user.username|slugify }};"
                     class="w-32 h-32 rounded-2xl mx-auto object-cover relative z-10">
             </div>
             <h1 style="view-transition-name: vt-title-{{ page_title|slugify }};"
-                class="text-2xl sm:text-4xl font-bold text-white mt-2">
+                class="flex flex-row items-center justify-center text-2xl sm:text-4xl font-bold text-white mt-2">
                 {{ viewed_user.username }}
                 <details class="relative inline-block ml-2 text-left group align-middle">
                     <summary
@@ -51,7 +51,7 @@
             </h1>
             <span class="flex flex-wrap items-center justify-center gap-2 mt-3">
                 {% for linked_wii in viewed_user.linked_wii_no %}
-                <p class="px-3 py-1 bg-gray-700 rounded-md text-gray-300">{{ linked_wii|format_serial }}</p>
+                <p class="px-3 py-1 theme-chip rounded-md text-gray-300">{{ linked_wii|format_serial }}</p>
                 {% endfor %}
             </span>
         </div>

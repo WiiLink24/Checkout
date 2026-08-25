@@ -29,6 +29,7 @@ from channels.cmoc import (
     render_mii_to_url,
 )
 from channels.tag_generator import generate_user_tag
+from utils.achievements import refresh_achievements_for_user
 from channels.nc import (
     fetch_user_latest_games,
     fetch_user_latest_reviews,
@@ -516,6 +517,15 @@ def friend_code_home(friend_code):
             if isinstance(wii, dict) and wii.get("wii_number"):
                 wii_numbers.append(wii.get("wii_number"))
 
+    if wii_numbers:
+        user_counts["polls"] = count_user_polls(wii_numbers)
+        user_counts["suggestions"] = count_user_suggestions(wii_numbers)
+        user_counts["contest_submissions"] = count_contest_submissions(wii_numbers)
+    else:
+        user_counts["polls"] = 0
+        user_counts["suggestions"] = 0
+        user_counts["contest_submissions"] = 0
+
     recent_contests = (
         fetch_contest_submissions(wii_numbers, limit=3) if wii_numbers else []
     )
@@ -540,6 +550,11 @@ def friend_code_home(friend_code):
             submission["mii_image_url"] = render_mii_to_url(submission["mii_data"])
         else:
             submission["mii_image_url"] = None
+
+    # Refresh the viewed user's achievements if their stored payload is stale
+    fresh_payload, _ = refresh_achievements_for_user(authentik_user)
+    if fresh_payload:
+        viewed_user["achievements"] = fresh_payload
 
     return render_template(
         "home.html",
