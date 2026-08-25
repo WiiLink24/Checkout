@@ -157,7 +157,6 @@ def find_user_by_wii_number(wii_number, attempt=0):
         response.raise_for_status()
         data = response.json()
         results = data.get("results", [])
-        print(results)
         if (
             not results and attempt < 10
         ):  # Honestly fuck you if you have more than 9 Wiis.
@@ -308,6 +307,9 @@ def search_authentik_users_by_name(search_query):
             response.raise_for_status()
             data = response.json()
             results = data.get("results", [])
+            for user in results:
+                email = user.get("email", "")
+                user["avatar"] = generate_gravatar_url(email)
             users.extend(
                 [user for user in results if user.get("attributes", {}).get("wiis")]
             )
