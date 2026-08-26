@@ -5,32 +5,206 @@ WiiLink Checkout | Login
 {% endblock %}
 
 {% block content %}
-<div class="min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full">
-        <img src="/static/img/logo.png" alt="WiiLink Logo" class="h-20 mx-auto mb-10">
+<div class="images-container">
+    <div class="images-wrapper">
+        <div class="image-box">
+            <img src="static/img/acc-bg-1.webp" class="scroll-down" alt="Background 1" />
+            <img src="static/img/acc-bg-1.webp" class="scroll-down" alt="Background 1" />
+        </div>
+        <div class="image-box">
+            <img src="static/img/acc-bg-2.webp" class="scroll-up" alt="Background 2" />
+            <img src="static/img/acc-bg-2.webp" class="scroll-up" alt="Background 2" />
+        </div>
+        <div class="image-box">
+            <img src="static/img/acc-bg-3.webp" class="scroll-down" alt="Background 3" />
+            <img src="static/img/acc-bg-3.webp" class="scroll-down" alt="Background 3" />
+        </div>
+    </div>
+</div>
+<div class="min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 z-10 relative">
+    <div class="max-w-4xl w-full">
+        <img src="static/img/logo.png" alt="WiiLink Logo" class="h-20 mx-auto mb-10">
 
-        <div class="relative group mb-8">
-            <div class="relative bg-gray-800 rounded-xl shadow-xl overflow-hidden border border-gray-700 p-8">
-                <div class="text-center mb-8">
-                    <h2 class="text-xl font-bold text-white mb-2">Welcome to WiiLink Checkout</h2>
-                    <p class="text-gray-300">Sign in with your WiiLink account for the best experience</p>
+        <div class="mt-10 grid grid-cols-2 xl:grid-cols-3 gap-4">
+            <div class="flex items-center gap-4 theme-card bg-[var(--user-base)] border rounded-xl px-4 py-3">
+                <div class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
+                    <img src="/static/icon/clock.svg" alt="" class="w-6 h-6 invert">
                 </div>
-
-                <div class="flex justify-center">
-                    <a href="{{ url_for('oidc_auth.login') }}" class="w-full">
-                        <button
-                            class="w-full px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition duration-200 flex items-center justify-center text-base font-medium">
-                            <img src="/static/icon/key-round.svg" alt="Wii Icon" class="w-5 h-5 invert mr-2" />
-                            Log In with your WiiLink Account
-                        </button>
-                    </a>
+                <div class="min-w-0">
+                    <p class="text-white font-semibold text-sm">Track your playtime</p>
+                    <p class="text-gray-400 text-xs">See total time played across all your games.</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4 theme-card bg-[var(--user-base)] border rounded-xl px-4 py-3">
+                <div class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
+                    <img src="/static/icon/star.svg" alt="" class="w-6 h-6 invert">
+                </div>
+                <div class="min-w-0">
+                    <p class="text-white font-semibold text-sm">View recommendations</p>
+                    <p class="text-gray-400 text-xs">See what other people think of your favorite games.</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4 theme-card bg-[var(--user-base)] border rounded-xl px-4 py-3">
+                <div class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
+                    <img src="/static/icon/heart.svg" alt="" class="w-6 h-6 invert">
+                </div>
+                <div class="min-w-0">
+                    <p class="text-white font-semibold text-sm">Favorite games</p>
+                    <p class="text-gray-400 text-xs">Keep a list of your most-loved titles.</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4 theme-card bg-[var(--user-base)] border rounded-xl px-4 py-3">
+                <div class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
+                    <img src="/static/icon/chart-line.svg" alt="" class="w-6 h-6 invert">
+                </div>
+                <div class="min-w-0">
+                    <p class="text-white font-semibold text-sm">View poll data</p>
+                    <p class="text-gray-400 text-xs">Check out what other people think.</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4 theme-card bg-[var(--user-base)] border rounded-xl px-4 py-3">
+                <div class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
+                    <img src="/static/icon/send-horizontal.svg" alt="" class="w-6 h-6 invert">
+                </div>
+                <div class="min-w-0">
+                    <p class="text-white font-semibold text-sm">View CMOC contests</p>
+                    <p class="text-gray-400 text-xs">View other players' contest entries.</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4 theme-card bg-[var(--user-base)] border rounded-xl px-4 py-3">
+                <div class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
+                    <img src="/static/icon/palette.svg" alt="" class="w-6 h-6 invert">
+                </div>
+                <div class="min-w-0">
+                    <p class="text-white font-semibold text-sm">Earn points &amp; themes</p>
+                    <p class="text-gray-400 text-xs">Unlock custom profile themes as you play.</p>
                 </div>
             </div>
         </div>
+
+        <a href="{{ url_for('oidc_auth.login') }}" class="pt-10 w-full block">
+            <button
+                class="w-full px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition duration-200 flex items-center justify-center text-base font-medium">
+                <img src="/static/icon/key-round.svg" alt="Wii Icon" class="w-5 h-5 invert mr-2" />
+                Log In with your WiiLink Account
+            </button>
+        </a>
+
+        <div class="mt-6 flex flex-row items-center gap-3">
+            <span class="flex-1 h-px bg-[var(--user-soft)]"></span>
+            <span class="text-[var(--user-soft)] text-sm">or</span>
+            <span class="flex-1 h-px bg-[var(--user-soft)]"></span>
+        </div>
+
+        <a href="{{ url_for('misc_routes.search') }}" class="pt-6 w-full block">
+            <button
+                class="w-full px-4 py-3 bg-[var(--user-dark)] hover:bg-[var(--user-base)] text-white rounded-xl transition duration-200 flex items-center justify-center text-base font-medium">
+                <img src="/static/icon/search.svg" alt="Wii Icon" class="w-5 h-5 invert mr-2" />
+                Search WiiLink Checkout without logging in
+            </button>
+        </a>
 
         <div class="mt-10 text-center">
             <p class="text-gray-400 text-sm">© 2026 WiiLink</p>
         </div>
     </div>
 </div>
+
+<style>
+    .images-container {
+        top: 0px;
+        left: 50%;
+        transform: translate(-50%, 0);
+        width: 100%;
+        min-width: 1000px;
+        max-width: 2000px;
+        height: 100%;
+        perspective: 1000px;
+        opacity: 0.1;
+        padding: 20px;
+        z-index: 0;
+        overflow: hidden;
+        position: absolute;
+    }
+
+    .images-wrapper {
+        width:1500px;
+        height: 150%;
+        transform: rotateX(20deg) scale(1.3) translateX(20%);
+        filter: blur(4px);
+        transform-style: preserve-3d;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        position: relative;
+    }
+
+    .image-box {
+        height: 100%;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        position: relative;
+    }
+
+    .image-box::before,
+    .image-box::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        width: 100%;
+        height: 300px;
+        z-index: 2;
+        pointer-events: none;
+    }
+
+    .image-box::before {
+        top: 0;
+        background: linear-gradient(to bottom,
+                var(--bg-color-secondary) 0%,
+                rgba(0, 0, 0, 0) 100%);
+    }
+
+    .image-box::after {
+        bottom: 0;
+        background: linear-gradient(to top,
+                var(--bg-color-secondary) 0%,
+                rgba(0, 0, 0, 0) 100%);
+    }
+
+    .image-box img {
+        width: 100%;
+        object-fit: cover;
+        will-change: transform;
+        position: relative;
+        z-index: 1;
+    }
+
+    .scroll-down {
+        animation: scrollDown 15s linear infinite;
+    }
+
+    .scroll-up {
+        animation: scrollUp 15s linear infinite;
+    }
+
+    @keyframes scrollDown {
+        from {
+            transform: translateY(-100%);
+        }
+
+        to {
+            transform: translateY(0%);
+        }
+    }
+
+    @keyframes scrollUp {
+        from {
+            transform: translateY(0%);
+        }
+
+        to {
+            transform: translateY(-100%);
+        }
+    }
+</style>
 {% endblock %}

@@ -225,8 +225,8 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                     title="{% if is_friend %}Remove from friends{% else %}Add to friends{% endif %}"
                     class="flex items-center justify-center w-11 h-11 rounded-full theme-btn border text-rose-400 transition hover:scale-110">
                     <svg id="friendHeartIcon" viewBox="0 0 24 24" width="26" height="26"
-                        fill="{{ 'var(--user-dark)' if is_friend else 'none' }}"
-                        stroke="var(--user-dark)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        fill="{{ 'var(--user-soft)' if is_friend else 'none' }}"
+                        stroke="var(--user-soft)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path
                             d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
                     </svg>
@@ -731,7 +731,7 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                 }).then(function (data) {
                     if (data.ok) {
                         const isFriend = data.is_friend;
-                        icon.setAttribute('fill', isFriend ? 'var(--user-dark)' : 'none');
+                        icon.setAttribute('fill', isFriend ? 'var(--user-soft)' : 'none');
                         friendToggleBtn.setAttribute('aria-pressed', String(isFriend));
                         friendToggleBtn.title = isFriend ? 'Remove from friends' : 'Add to friends';
                     } else if (data.error) {

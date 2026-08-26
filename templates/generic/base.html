@@ -266,9 +266,8 @@
                 {% endmacro %}
 
                 {% macro friends_menu(friends) %}
-                <div class="hidden md:block relative" onmouseenter="openFriendsMenu()"
-                    onmouseleave="closeFriendsMenu()">
-                    <button id="friendsMenuBtn"
+                <div class="relative" onmouseenter="openFriendsMenu()" onmouseleave="closeFriendsMenu()">
+                    <button id="friendsMenuBtn" onclick="toggleFriendsMenu(event)"
                         class="w-full px-4 py-2 theme-menu-btn text-white rounded-xl transition duration-200 flex items-center justify-between">
                         <span class="flex items-center">
                             <img src="/static/icon/users.svg" alt="Friends" class="w-5 h-5 invert mr-2" />
@@ -279,8 +278,9 @@
                     </button>
 
                     <div id="friendsMenu"
-                        class="flex flex-col gap-1 absolute left-full top-0 -ml-4 w-64 bg-[var(--user-dark)] backdrop-blur-md rounded-xl shadow-xl p-1 z-40 pointer-events-none opacity-0 transition-opacity duration-200 min-w-max max-h-72 overflow-y-auto"
+                        class="flex flex-col gap-1 absolute left-0 top-full mt-1 w-64 bg-[var(--user-dark)] backdrop-blur-md rounded-xl shadow-xl p-1 z-50 pointer-events-none opacity-0 transition-opacity duration-200 min-w-max max-h-72 overflow-y-auto"
                         style="visibility: hidden;">
+                        {% if friends %}
                         {% for friend in friends %}
                         <a href="{{ friend.profile_url }}" target="_blank"
                             class="block w-full px-2 py-1.5 theme-menu-btn text-white rounded-xl transition duration-200 flex items-center gap-2">
@@ -291,6 +291,9 @@
                             </span>
                         </a>
                         {% endfor %}
+                        {% else %}
+                        <p class="px-3 py-2 text-sm text-gray-400">No friends yet.</p>
+                        {% endif %}
                     </div>
                 </div>
                 {% endmacro %}
@@ -350,9 +353,7 @@
                         }
                         ] %}
                         {{ you_menu(channels) }}
-                        {% if user_info.friends %}
                         {{ friends_menu(user_info.friends) }}
-                        {% endif %}
                         <div class="mt-6 sm:hidden"></div>
                         {{ menu_item('Themes', 'auth_routes.themes', 'palette') }}
                         {% if is_coupon_admin %}
@@ -608,6 +609,26 @@
             menu.style.opacity = '0';
             menu.style.pointerEvents = 'none';
         }
+
+        function toggleFriendsMenu(event) {
+            if (event) event.stopPropagation();
+            const menu = document.getElementById('friendsMenu');
+            if (!menu) return;
+            if (menu.style.visibility === 'visible') {
+                closeFriendsMenu();
+            } else {
+                openFriendsMenu();
+            }
+        }
+
+        document.addEventListener('click', function (event) {
+            const btn = document.getElementById('friendsMenuBtn');
+            const menu = document.getElementById('friendsMenu');
+            if (!btn || !menu) return;
+            if (!btn.contains(event.target) && !menu.contains(event.target)) {
+                closeFriendsMenu();
+            }
+        });
 
         document.getElementById('artisanModal').addEventListener('click', function (e) {
             if (e.target === this) {
