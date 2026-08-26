@@ -33,6 +33,7 @@ def build_user_info(profile):
         "profile_picture": generate_gravatar_url(email),
         "linked_wii_no": wii_numbers,
         "serial_number": serial_numbers if serial_numbers else [],
+        "groups": profile.get("groups") or [],
         "achievements": parse_achievements(
             {"achievements": profile.get("achievements")}
         ),

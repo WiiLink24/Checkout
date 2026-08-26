@@ -71,6 +71,7 @@ def _execute_query(query, params, db_url):
         cur.execute(query, params)
         rows = cur.fetchall()
         columns = [desc[0] for desc in cur.description]
+        conn.commit()
     finally:
         cur.close()
     return [dict(zip(columns, row)) for row in rows]
@@ -141,6 +142,25 @@ def _run_query(query, params, db_url=None, use_cache=True):
         cache.set(cache_key, result, timeout=_QUERY_CACHE_TTL)
     print(f"[DB] QUERY ({time.perf_counter() - start:.3f}s): {_short_query(query)}")
     return copy.deepcopy(result)
+
+
+def _run_query_one(query, params, db_url=None, use_cache=True):
+    rows = _run_query(query, params, db_url, use_cache=use_cache)
+    return rows[0] if rows else None
+
+
+def _execute(query, params, db_url=None):
+    if db_url is None:
+        db_url = config.db_url
+    conn = _get_connection(db_url)
+    cur = conn.cursor()
+    try:
+        cur.execute(query, params)
+        rowcount = cur.rowcount
+        conn.commit()
+    finally:
+        cur.close()
+    return rowcount
 
 
 def find_user_by_wii_number(wii_number, attempt=0):

@@ -2,6 +2,7 @@ db_url = "postgresql://username:password@localhost/nc"
 cmoc_db_url = "postgresql://username:password@localhost/cmoc"
 evc_db_url = "postgresql://username:password@localhost/evc"
 cam_server_db_url = "postgresql://username:password@localhost/cam_server"
+checkout_db_url = "postgresql://username:password@localhost/checkout"
 
 redis_host = "localhost"
 redis_password = ""
@@ -12,6 +13,9 @@ secret_key = "please_change_thank_you"
 # Authentik API configuration
 authentik_api_url = ""
 authentik_service_account_token = ""
+
+# Authentik group (uuid) allowed to manage coupons.
+coupon_admin_group_uuid = ""
 
 # OpenID Connect configuration
 oidc_redirect_uri = ""

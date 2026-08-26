@@ -1,0 +1,159 @@
+{% extends "generic/base.html" %}
+
+{% block title %}WiiLink Checkout | Redeem Coupon{% endblock %}
+
+{% block content %}
+<div class="min-h-screen px-4 sm:px-6 lg:px-8 py-12">
+    <div class="w-full max-w-5xl mx-auto">
+        <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
+            <div>
+                <h1 class="text-4xl font-bold text-white">Redeem Coupon</h1>
+                <p class="text-gray-400 mt-2">Enter a coupon code to see what it contains, then redeem it.</p>
+            </div>
+            <div class="theme-card border rounded-xl px-5 py-3 text-right">
+                <p class="text-xs uppercase tracking-widest text-gray-400">Your balance</p>
+                <p class="text-2xl font-bold text-white">{{ theme_data.points.balance|default(0) }} <span
+                        class="text-sm text-gray-400">points</span></p>
+            </div>
+        </div>
+
+        {% if coupon_preview %}
+        <section class="theme-card border rounded-2xl overflow-hidden">
+            <div class="flex items-center gap-3 p-5 sm:p-6 border-b border-[var(--user-transparent)]">
+                <img src="/static/icon/badge-dollar-sign.svg" alt="Coupon" class="w-8 h-8 invert opacity-70">
+                <div class="min-w-0">
+                    <h2 class="text-xl font-bold text-white">Redeem this coupon?</h2>
+                    <p class="text-sm text-gray-400 mt-0.5">Issued by <strong class="text-white">{{
+                            coupon_preview.issuer }}</strong></p>
+                </div>
+                <span
+                    class="ml-auto theme-chip text-white px-3 py-1.5 rounded-full text-xs font-semibold flex-shrink-0">
+                    {% if coupon_preview.max_uses == -1 %}
+                    Unlimited uses
+                    {% else %}
+                    {{ coupon_preview.uses_left }} use{{ 's' if coupon_preview.uses_left != 1 else '' }} left
+                    {% endif %}
+                </span>
+            </div>
+
+            <div class="p-5 sm:p-6 flex flex-col gap-4">
+                {% for item in coupon_preview.redeemables %}
+                {% if item.type == 'points' %}
+                <div
+                    class="flex items-center gap-4 rounded-xl bg-[var(--user-dark)] border border-[var(--user-transparent)] p-4">
+                    <div class="w-12 h-12 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
+                        <img src="/static/icon/badge-dollar-sign.svg" alt="" class="w-6 h-6 invert">
+                    </div>
+                    <div>
+                        <p class="text-lg font-bold text-white">{{ item.value }} points</p>
+                        <p class="text-sm text-gray-400">Added to your points balance</p>
+                    </div>
+                </div>
+                {% elif item.type == 'theme' and item.theme %}
+                {% set theme = item.theme %}
+                <div
+                    class="flex flex-col items-center gap-4 rounded-xl bg-[var(--user-dark)] border border-[var(--user-transparent)] p-4">
+                    <div class="flex flex-row items-start h-[200px] rounded-xl overflow-hidden relative"
+                    style="background-color: {{ theme.base }}; color: {{ theme.soft }}; font-family: {{ theme.font or 'inherit' }};">
+                    {% if theme.bgm %}
+                    <img src="/static/icon/audio-lines.svg" alt="BGM" class="w-5 h-5 mt-3 absolute top-0 right-4 invert">
+                    {% endif %}
+                    {% if theme.background %}<img src="{{ theme.background }}" alt="{{ theme.name }}"
+                        class="absolute inset-x-0 top-0 left-0 w-full h-[200px] bg-center bg-cover -translate-y-[50px] blur-sm opacity-30 pointer-events-none z-0"
+                        style=" -webkit-mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0)); mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0));">{%
+                    endif %}
+                    <div class="h-full w-[100px] p-4 min-h-[150px] z-10 relative" style="background: {{ theme.dark }};">
+                    </div>
+                    <div class="w-full h-full p-4 flex flex-col justify-end translate-y-5 z-10 relative">
+                        <span class="flex flex-row items-center gap-3 z-10 relative">
+                            <div class="w-10 h-10 rounded-md" style="background-color: {{ theme.soft }};"></div>
+                            <span class="flex flex-col gap-1">
+                                <p class="text-md font-semibold text-white"
+                                    style="font-family: {{ theme.font or 'inherit' }};">{{ theme.name }}</p>
+                                <div class="w-20 h-2 rounded-full" style="background-color: {{ theme.soft }};"></div>
+                            </span>
+                        </span>
+                        <span class="flex flex-row items-center gap-3 mt-2 z-10 relative">
+                            <div class="w-2/3 h-10 rounded-md" style="background-color: {{ theme.transparent }};"></div>
+                            <div class="w-1/3 h-10 rounded-md" style="background-color: {{ theme.dark }};"></div>
+                        </span>
+                        <div class="w-full h-20 rounded-md"
+                            style="background-color: {{ theme.dark }}; margin-top: 0.5rem;"></div>
+                    </div>
+                </div>
+                    <div class="min-w-0">
+                        <p class="text-base font-bold text-white">{{ theme.name }} theme</p>
+                        <p class="text-sm text-gray-400 mt-1">{{ theme.description }}</p>
+                    </div>
+                </div>
+                {% else %}
+                <div
+                    class="flex items-center gap-3 rounded-xl bg-[var(--user-dark)] border border-[var(--user-transparent)] p-4">
+                    <p class="text-sm text-gray-200">{{ item.type }}: {{ item.value }}</p>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+
+            <div class="p-5 sm:p-6 border-t border-[var(--user-transparent)] flex flex-wrap items-center gap-3">
+                <form method="post" onsubmit="return confirm('Redeem this coupon? You cannot undo this.');">
+                    <input type="hidden" name="action" value="coupon_redeem">
+                    <input type="hidden" name="coupon_uuid" value="{{ coupon_preview.uuid }}">
+                    <button type="submit"
+                        class="theme-btn bg-[var(--user-soft)] border rounded-lg px-6 py-2.5 text-sm text-white font-semibold">Yes,
+                        redeem it</button>
+                </form>
+                <a href="{{ url_for('auth_routes.coupons_redeem') }}"
+                    class="theme-btn border rounded-lg px-6 py-2.5 text-sm text-gray-300">Don't redeem</a>
+            </div>
+        </section>
+        {% else %}
+        <section class="theme-card border rounded-2xl p-5 sm:p-6">
+            <div class="flex items-center gap-3 mb-4">
+                <img src="/static/icon/badge-dollar-sign.svg" alt="Coupon" class="w-6 h-6 invert opacity-70">
+                <h2 class="text-xl font-bold text-white">Have a coupon code?</h2>
+            </div>
+            <form method="post" class="flex flex-col sm:flex-row gap-3">
+                <input type="hidden" name="action" value="coupon_preview">
+                <input type="text" name="coupon_code" value="{{ request.form.get('coupon_code', '') }}"
+                    placeholder="Enter coupon code"
+                    class="flex-1 bg-[var(--user-base)] border border-[var(--user-transparent)] text-white rounded-lg px-4 py-2.5 text-sm outline-none focus:border-[var(--user-light)]">
+                <button type="submit"
+                    class="theme-btn border rounded-lg px-5 py-2.5 text-sm text-white">Preview</button>
+            </form>
+        </section>
+        {% endif %}
+
+        <section class="theme-card border rounded-2xl overflow-hidden mt-10">
+            <div class="flex items-center gap-3 p-5 sm:p-6 border-b border-[var(--user-transparent)]">
+                <img src="/static/icon/badge-check.svg" alt="History" class="w-6 h-6 invert opacity-70">
+                <h2 class="text-xl font-bold text-white">Your redemptions</h2>
+            </div>
+            {% if redeem_history %}
+            <div class="flex flex-col divide-y divide-[var(--user-transparent)]">
+                {% for redemption in redeem_history %}
+                <div class="flex flex-col sm:flex-row sm:items-center gap-3 p-5">
+                    <div class="min-w-0 flex-1">
+                        <p class="font-semibold text-white">{{ redemption.coupon_code }}</p>
+                        <p class="text-sm text-gray-400">From {{ redemption.issuer }}
+                            {% if redemption.redeemed_at %} • {{ redemption.redeemed_at.strftime('%Y-%m-%d %H:%M') }}{% endif %}</p>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        {% for item in redemption.redeemables %}
+                        <span class="theme-chip text-white px-2 py-1 rounded-md text-xs">
+                            {% if item.type == 'points' %}{{ item.value }} pts{% elif item.type == 'theme' %}{{ item.value }}{% else %}{{ item.type }}: {{ item.value }}{% endif %}
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="p-8 text-center">
+                <p class="text-gray-400">You haven't redeemed any coupons yet.</p>
+            </div>
+            {% endif %}
+        </section>
+    </div>
+</div>
+{% endblock %}

@@ -2,6 +2,7 @@ from datetime import datetime
 from io import BytesIO
 from pathlib import Path
 
+import re
 import requests
 from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageFont
 
@@ -53,6 +54,72 @@ _FONT_CANDIDATES = {
 }
 
 
+def _get_user_theme(authentik_user):
+    """Return the user's active theme dict (or {} when unavailable)."""
+    try:
+        from utils.achievements import parse_achievements
+        from utils.theme import get_user_theme
+    except ImportError:
+        return {}
+
+    attributes = authentik_user.get("attributes") or {}
+    payload = parse_achievements(attributes) if isinstance(attributes, dict) else None
+
+    active = None
+    themes = (payload or {}).get("themes") or {}
+    active = themes.get("active") or None
+    if active == "default":
+        active = None
+
+    pfp_url = generate_gravatar_url(authentik_user.get("email", ""))
+    theme = get_user_theme(pfp_url, active)
+    return theme or {}
+
+
+def _hex_to_rgb(value):
+    value = (value or "").strip()
+    if not value:
+        return None
+    if value.startswith("#"):
+        hex_value = value[1:]
+        if len(hex_value) == 3:
+            hex_value = "".join(ch * 2 for ch in hex_value)
+        if len(hex_value) == 6:
+            return (
+                int(hex_value[0:2], 16),
+                int(hex_value[2:4], 16),
+                int(hex_value[4:6], 16),
+            )
+        return None
+    nums = re.findall(r"\d+", value)
+    if len(nums) >= 3:
+        return (int(nums[0]), int(nums[1]), int(nums[2]))
+    return None
+
+
+def _theme_hex(theme, key, default):
+    return _hex_to_rgb(theme.get(key, "")) or default
+
+
+def _theme_transparent(theme, default):
+    value = theme.get("transparent", "")
+    match = re.search(r"rgba?\(([^)]*)\)", value)
+    if match:
+        parts = [p.strip() for p in match.group(1).split(",")]
+        if len(parts) >= 3:
+            alpha = (
+                int(round(float(parts[3]) * 255))
+                if len(parts) > 3 and parts[3]
+                else 255
+            )
+            return (int(parts[0]), int(parts[1]), int(parts[2]), alpha)
+    return default
+
+
+def _with_alpha(rgb, alpha):
+    return (rgb[0], rgb[1], rgb[2], alpha)
+
+
 def generate_user_tag(friend_code):
     friend_code_normalized = normalize_serial(friend_code)
     authentik_user = find_user_by_wii_number(friend_code_normalized)
@@ -72,6 +139,7 @@ def generate_user_tag(friend_code):
         fetch_user_latest_games(serial_prefixes, 7) if serial_prefixes else []
     )
     games = _build_game_data(latest_games)
+    theme = _get_user_theme(authentik_user)
 
     try:
         png_bytes = _render_tag_png(
@@ -82,6 +150,7 @@ def generate_user_tag(friend_code):
             games=games,
             tag_background_url=_get_tag_background_url(games),
             generated_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            theme=theme,
         )
         return BytesIO(png_bytes)
     except Exception as e:
@@ -97,8 +166,28 @@ def _render_tag_png(
     games,
     tag_background_url,
     generated_at,
+    theme=None,
 ):
-    tag = _draw_gradient(_TAG_SIZE, _TAG_BG_START, _TAG_BG_END).convert("RGBA")
+    theme = theme or {}
+    colors = {
+        "bg_start": _theme_hex(theme, "base", _TAG_BG_START),
+        "bg_end": _theme_hex(theme, "dark", _TAG_BG_END),
+        "username": _COLOR_USERNAME,
+        "code": _theme_hex(theme, "soft", _COLOR_CODE),
+        "label": _theme_hex(theme, "soft", _COLOR_STAT_LABEL),
+        "value": _theme_hex(theme, "light", _COLOR_STAT_VALUE),
+        "footer": _theme_hex(theme, "soft", _COLOR_FOOTER_TEXT),
+        "footer_border": _theme_transparent(theme, _COLOR_FOOTER_BORDER),
+        "cover_border": _theme_transparent(theme, _COLOR_COVER_BORDER),
+        "placeholder_bg": _with_alpha(
+            _theme_hex(theme, "base", _COLOR_PLACEHOLDER_BG[:3]), 115
+        ),
+        "placeholder_text": _theme_hex(theme, "soft", _COLOR_PLACEHOLDER_TEXT),
+    }
+
+    tag = _draw_gradient(_TAG_SIZE, colors["bg_start"], colors["bg_end"]).convert(
+        "RGBA"
+    )
 
     if tag_background_url:
         background = _load_image(tag_background_url)
@@ -106,9 +195,9 @@ def _render_tag_png(
             tag = _blend_background(tag, background)
 
     draw = ImageDraw.Draw(tag, "RGBA")
-    _draw_header(tag, draw, username, pfp_url, formatted_code, playtime_text)
-    _draw_game_covers(tag, draw, games)
-    _draw_footer(draw, generated_at)
+    _draw_header(tag, draw, username, pfp_url, formatted_code, playtime_text, colors)
+    _draw_game_covers(tag, draw, games, colors)
+    _draw_footer(draw, generated_at, colors)
 
     buffer = BytesIO()
     tag.convert("RGB").save(buffer, format="PNG")
@@ -151,7 +240,7 @@ def _blend_background(tag, background):
     return Image.alpha_composite(tag, cover)
 
 
-def _draw_header(tag, draw, username, pfp_url, formatted_code, playtime_text):
+def _draw_header(tag, draw, username, pfp_url, formatted_code, playtime_text, colors):
     pfp = _load_image(pfp_url)
     if pfp:
         pfp = _resize_square(pfp, 60)
@@ -171,9 +260,9 @@ def _draw_header(tag, draw, username, pfp_url, formatted_code, playtime_text):
         _paste_rounded(tag, pfp, (40, int(center_y - 30)), radius=30)
 
     text_y = int(center_y - text_height / 2)
-    draw.text((120, text_y), username, font=username_font, fill=_COLOR_USERNAME)
+    draw.text((120, text_y), username, font=username_font, fill=colors["username"])
     code_y = text_y + sum(username_font.getmetrics()) + gap
-    draw.text((120, code_y), formatted_code, font=code_font, fill=_COLOR_CODE)
+    draw.text((120, code_y), formatted_code, font=code_font, fill=colors["code"])
 
     playtime_y = int(center_y - playtime_height / 2)
     right = 960
@@ -181,18 +270,18 @@ def _draw_header(tag, draw, username, pfp_url, formatted_code, playtime_text):
         (right - draw.textlength(label, font=label_font), playtime_y),
         label,
         font=label_font,
-        fill=_COLOR_STAT_LABEL,
+        fill=colors["label"],
     )
     value_y = playtime_y + sum(label_font.getmetrics()) + gap
     draw.text(
         (right - draw.textlength(playtime_text, font=value_font), value_y),
         playtime_text,
         font=value_font,
-        fill=_COLOR_STAT_VALUE,
+        fill=colors["value"],
     )
 
 
-def _draw_game_covers(tag, draw, games):
+def _draw_game_covers(tag, draw, games, colors):
     covers = games[:7]
     if not covers:
         return
@@ -210,23 +299,23 @@ def _draw_game_covers(tag, draw, games):
             cover = _load_image(game.get("fallback_url"))
 
         if cover is None:
-            _draw_placeholder(draw, x, y)
+            _draw_placeholder(draw, x, y, colors)
             continue
 
         cover = _resize_cover(cover)
         tag.paste(cover, (x, y))
         draw.rectangle(
             [x, y, x + cover_w, y + cover_h],
-            outline=_COLOR_COVER_BORDER,
+            outline=colors["cover_border"],
             width=2,
         )
 
 
-def _draw_placeholder(draw, x, y):
+def _draw_placeholder(draw, x, y, colors):
     cover_w, cover_h = _COVER_SIZE
     draw.rectangle(
         [x, y, x + cover_w - 1, y + cover_h - 1],
-        fill=_COLOR_PLACEHOLDER_BG,
+        fill=colors["placeholder_bg"],
     )
     text = "No Cover"
     font = _get_font(12)
@@ -235,18 +324,18 @@ def _draw_placeholder(draw, x, y):
         (x + (cover_w - text_w) / 2, y + (cover_h - 12) / 2),
         text,
         font=font,
-        fill=_COLOR_PLACEHOLDER_TEXT,
+        fill=colors["placeholder_text"],
     )
 
 
-def _draw_footer(draw, generated_at):
+def _draw_footer(draw, generated_at, colors):
     line_y = 350
-    draw.line([(40, line_y), (960, line_y)], fill=_COLOR_FOOTER_BORDER, width=1)
+    draw.line([(40, line_y), (960, line_y)], fill=colors["footer_border"], width=1)
 
     text = f"Generated {generated_at} • WiiLink Checkout"
     font = _get_font(11)
     text_w = draw.textlength(text, font=font)
-    draw.text(((1000 - text_w) / 2, 358), text, font=font, fill=_COLOR_FOOTER_TEXT)
+    draw.text(((1000 - text_w) / 2, 358), text, font=font, fill=colors["footer"])
 
 
 def _load_image(url):
