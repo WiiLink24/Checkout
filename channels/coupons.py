@@ -49,7 +49,7 @@ def coupon_available(coupon, username=None, db_url=None):
             return False, "You have already redeemed this coupon."
     if coupon.get("max_uses") == -1:
         return True, None
-    used = coupon.get("uses_count", 0) or 0
+    used = coupon.get("uses_count", 0)
     if used >= coupon.get("max_uses", 1):
         return False, "This coupon has already been fully used."
     return True, None
