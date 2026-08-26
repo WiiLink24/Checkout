@@ -28,6 +28,7 @@ from routes.public import public_routes_bp
 from routes.trending import trending_bp
 from routes.digicard import digicard_bp, set_oidc as set_oidc_digicard
 from routes.misc import misc_routes_bp
+from routes.coupons_admin import coupons_admin_bp
 from utils.cache import init_cache, generate_top_page_cache
 from utils.achievements import sync_achievements
 
@@ -36,7 +37,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = config.db_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SECRET_KEY"] = config.secret_key
 app.config["OIDC_CLIENT_SECRETS"] = config.oidc_client_secrets_json
-app.config["OIDC_SCOPES"] = "openid profile email offline_access achievements"
+app.config["OIDC_SCOPES"] = "openid profile email offline_access achievements groups"
 app.config["OIDC_OVERWRITE_REDIRECT_URI"] = config.oidc_redirect_uri
 app.config["SESSION_TYPE"] = "redis"
 app.config["SESSION_REDIS"] = Redis(
@@ -66,13 +67,16 @@ app.jinja_env.filters["user_theme"] = get_user_theme
 def inject_artisan_id():
     """Inject artisan IDs for logged-in user into template context."""
     artisan_ids = []
+    is_coupon_admin = False
     # Only check for user login if we're in a request context
     if has_request_context() and oidc.user_loggedin:
         user_info = get_logged_in_user_info()
         if user_info and user_info.get("linked_wii_no"):
             wii_number = user_info["linked_wii_no"][0]
             artisan_ids = get_artisan_ids_from_wii_number(wii_number)
-    return dict(artisan_ids=artisan_ids)
+        groups = (user_info or {}).get("groups") or []
+        is_coupon_admin = config.coupon_admin_group_uuid in groups
+    return dict(artisan_ids=artisan_ids, is_coupon_admin=is_coupon_admin)
 
 
 # Set OIDC instance for blueprints that need it
@@ -85,6 +89,7 @@ app.register_blueprint(public_routes_bp)
 app.register_blueprint(trending_bp)
 app.register_blueprint(digicard_bp)
 app.register_blueprint(misc_routes_bp)
+app.register_blueprint(coupons_admin_bp)
 
 # Background scheduler for cache generation
 scheduler = BackgroundScheduler()

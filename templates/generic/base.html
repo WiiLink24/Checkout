@@ -314,8 +314,7 @@
                         {'name': 'Discover', 'route': 'auth_routes.discover', 'icon': 'lightbulb'},
                         {'name': 'Recommendations', 'route': 'auth_routes.recommendations', 'icon': 'gamepad'},
                         {'name': 'Time Played', 'route': 'auth_routes.time_played', 'icon': 'clock'},
-                        {'name': 'Favorites', 'route': 'auth_routes.favorites', 'icon': 'star'},
-                            {'name': 'Themes', 'route': 'auth_routes.themes', 'icon': 'settings'}
+                        {'name': 'Favorites', 'route': 'auth_routes.favorites', 'icon': 'star'}
                         ]
                         },
                         {
@@ -355,6 +354,10 @@
                         {{ friends_menu(user_info.friends) }}
                         {% endif %}
                         <div class="mt-6 sm:hidden"></div>
+                        {{ menu_item('Themes', 'auth_routes.themes', 'palette') }}
+                        {% if is_coupon_admin %}
+                        {{ menu_item('Coupon Admin', 'coupons_admin.panel', 'badge-dollar-sign') }}
+                        {% endif %}
                         {{ menu_item_external('Account Settings', 'https://accounts.wiilink.ca/manage', 'settings') }}
                     </div>
                     {% endif %}

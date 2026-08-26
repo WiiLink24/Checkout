@@ -65,6 +65,50 @@ def _get_owned_user():
     return find_user_by_wii_number(linked_wii[0]) if linked_wii else None
 
 
+def _enrich_redeemables(redeemables, catalog):
+    """Attach theme catalog data to theme redeemables for preview rendering."""
+    enriched = []
+    for item in redeemables:
+        if not isinstance(item, dict):
+            continue
+        if item.get("type") == "theme":
+            enriched.append({**item, "theme": catalog.get(item.get("value"))})
+        else:
+            enriched.append(item)
+    return enriched
+
+
+def _apply_coupon(coupon, payload, user):
+    """Apply a coupon's redeemables to the user's achievements payload and save it."""
+    from utils.utils import update_user_attributes
+
+    applied = []
+    for item in coupon.get("redeemables") or []:
+        kind = item.get("type")
+        value = item.get("value")
+        if kind == "points":
+            points = payload.setdefault(
+                "points", {"earned": 0, "spent": 0, "balance": 0}
+            )
+            points["earned"] = int(points.get("earned", 0)) + int(value)
+            points["balance"] = max(0, points["earned"] - int(points.get("spent", 0)))
+            applied.append(f"{value} points")
+        elif kind == "theme":
+            themes = payload.setdefault("themes", {"unlocked": [], "active": None})
+            themes.setdefault("unlocked", [])
+            if value not in themes["unlocked"]:
+                themes["unlocked"].append(value)
+                applied.append(f'theme "{value}"')
+
+    if not applied:
+        return applied
+
+    attributes = (user.get("attributes") or {}).copy()
+    attributes["achievements"] = payload
+    update_user_attributes(user, attributes)
+    return applied
+
+
 @auth_routes_bp.route("/themes", methods=["GET", "POST"], endpoint="themes")
 def themes():
     if not oidc or not oidc.user_loggedin:
@@ -73,6 +117,8 @@ def themes():
     user = _get_owned_user()
     if not user:
         return render_template("errors/not_linked.html", user_info=None), 400
+
+    user_info = get_logged_in_user_info()
 
     payload, _ = refresh_achievements_for_user(user, force=True)
     payload = payload or {
@@ -90,6 +136,8 @@ def themes():
     seen = []
     for tid, theme in catalog.items():
         if tid == "default":
+            continue
+        if theme.get("hidden") and tid not in unlocked:
             continue
         cat = theme.get("category") or {}
         title = cat.get("title") or "Other"
@@ -125,6 +173,8 @@ def themes():
         theme = catalog.get(theme_id)
         if not theme:
             flash("That theme does not exist.", "error")
+        elif theme.get("hidden") and theme_id not in theme_state["unlocked"]:
+            flash("This theme cannot be purchased.", "error")
         elif action == "unlock" and theme_id not in theme_state["unlocked"]:
             price = max(0, int(theme.get("price", 0)))
             if points.get("balance", 0) < price:
@@ -136,7 +186,7 @@ def themes():
             else:
                 theme_state["unlocked"].append(theme_id)
                 points["spent"] = points.get("spent", 0) + price
-                points["balance"] = max(0, points.get("earned", 0) - points["spent"])
+                points["balance"] = max(0, points["earned"] - points["spent"])
                 flash("Theme unlocked.", "success")
         elif action == "activate" and theme_id in theme_state["unlocked"]:
             theme_state["active"] = theme_id
@@ -149,7 +199,6 @@ def themes():
 
         update_user_attributes(user, attributes)
 
-    user_info = get_logged_in_user_info()
     if user_info is not None:
         user_info["achievements"] = payload
     return render_template(
@@ -159,6 +208,107 @@ def themes():
         categories=categories,
         theme_data=payload,
         points_error=points_error,
+    )
+
+
+@auth_routes_bp.route(
+    "/coupons/redeem", methods=["GET", "POST"], endpoint="coupons_redeem"
+)
+def coupons_redeem():
+    if not oidc or not oidc.user_loggedin:
+        return redirect(url_for("auth_routes.index"))
+
+    user = _get_owned_user()
+    if not user:
+        return render_template("errors/not_linked.html", user_info=None), 400
+
+    user_info = get_logged_in_user_info()
+    payload, _ = refresh_achievements_for_user(user, force=True)
+    payload = payload or {
+        "points": {"balance": 0, "spent": 0, "earned": 0},
+        "themes": {"unlocked": [], "active": None},
+    }
+    coupon_preview = None
+    catalog = get_theme_catalog()
+
+    if request.method == "POST":
+        from channels.coupons import (
+            coupon_available,
+            fetch_coupon_by_code,
+            fetch_coupon_by_uuid,
+            consume_coupon,
+            refund_coupon,
+        )
+
+        action = request.form.get("action", "")
+        username = (user_info or {}).get("username", "Unknown")
+
+        if action == "coupon_preview":
+            coupon_code = request.form.get("coupon_code", "").strip()
+            coupon = fetch_coupon_by_code(coupon_code) if coupon_code else None
+            if not coupon:
+                flash("That coupon code is invalid.", "error")
+            else:
+                available, reason = coupon_available(coupon, username)
+                if not available:
+                    flash(reason, "error")
+                else:
+                    coupon_preview = {
+                        "uuid": coupon["uuid"],
+                        "code": coupon["coupon_code"],
+                        "issuer": coupon["issuer"],
+                        "max_uses": coupon["max_uses"],
+                        "uses_left": (
+                            -1
+                            if coupon["max_uses"] == -1
+                            else max(
+                                0, coupon["max_uses"] - (coupon["uses_count"] or 0)
+                            )
+                        ),
+                        "redeemables": _enrich_redeemables(
+                            coupon.get("redeemables") or [], catalog
+                        ),
+                    }
+        elif action == "coupon_redeem":
+            coupon_uuid = request.form.get("coupon_uuid", "").strip()
+            coupon = fetch_coupon_by_uuid(coupon_uuid) if coupon_uuid else None
+            if not coupon:
+                flash("That coupon is no longer valid.", "error")
+            else:
+                available, reason = coupon_available(coupon, username)
+                if not available:
+                    flash(reason, "error")
+                elif consume_coupon(coupon["uuid"], username):
+                    try:
+                        applied = _apply_coupon(coupon, payload, user)
+                        if applied:
+                            flash(
+                                "Coupon redeemed: " + ", ".join(applied) + ".",
+                                "success",
+                            )
+                        else:
+                            refund_coupon(coupon["uuid"], username)
+                            flash("This coupon contains nothing to redeem.", "error")
+                    except Exception as e:
+                        refund_coupon(coupon["uuid"], username)
+                        print(f"[COUPONS] Redemption failed: {e}")
+                        flash("Could not redeem the coupon.", "error")
+                else:
+                    flash("This coupon has already been fully used.", "error")
+
+    if user_info is not None:
+        user_info["achievements"] = payload
+
+    from channels.coupons import user_redeem_history
+
+    username = (user_info or {}).get("username", "")
+    return render_template(
+        "redeem.html",
+        user_info=user_info,
+        viewed_user=user_info,
+        theme_data=payload,
+        coupon_preview=coupon_preview,
+        redeem_history=user_redeem_history(username) if username else [],
     )
 
 

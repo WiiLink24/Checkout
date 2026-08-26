@@ -185,6 +185,7 @@
                     "name": "Your Theme Name",
                     "description": "Your description",
                     "price": 100,
+                    "hidden": true,
                     "base": "",
                     "dark": "",
                     "light": "",

@@ -375,11 +375,12 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                 </a>
             </div>
 
-            {% set earned_achievements = viewed_user.achievements.achievements if viewed_user.achievements else [] %}
-            {% if earned_achievements|selectattr('achieved')|list %}
-            <section class="home-reveal w-full xl:w-[500px] theme-card-faint border rounded-2xl p-5 sm:p-6 mb-10">
+            {% set all_achievements = viewed_user.achievements.achievements if viewed_user.achievements else [] %}
+            {% if all_achievements %}
+            <section id="achievementsSection" onclick="openAchievementsModal()"
+                class="home-reveal w-full xl:w-[500px] theme-card-faint border rounded-2xl p-5 sm:p-6 mb-10 cursor-pointer">
                 <div class="ach-grid ach-strip xl:max-h-[460px] xl:pr-1">
-                    {% for ach in earned_achievements if ach.achieved %}
+                    {% for ach in all_achievements if ach.achieved %}
                     <div class="ach-tile-cell relative group rounded-xl aspect-square flex items-center justify-center overflow-visible"
                         title="{{ ach.name }} — {{ ach.description }} ({{ (ach.percent)|round|int }}% of users)">
                         <div class="ach-icon-box w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center">
@@ -851,6 +852,57 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
 
         setCookie("wiilink_user", JSON.stringify({ username: "{{ user_info.username }}", pfp: "{{ user_info.profile_picture }}" }), 7);
         setCookie("is_logged_in", "true", 7);
+    });
+</script>
+
+<div id="achievementsModal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/70 backdrop-blur-sm animate-opaque" data-ach-close></div>
+    <div
+        class="absolute right-0 top-0 bottom-0 w-full max-w-2xl bg-[var(--user-dark)] border-l border-[var(--user-transparent)] shadow-2xl overflow-y-auto animate-slideIn">
+        <div class="p-6 sm:p-8">
+            <div class="flex items-center justify-between gap-4 mb-6">
+                <h2 class="text-2xl font-bold text-white">Achievements</h2>
+                <button data-ach-close
+                    class="theme-btn border rounded-lg px-4 py-2 text-sm text-gray-300">Close</button>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {% for ach in all_achievements %}
+                {% set achieved = ach.achieved %}
+                <div
+                    class="theme-card-inner border border-[var(--user-transparent)] rounded-xl p-4 flex flex-col items-center text-center {% if not achieved %}opacity-60{% endif %}">
+                    <img src="/static/icon/{{ ach.icon }}.svg" alt="{{ ach.name }}"
+                        class="w-12 h-12 sm:w-14 sm:h-14 text-white mb-3 {% if not achieved %}grayscale{% endif %}">
+                    <p class="text-sm font-bold text-white">{{ ach.name }}</p>
+                    <p class="text-xs text-gray-400 mt-1 leading-snug">{{ ach.description }}</p>
+                    <p class="text-xs text-gray-500 mt-2">{{ (ach.percent)|round|int }}% of users</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openAchievementsModal() {
+        const modal = document.getElementById('achievementsModal');
+        if (!modal) return;
+        modal.classList.remove('hidden');
+        document.body.classList.add('overflow-hidden');
+    }
+
+    function closeAchievementsModal() {
+        const modal = document.getElementById('achievementsModal');
+        if (!modal) return;
+        modal.classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
+    }
+
+    document.querySelectorAll('[data-ach-close]').forEach(function (el) {
+        el.addEventListener('click', function (e) {
+            if (e.target === this || this.hasAttribute('data-ach-close')) {
+                closeAchievementsModal();
+            }
+        });
     });
 </script>
 {% include "components/details_modal.html" %}

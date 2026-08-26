@@ -128,6 +128,19 @@
             </div>
         </section>
         {% endfor %}
+
+        <section
+            class="theme-card border rounded-2xl p-5 sm:p-6 mb-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <img src="/static/icon/badge-dollar-sign.svg" alt="Coupon" class="w-6 h-6 invert opacity-70">
+                <div>
+                    <h2 class="text-xl font-bold text-white">Have a coupon?</h2>
+                    <p class="text-sm text-gray-400 mt-1">Redeem it for points and themes.</p>
+                </div>
+            </div>
+            <a href="{{ url_for('auth_routes.coupons_redeem') }}"
+                class="theme-btn border rounded-lg px-5 py-2.5 text-sm text-white flex-shrink-0">Redeem coupon</a>
+        </section>
     </div>
 </div>
 {% endblock %}
