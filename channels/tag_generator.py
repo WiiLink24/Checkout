@@ -141,6 +141,19 @@ def generate_user_tag(friend_code):
     games = _build_game_data(latest_games)
     theme = _get_user_theme(authentik_user)
 
+    theme_background = (theme or {}).get("background") or ""
+    custom_background = theme_background.startswith(
+        "data:"
+    ) or theme_background.startswith("http")
+    if theme_background and _load_image(theme_background):
+        tag_background_url = theme_background
+        light_blur = True
+        cover = custom_background
+    else:
+        tag_background_url = _get_tag_background_url(games)
+        light_blur = False
+        cover = False
+
     try:
         png_bytes = _render_tag_png(
             username=authentik_user.get("username", "Unknown"),
@@ -148,9 +161,11 @@ def generate_user_tag(friend_code):
             formatted_code=format_serial(friend_code_normalized),
             playtime_text=_format_playtime(user_stats.get("total_minutes", 0)),
             games=games,
-            tag_background_url=_get_tag_background_url(games),
+            tag_background_url=tag_background_url,
             generated_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             theme=theme,
+            light_blur=light_blur,
+            cover=cover,
         )
         return BytesIO(png_bytes)
     except Exception as e:
@@ -167,6 +182,8 @@ def _render_tag_png(
     tag_background_url,
     generated_at,
     theme=None,
+    light_blur=False,
+    cover=False,
 ):
     theme = theme or {}
     colors = {
@@ -192,7 +209,19 @@ def _render_tag_png(
     if tag_background_url:
         background = _load_image(tag_background_url)
         if background:
-            tag = _blend_background(tag, background)
+            tag = _blend_background(
+                tag,
+                background,
+                blur_radius=12 if light_blur else 24,
+                cover=cover,
+            )
+
+    if tag_background_url:
+        background = _load_image(tag_background_url)
+        if background:
+            tag = _blend_background(
+                tag, background, blur_radius=4 if light_blur else 24
+            )
 
     draw = ImageDraw.Draw(tag, "RGBA")
     _draw_header(tag, draw, username, pfp_url, formatted_code, playtime_text, colors)
@@ -225,19 +254,30 @@ def _draw_gradient(size, start, end):
     return ImageChops.add(horizontal, vertical, scale=2.0)
 
 
-def _blend_background(tag, background):
+def _blend_background(tag, background, blur_radius=24, cover=False):
     width, height = _TAG_SIZE
-    scaled = background.resize(
-        (int(width * 1.08), int(height * 1.08)), Image.LANCZOS
-    ).filter(ImageFilter.GaussianBlur(24))
+    if cover:
+        # object-fit: cover — scale preserving aspect ratio, center crop
+        scale = max(width / background.width, height / background.height)
+        new_w = int(background.width * scale)
+        new_h = int(background.height * scale)
+        resized = background.resize((new_w, new_h), Image.LANCZOS)
+        left = (new_w - width) // 2
+        top = (new_h - height) // 2
+        scaled = resized.crop((left, top, left + width, top + height))
+    else:
+        scaled = background.resize(
+            (int(width * 1.08), int(height * 1.08)), Image.LANCZOS
+        )
+        left = (scaled.width - width) // 2
+        top = (scaled.height - height) // 2
+        scaled = scaled.crop((left, top, left + width, top + height))
+    scaled = scaled.filter(ImageFilter.GaussianBlur(blur_radius))
 
-    left = (scaled.width - width) // 2
-    top = (scaled.height - height) // 2
-    cover = scaled.crop((left, top, left + width, top + height))
-    cover = cover.convert("RGBA")
-    cover.putalpha(Image.new("L", cover.size, 77))  # 30% opacity
+    layer = scaled.convert("RGBA")
+    layer.putalpha(Image.new("L", layer.size, 77))  # 30% opacity
 
-    return Image.alpha_composite(tag, cover)
+    return Image.alpha_composite(tag, layer)
 
 
 def _draw_header(tag, draw, username, pfp_url, formatted_code, playtime_text, colors):
@@ -341,6 +381,25 @@ def _draw_footer(draw, generated_at, colors):
 def _load_image(url):
     if not url:
         return None
+    # Local static path (e.g. theme background "/static/themes/backgrounds/x.png")
+    if url.startswith("/"):
+        local_path = Path(__file__).resolve().parent.parent / url.lstrip("/")
+        if local_path.exists():
+            try:
+                return Image.open(local_path).convert("RGB")
+            except Exception as e:
+                print(f"Error opening local image {url}: {e}")
+                return None
+    # Inline data URI
+    if url.startswith("data:"):
+        try:
+            import base64
+
+            _, b64 = url.split(",", 1)
+            return Image.open(BytesIO(base64.b64decode(b64))).convert("RGB")
+        except Exception as e:
+            print(f"Error loading data URI: {e}")
+            return None
     try:
         response = requests.get(url, timeout=10)
         if not response.ok:

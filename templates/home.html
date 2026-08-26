@@ -159,17 +159,27 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
 {% set active_theme_id = viewed_user.achievements.themes.active if viewed_user.achievements and viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'default' else None %}
 {% set user_theme = viewed_user.profile_picture|user_theme(active_theme_id) %}
 {% set share_url = (base_url ~ '/') if base_url else ('/' ~ viewed_user.linked_wii_no[0] ~ '/') %}
+{% set bg_type = user_theme.get('bg-type') if user_theme else 0 %}
 {% if user_theme %}
+{% if bg_type == 0 %}
 <div class="absolute inset-x-0 top-0 h-[400px] pointer-events-none"
     style="background: radial-gradient(ellipse 90% 100% at 50% 0%, rgba({{ user_theme.rgb }}, 0.16), transparent 70%);">
 </div>
+{% endif %}
 {% if user_theme.bgm %}
 <audio id="themeBgm" src="{{ user_theme.bgm }}" autoplay loop preload="auto"></audio>
 {% endif %}
 {% endif %}
+{% if bg_type == 1 %}
+<div class="absolute inset-x-0 top-0 h-[500px] bg-center bg-cover blur-md pointer-events-none"
+    style="view-transition-name: vt-bg-blur; background-image: {% if user_theme and user_theme.background %}url('{{ user_theme.background }}'){% else %}url('{{ viewed_user.profile_picture }}'){% endif %}; -webkit-mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0)); mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0));">
+</div>
+{% elif bg_type == 2 %}
+{% else %}
 <div class="absolute inset-x-0 top-0 h-[500px] bg-center bg-cover blur-lg opacity-30 pointer-events-none"
     style="view-transition-name: vt-bg-blur; background-image: {% if user_theme and user_theme.background %}url('{{ user_theme.background }}'){% else %}url('{{ viewed_user.profile_picture }}'){% endif %}; -webkit-mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0)); mask-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0));">
 </div>
+{% endif %}
 {% if active_theme_id %}
 <button id="themeEffectsToggle" type="button" title="Toggle theme font and music"
     aria-pressed="false"
@@ -194,12 +204,17 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
     {% if viewed_user.achievements %}
     {% for ach in viewed_user.achievements.achievements if ach.achieved %}
     <img src="/static/icon/{{ ach.icon }}.svg" alt="{{ ach.name }}"
-        title="{{ ach.name }} — {{ ach.description }} ({{ (ach.percent)|round|int }}% of users)"
+        title="{{ ach.name }} — {{ ach.description }}"
         class="w-7 h-7 text-white cursor-help">
     {% endfor %}
     {% endif %}
 </div>
-<div id="pageContent" class="mt-8 px-4 sm:px-6 lg:px-8 py-8">
+{% if bg_type == 2 %}
+<div id="pageContent" class="mt-8 px-4 sm:px-6 lg:px-8 py-8 z-10 relative"
+    style="background-image: url('{{ user_theme.background }}'); background-repeat: repeat-y; background-size: 100% auto; background-position: center top;">
+{% else %}
+<div id="pageContent" class="mt-8 px-4 sm:px-6 lg:px-8 py-8 z-10 relative">
+{% endif %}
     <div class="max-w-6xl mx-auto">
         <div class="flex flex-col sm:flex-row sm:items-center gap-6 mb-10">
             <div class="relative w-32 h-32 flex items-center justify-center group flex-shrink-0">
@@ -382,7 +397,7 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                 <div class="ach-grid ach-strip xl:max-h-[460px] xl:pr-1">
                     {% for ach in all_achievements if ach.achieved %}
                     <div class="ach-tile-cell relative group rounded-xl aspect-square flex items-center justify-center overflow-visible"
-                        title="{{ ach.name }} — {{ ach.description }} ({{ (ach.percent)|round|int }}% of users)">
+                        title="{{ ach.name }} — {{ ach.description }}">
                         <div class="ach-icon-box w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center">
                             <img src="/static/icon/{{ ach.icon }}.svg" alt="{{ ach.name }}"
                                 class="ach-icon w-10 h-10 sm:w-12 sm:h-12 text-white">
@@ -392,7 +407,6 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                             <p class="text-xs font-semibold text-white leading-tight">{{ ach.name }}</p>
                             <p class="text-[10px] text-gray-400 leading-tight line-clamp-2">{{
                                 ach.description }}</p>
-                            <p class="text-[10px] text-gray-300">{{ (ach.percent)|round|int }}% of users</p>
                         </div>
                     </div>
                     {% endfor %}
@@ -874,7 +888,6 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                         class="w-12 h-12 sm:w-14 sm:h-14 text-white mb-3 {% if not achieved %}grayscale{% endif %}">
                     <p class="text-sm font-bold text-white">{{ ach.name }}</p>
                     <p class="text-xs text-gray-400 mt-1 leading-snug">{{ ach.description }}</p>
-                    <p class="text-xs text-gray-500 mt-2">{{ (ach.percent)|round|int }}% of users</p>
                 </div>
                 {% endfor %}
             </div>
