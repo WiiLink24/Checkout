@@ -116,15 +116,15 @@ def collect_metrics(serial_prefixes=None, wii_numbers=None, use_cache=True):
     )
 
     contest_wins = 0
-    contest_ranks = {1: 0, 2: 0, 3: 0}
+    contest_ranks = {10: 0, 9: 0, 8: 0}
     if wii_numbers:
         from channels.cmoc import fetch_contest_submissions
 
         for submission in fetch_contest_submissions(wii_numbers, use_cache=use_cache):
             rank = submission.get("rank")
-            if str(rank) in ("1", "2", "3"):
+            if str(rank) in ("10", "9", "8"):
                 contest_ranks[int(rank)] += 1
-            if str(rank) == "1":
+            if str(rank) == "10":
                 contest_wins += 1
 
     return {
@@ -150,9 +150,9 @@ def collect_metrics(serial_prefixes=None, wii_numbers=None, use_cache=True):
             else 0
         ),
         "contest_wins": contest_wins,
-        "contest_rank_1": contest_ranks[1],
-        "contest_rank_2": contest_ranks[2],
-        "contest_rank_3": contest_ranks[3],
+        "contest_rank_10": contest_ranks[10],
+        "contest_rank_9": contest_ranks[9],
+        "contest_rank_8": contest_ranks[8],
     }
 
 
@@ -177,9 +177,9 @@ def _build_points(metrics, achieved_ids, previous):
             + metrics.get("reviews", 0) * 5
             + metrics.get("polls", 0) * 5
             + metrics.get("contest_submissions", 0) * 10
-            + metrics.get("contest_rank_1", 0) * 50
-            + metrics.get("contest_rank_2", 0) * 40
-            + metrics.get("contest_rank_3", 0) * 30
+            + metrics.get("contest_rank_10", 0) * 50
+            + metrics.get("contest_rank_9", 0) * 40
+            + metrics.get("contest_rank_8", 0) * 30
             + len(achieved_ids) * _ACHIEVEMENT_POINTS
         )
         return {
@@ -191,9 +191,9 @@ def _build_points(metrics, achieved_ids, previous):
                 "reviews": metrics.get("reviews", 0),
                 "polls": metrics.get("polls", 0),
                 "contest_submissions": metrics.get("contest_submissions", 0),
-                "contest_rank_1": metrics.get("contest_rank_1", 0),
-                "contest_rank_2": metrics.get("contest_rank_2", 0),
-                "contest_rank_3": metrics.get("contest_rank_3", 0),
+                "contest_rank_10": metrics.get("contest_rank_10", 0),
+                "contest_rank_9": metrics.get("contest_rank_9", 0),
+                "contest_rank_8": metrics.get("contest_rank_8", 0),
                 "achievements": list(achieved_ids),
             },
         }
@@ -217,7 +217,7 @@ def _build_points(metrics, achieved_ids, previous):
             - old_milestones.get(f"contest_rank_{rank}", 0),
         )
         * points
-        for rank, points in ((1, 50), (2, 40), (3, 30))
+        for rank, points in ((10, 50), (9, 40), (8, 30))
     )
     earned = old_points.get("earned", 0) + (
         (play_minutes // 60)
@@ -239,9 +239,9 @@ def _build_points(metrics, achieved_ids, previous):
             "reviews": metrics.get("reviews", 0),
             "polls": metrics.get("polls", 0),
             "contest_submissions": metrics.get("contest_submissions", 0),
-            "contest_rank_1": metrics.get("contest_rank_1", 0),
-            "contest_rank_2": metrics.get("contest_rank_2", 0),
-            "contest_rank_3": metrics.get("contest_rank_3", 0),
+            "contest_rank_10": metrics.get("contest_rank_10", 0),
+            "contest_rank_9": metrics.get("contest_rank_9", 0),
+            "contest_rank_8": metrics.get("contest_rank_8", 0),
             "achievements": list(previous_achievements | set(achieved_ids)),
         },
     }
