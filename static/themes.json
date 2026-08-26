@@ -199,6 +199,30 @@
                     "bgm": ""
                 }
             ]
+        },
+        {
+            "title": "Wii Sports",
+            "description": "Celebrate the Wii Sports Anniversary with these exclusive themes!",
+            "themes": [
+                {
+                    "id": "wii-tennis",
+                    "name": "Wii Tennis",
+                    "description": "Head off to the court in this Tennis theme.",
+                    "price": 300,
+                    "base": "#b5d300",
+                    "dark": "#647400",
+                    "light": "#cde152",
+                    "soft": "#e3ee9e",
+                    "rgb": "181, 211, 0",
+                    "dark_rgb": "100, 116, 0",
+                    "transparent": "rgba(181, 211, 0, 0.18)",
+                    "font": "",
+                    "background": "Wii_Tennis.jpg",
+                    "bgm": "Wii_Tennis.mp3",
+                    "bg-type": 1,
+                    "hidden": true
+                }
+            ]
         }
     ]
 }
