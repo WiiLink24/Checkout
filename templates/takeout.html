@@ -6,7 +6,7 @@
 <div class="container mx-auto px-4 py-8 max-w-4xl">
     <div class="mb-8">
         <h1 class="text-4xl font-bold text-white mb-4">Takeout</h1>
-        <p class="text-gray-400">At WiiLink we believe you're in control of your data. Feel free to request a data
+        <p class="text-[var(--user-soft)]">At WiiLink we believe you're in control of your data. Feel free to request a data
             export of your data. Please be advised you are only allowed to export your data once per month.</p>
     </div>
 
@@ -33,7 +33,7 @@
                         data_counts.recommendations or not can_export %}disabled{% endif %}>
                     <div class="ml-4 flex-1">
                         <div class="font-semibold text-white">Recommendations</div>
-                        <div class="text-sm text-gray-400">{{ data_counts.recommendations }} entries</div>
+                        <div class="text-sm text-[var(--user-soft)]">{{ data_counts.recommendations }} entries</div>
                     </div>
                 </label>
 
@@ -43,7 +43,7 @@
                         data_counts.favorites or not can_export %}disabled{% endif %}>
                     <div class="ml-4 flex-1">
                         <div class="font-semibold text-white">Favorites (Bookmarks)</div>
-                        <div class="text-sm text-gray-400">{{ data_counts.favorites }} entries</div>
+                        <div class="text-sm text-[var(--user-soft)]">{{ data_counts.favorites }} entries</div>
                     </div>
                 </label>
 
@@ -53,7 +53,7 @@
                         data_counts.time_played or not can_export %}disabled{% endif %}>
                     <div class="ml-4 flex-1">
                         <div class="font-semibold text-white">Time Played</div>
-                        <div class="text-sm text-gray-400">{{ data_counts.time_played }} entries</div>
+                        <div class="text-sm text-[var(--user-soft)]">{{ data_counts.time_played }} entries</div>
                     </div>
                 </label>
 
@@ -63,7 +63,7 @@
                         data_counts.polls or not can_export %}disabled{% endif %}>
                     <div class="ml-4 flex-1">
                         <div class="font-semibold text-white">Polls</div>
-                        <div class="text-sm text-gray-400">{{ data_counts.polls }} entries</div>
+                        <div class="text-sm text-[var(--user-soft)]">{{ data_counts.polls }} entries</div>
                     </div>
                 </label>
 
@@ -73,7 +73,7 @@
                         data_counts.suggestions or not can_export %}disabled{% endif %}>
                     <div class="ml-4 flex-1">
                         <div class="font-semibold text-white">Suggestions</div>
-                        <div class="text-sm text-gray-400">{{ data_counts.suggestions }} entries</div>
+                        <div class="text-sm text-[var(--user-soft)]">{{ data_counts.suggestions }} entries</div>
                     </div>
                 </label>
 
@@ -83,7 +83,7 @@
                         not data_counts.contest_submissions or not can_export %}disabled{% endif %}>
                     <div class="ml-4 flex-1">
                         <div class="font-semibold text-white">Contest Submissions</div>
-                        <div class="text-sm text-gray-400">{{ data_counts.contest_submissions }} entries</div>
+                        <div class="text-sm text-[var(--user-soft)]">{{ data_counts.contest_submissions }} entries</div>
                     </div>
                 </label>
 
@@ -93,7 +93,7 @@
                         data_counts.cam_orders or not can_export %}disabled{% endif %}>
                     <div class="ml-4 flex-1">
                         <div class="font-semibold text-white">Photo Prints Channel Orders</div>
-                        <div class="text-sm text-gray-400">{{ data_counts.cam_orders }} entries</div>
+                        <div class="text-sm text-[var(--user-soft)]">{{ data_counts.cam_orders }} entries</div>
                     </div>
                 </label>
             </div>
@@ -104,7 +104,7 @@
                     {% if not can_export %}disabled{% endif %}>
                     Download as ZIP
                 </button>
-                <p class="text-sm text-gray-400 mt-4">All data will be packaged into a single ZIP file with CSV files
+                <p class="text-sm text-[var(--user-soft)] mt-4">All data will be packaged into a single ZIP file with CSV files
                     and an export summary.</p>
             </div>
         </form>
