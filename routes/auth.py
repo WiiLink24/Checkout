@@ -16,7 +16,13 @@ import zipfile
 from datetime import datetime, timedelta
 from utils.auth import get_user_profile, build_user_info
 from utils.helpers import parse_int
-from utils.utils import get_serial_prefixes, find_user_by_wii_number
+from utils.utils import (
+    get_serial_prefixes,
+    find_user_by_wii_number,
+    generate_gravatar_url,
+    format_serial,
+    cache,
+)
 from utils.achievements import refresh_achievements_for_user
 from utils.theme import get_theme_catalog
 from channels.nc import (
@@ -79,6 +85,40 @@ def themes():
     points = payload.setdefault("points", {"balance": 0, "spent": 0, "earned": 0})
     points_error = None
 
+    unlocked = set(theme_state.get("unlocked", []))
+    categories = []
+    seen = []
+    for tid, theme in catalog.items():
+        if tid == "default":
+            continue
+        cat = theme.get("category") or {}
+        title = cat.get("title") or "Other"
+        if title not in seen:
+            seen.append(title)
+            categories.append(
+                {
+                    "title": title,
+                    "description": cat.get("description", ""),
+                    "themes": [],
+                }
+            )
+        for bucket in categories:
+            if bucket["title"] == title:
+                bucket["themes"].append(theme)
+                break
+    for bucket in categories:
+        bucket["themes"].sort(key=lambda t: t["id"] not in unlocked)
+
+    default_theme = catalog.get("default")
+    if default_theme:
+        categories = [
+            {
+                "title": "Default",
+                "description": "The classic WiiLink Checkout look. Always available.",
+                "themes": [default_theme],
+            }
+        ] + categories
+
     if request.method == "POST":
         theme_id = request.form.get("theme_id", "")
         action = request.form.get("action", "")
@@ -116,10 +156,91 @@ def themes():
         "themes.html",
         user_info=user_info,
         viewed_user=user_info,
-        themes=list(catalog.values()),
+        categories=categories,
         theme_data=payload,
         points_error=points_error,
     )
+
+
+@auth_routes_bp.route("/friends/toggle", methods=["POST"], endpoint="toggle_friend")
+def toggle_friend():
+    if not oidc or not oidc.user_loggedin:
+        return jsonify({"ok": False, "error": "Not logged in."}), 401
+
+    user_info = get_logged_in_user_info()
+    if not user_info or not user_info.get("linked_wii_no"):
+        return jsonify({"ok": False, "error": "No Wii linked to your account."}), 400
+
+    data = request.get_json(silent=True) or {}
+    friend_code = (
+        data.get("friend_code") or request.form.get("friend_code") or ""
+    ).strip()
+    if not friend_code:
+        return jsonify({"ok": False, "error": "Missing friend code."}), 400
+
+    own_user = find_user_by_wii_number(user_info["linked_wii_no"][0])
+    if not own_user:
+        return jsonify({"ok": False, "error": "Account not found."}), 400
+
+    payload, _ = refresh_achievements_for_user(own_user)
+    if not payload:
+        return jsonify({"ok": False, "error": "Could not load achievements."}), 500
+
+    friends = payload.setdefault("friends", [])
+    if not isinstance(friends, list):
+        friends = []
+        payload["friends"] = friends
+
+    if friend_code in friends:
+        friends.remove(friend_code)
+        is_friend = False
+    else:
+        friends.append(friend_code)
+        is_friend = True
+
+    attributes = (own_user.get("attributes") or {}).copy()
+    attributes["achievements"] = payload
+    from utils.utils import update_user_attributes
+
+    try:
+        update_user_attributes(own_user, attributes)
+        cache.delete(f"friends:{user_info['linked_wii_no'][0]}")
+    except Exception as e:
+        print(f"[FRIENDS] Failed to save friends: {e}")
+        return jsonify({"ok": False, "error": "Failed to save friends."}), 500
+
+    return jsonify({"ok": True, "is_friend": is_friend, "friend_count": len(friends)})
+
+
+def _resolve_friends(payload, wii_number):
+    """Resolve friend codes into user details, cached briefly for the sidebar."""
+    friend_codes = (payload or {}).get("friends") or []
+    if not isinstance(friend_codes, list) or not friend_codes:
+        return []
+
+    cache_key = f"friends:{wii_number}"
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return cached
+
+    friends = []
+    for code in friend_codes:
+        friend_user = find_user_by_wii_number(code)
+        if not friend_user:
+            continue
+        email = friend_user.get("email", "")
+        friends.append(
+            {
+                "username": friend_user.get("username", "Unknown"),
+                "avatar": generate_gravatar_url(email),
+                "wii_number": code,
+                "code": format_serial(code),
+                "profile_url": f"/{code}/",
+            }
+        )
+
+    cache.set(cache_key, friends, timeout=120)
+    return friends
 
 
 def set_oidc(oidc_instance):
@@ -130,7 +251,26 @@ def set_oidc(oidc_instance):
 def get_logged_in_user_info():
     if oidc and oidc.user_loggedin:
         profile = get_user_profile()
-        return build_user_info(profile)
+        user_info = build_user_info(profile)
+        if user_info.get("linked_wii_no"):
+            payload = None
+            user_id = profile.get("sub") or profile.get("uuid")
+            try:
+                if user_id:
+                    payload, _ = refresh_achievements_for_user({"uuid": user_id})
+                else:
+                    own_user = find_user_by_wii_number(user_info["linked_wii_no"][0])
+                    if own_user:
+                        payload, _ = refresh_achievements_for_user(own_user)
+            except Exception as e:
+                print(f"[ACHIEVEMENTS] session refresh failed: {e}")
+                payload = None
+            if payload:
+                user_info["achievements"] = payload
+            user_info["friends"] = _resolve_friends(
+                payload, user_info["linked_wii_no"][0]
+            )
+        return user_info
     return None
 
 

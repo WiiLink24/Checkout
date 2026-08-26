@@ -265,6 +265,36 @@
                 </div>
                 {% endmacro %}
 
+                {% macro friends_menu(friends) %}
+                <div class="hidden md:block relative" onmouseenter="openFriendsMenu()"
+                    onmouseleave="closeFriendsMenu()">
+                    <button id="friendsMenuBtn"
+                        class="w-full px-4 py-2 theme-menu-btn text-white rounded-xl transition duration-200 flex items-center justify-between">
+                        <span class="flex items-center">
+                            <img src="/static/icon/users.svg" alt="Friends" class="w-5 h-5 invert mr-2" />
+                            Friends
+                        </span>
+                        <span class="inline-block mr-1 transform"><img src="/static/icon/chevron-right.svg"
+                                alt="Arrow Down" class="w-4 h-4 invert" /></span>
+                    </button>
+
+                    <div id="friendsMenu"
+                        class="flex flex-col gap-1 absolute left-full top-0 -ml-4 w-64 bg-[var(--user-dark)] backdrop-blur-md rounded-xl shadow-xl p-1 z-40 pointer-events-none opacity-0 transition-opacity duration-200 min-w-max max-h-72 overflow-y-auto"
+                        style="visibility: hidden;">
+                        {% for friend in friends %}
+                        <a href="{{ friend.profile_url }}" target="_blank"
+                            class="block w-full px-2 py-1.5 theme-menu-btn text-white rounded-xl transition duration-200 flex items-center gap-2">
+                            <img src="{{ friend.avatar }}" alt="" class="w-8 h-8 rounded-lg object-cover flex-shrink-0" />
+                            <span class="min-w-0">
+                                <span class="block text-sm truncate">{{ friend.username }}</span>
+                                <span class="block text-xs text-gray-400">{{ friend.code }}</span>
+                            </span>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endmacro %}
+
                 <span class="h-full sm:h-[calc(100%-80px)] flex flex-col justify-between">
                     <div class="flex flex-col gap-2">
                         {{ menu_item('Search', 'misc_routes.search', 'search') }}
@@ -321,6 +351,9 @@
                         }
                         ] %}
                         {{ you_menu(channels) }}
+                        {% if user_info.friends %}
+                        {{ friends_menu(user_info.friends) }}
+                        {% endif %}
                         <div class="mt-6 sm:hidden"></div>
                         {{ menu_item_external('Account Settings', 'https://accounts.wiilink.ca/manage', 'settings') }}
                     </div>
@@ -555,6 +588,22 @@
 
         function navigateToArtisan(artisanId) {
             window.location.href = 'https://miicontest.wiilink.ca/artisans/' + artisanId;
+        }
+
+        function openFriendsMenu() {
+            const menu = document.getElementById('friendsMenu');
+            if (!menu) return;
+            menu.style.visibility = 'visible';
+            menu.style.opacity = '1';
+            menu.style.pointerEvents = 'auto';
+        }
+
+        function closeFriendsMenu() {
+            const menu = document.getElementById('friendsMenu');
+            if (!menu) return;
+            menu.style.visibility = 'hidden';
+            menu.style.opacity = '0';
+            menu.style.pointerEvents = 'none';
         }
 
         document.getElementById('artisanModal').addEventListener('click', function (e) {

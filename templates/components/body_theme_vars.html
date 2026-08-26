@@ -1,10 +1,11 @@
 {# Emits theme CSS vars for the body element.
-   Priority: explicit user_theme param -> viewed_user theme -> gray-900/950 defaults. #}
-{% set active_theme_id = viewed_user.achievements.themes.active if viewed_user and viewed_user.achievements and viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'default' else None %}
+   Priority: explicit user_theme param -> viewed_user theme -> user_info theme -> gray-900/950 defaults. #}
+{% set theme_source = viewed_user if viewed_user else user_info %}
+{% set active_theme_id = theme_source.achievements.themes.active if theme_source and theme_source.achievements and theme_source.achievements.themes and theme_source.achievements.themes.active != 'default' else None %}
 {% if user_theme is defined and user_theme %}
 {% set theme = user_theme %}
-{% elif viewed_user %}
-{% set theme = viewed_user.profile_picture|user_theme(active_theme_id) %}
+{% elif theme_source %}
+{% set theme = theme_source.profile_picture|user_theme(active_theme_id) %}
 {% else %}
 {% set theme = None %}
 {% endif %}

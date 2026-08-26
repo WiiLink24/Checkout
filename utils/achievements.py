@@ -265,6 +265,7 @@ def build_payload(
         "total_users": total_users,
         "points": points,
         "themes": themes,
+        "friends": previous.get("friends") or [],
         "achievements": [
             {
                 "id": ach.id,
@@ -376,6 +377,7 @@ def _build_refresh_payload(achieved_ids, metrics=None, previous=None) -> Dict:
         "total_users": tally["eligible"],
         "points": points,
         "themes": themes,
+        "friends": previous.get("friends") or [],
         "achievements": [
             {
                 "id": ach.id,

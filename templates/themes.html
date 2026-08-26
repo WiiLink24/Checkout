@@ -34,17 +34,23 @@
                 <li class="flex items-center gap-3"><img src="/static/icon/star.svg" alt="" class="w-5 h-5 invert opacity-60"> <span><strong>Leave reviews</strong> - 5 points per game recommendation</span></li>
                 <li class="flex items-center gap-3"><img src="/static/icon/chart-line.svg" alt="" class="w-5 h-5 invert opacity-60"> <span><strong>Vote in polls</strong> - 5 points per poll</span></li>
                 <li class="flex items-center gap-3"><img src="/static/icon/send-horizontal.svg" alt="" class="w-5 h-5 invert opacity-60"> <span><strong>Enter contests</strong> - 10 points per submission</span></li>
-                <li class="flex items-center gap-3"><img src="/static/icon/sword.svg" alt="" class="w-5 h-5 invert opacity-60"> <span><strong>Place in contests</strong> - 50 / 40 / 30 points for rank 1 / 2 / 3</span></li>
+                <li class="flex items-center gap-3"><img src="/static/icon/trophy.svg" alt="" class="w-5 h-5 invert opacity-60"> <span><strong>Place in contests</strong> - 50 / 40 / 30 points for rank 1 / 2 / 3</span></li>
                 <li class="flex items-center gap-3"><img src="/static/icon/badge-check.svg" alt="" class="w-5 h-5 invert opacity-60"> <span><strong>Unlock achievements</strong> - 50 points per achievement</span></li>
             </ul>
             <p class="text-xs text-white/30 mt-4">Points refresh automatically as you keep using the service.</p>
         </section>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {% for theme in themes %}
-            {% set owned = theme.id in theme_data.themes.unlocked %}
-            {% set active = (theme.id == 'default' and not theme_data.themes.active) or (theme_data.themes.active == theme.id) %}
-            <article class="theme-card border rounded-2xl overflow-hidden">
+        {% for category in categories %}
+        <section class="mb-10">
+            <div class="mb-4">
+                <h2 class="text-2xl font-bold text-white">{{ category.title }}</h2>
+                <p class="text-gray-400 mt-1">{{ category.description }}</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {% for theme in category.themes %}
+                {% set owned = theme.id in theme_data.themes.unlocked %}
+                {% set active = (theme.id == 'default' and not theme_data.themes.active) or (theme_data.themes.active == theme.id) %}
+                <article class="theme-card border rounded-2xl overflow-hidden">
                 <div class="flex flex-row items-start h-[200px] overflow-hidden relative"
                     style="background-color: {{ theme.base }}; color: {{ theme.soft }}; font-family: {{ theme.font or 'inherit' }};">
                     {% if theme.bgm %}
@@ -118,8 +124,10 @@
                     </div>
                 </div>
             </article>
-            {% endfor %}
-        </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endfor %}
     </div>
 </div>
 {% endblock %}

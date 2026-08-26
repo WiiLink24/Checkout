@@ -19,35 +19,47 @@ def _catalog_asset_url(directory, filename):
 def get_theme_catalog():
     try:
         with _THEME_CATALOG_PATH.open(encoding="utf-8") as theme_file:
-            themes = json.load(theme_file)
-        normalized = {}
-        normalized["default"] = {
-            "id": "default",
-            "name": "Default",
-            "description": "Use the original profile theme.",
-            "price": 0,
-            "base": "#111827",
-            "dark": "#030712",
-            "light": "#646873",
-            "soft": "#9ca3af",
-            "rgb": "17, 24, 39",
-            "dark_rgb": "3, 7, 18",
-            "transparent": "rgba(17, 24, 39, 0.14)",
-            "font": "",
-            "background": "",
-            "bgm": "",
-        }
-        for theme in themes:
+            data = json.load(theme_file)
+    except (OSError, ValueError, TypeError):
+        return {}
+
+    # Backwards compatible: a bare list is treated as a single "Other" category.
+    if isinstance(data, list):
+        data = {"categories": [{"title": "Other", "description": "", "themes": data}]}
+
+    normalized = {}
+    normalized["default"] = {
+        "id": "default",
+        "name": "Default",
+        "description": "Use the original profile theme.",
+        "price": 0,
+        "base": "#111827",
+        "dark": "#030712",
+        "light": "#646873",
+        "soft": "#9ca3af",
+        "rgb": "17, 24, 39",
+        "dark_rgb": "3, 7, 18",
+        "transparent": "rgba(17, 24, 39, 0.14)",
+        "font": "",
+        "background": "",
+        "bgm": "",
+    }
+    for category in data.get("categories", []):
+        title = category.get("title", "Other")
+        description = category.get("description", "")
+        for theme in category.get("themes", []):
             if not theme.get("id"):
                 continue
             theme = dict(theme)
-            theme["background"] = _catalog_asset_url("backgrounds", theme.get("background", ""))
+            theme["category"] = {"title": title, "description": description}
+            theme["background"] = _catalog_asset_url(
+                "backgrounds", theme.get("background", "")
+            )
             theme["bgm"] = _catalog_asset_url("audio", theme.get("bgm", ""))
-            theme["font"] = (theme.get("font", ""))
+            font = theme.get("font", "")
+            theme["font"] = "'Minecraft', sans-serif" if font == "minecraft" else font
             normalized[theme["id"]] = theme
-        return normalized
-    except (OSError, ValueError, TypeError):
-        return {}
+    return normalized
 
 
 def _download_image(url):

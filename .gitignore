@@ -12,3 +12,4 @@ config.py
 /channels/__pycache__
 /routes/__pycache__
 /utils/__pycache__
+theme_customizer.html

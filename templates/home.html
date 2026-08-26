@@ -158,6 +158,7 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
 {% set vt_seen = namespace(ids=[]) %}
 {% set active_theme_id = viewed_user.achievements.themes.active if viewed_user.achievements and viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'default' else None %}
 {% set user_theme = viewed_user.profile_picture|user_theme(active_theme_id) %}
+{% set share_url = (base_url ~ '/') if base_url else ('/' ~ viewed_user.linked_wii_no[0] ~ '/') %}
 {% if user_theme %}
 <div class="absolute inset-x-0 top-0 h-[400px] pointer-events-none"
     style="background: radial-gradient(ellipse 90% 100% at 50% 0%, rgba({{ user_theme.rgb }}, 0.16), transparent 70%);">
@@ -211,10 +212,33 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                     <img src="/static/icon/tag.svg" alt="View Tag" class="w-10 h-10 invert">
                 </a>
             </div>
-            <div class="flex flex-col items-start gap-3">
+            <div class="w-full flex flex-col items-start gap-3">
+                <span class="w-full flex flex-col-reverse xl:flex-row xl:items-center justify-between gap-3">
+                <span class="flex items-center gap-3">
                 <h1 class="text-3xl sm:text-5xl font-bold text-white">
                     {{ viewed_user.username }}
                 </h1>
+                {% if user_info and base_url and viewed_user.linked_wii_no %}
+                {% set is_friend = user_info.achievements and user_info.achievements.friends and viewed_user.linked_wii_no[0] in user_info.achievements.friends %}
+                <button id="friendToggleBtn" type="button" data-friend-code="{{ viewed_user.linked_wii_no[0] }}"
+                    aria-pressed="{{ 'true' if is_friend else 'false' }}"
+                    title="{% if is_friend %}Remove from friends{% else %}Add to friends{% endif %}"
+                    class="flex items-center justify-center w-11 h-11 rounded-full theme-btn border text-rose-400 transition hover:scale-110">
+                    <svg id="friendHeartIcon" viewBox="0 0 24 24" width="26" height="26"
+                        fill="{{ 'var(--user-dark)' if is_friend else 'none' }}"
+                        stroke="var(--user-dark)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                    </svg>
+                </button>
+                {% endif %}
+            </span>
+                                    <button id="shareProfileBtn" type="button"
+                        class="flex items-center gap-2 px-3 py-1.5 theme-btn border rounded-lg text-gray-300 hover:text-white transition-colors duration-200">
+                        <img src="/static/icon/share.svg" alt="Share" class="w-4 h-4 invert">
+                        Share
+                    </button>
+                    </span>
                 <div class="flex flex-wrap items-center gap-2">
                     {% for linked_wii in viewed_user.linked_wii_no %}
                     <button
@@ -673,6 +697,50 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+
+        const shareProfileBtn = document.getElementById('shareProfileBtn');
+        if (shareProfileBtn) {
+            shareProfileBtn.addEventListener('click', function () {
+                const url = "{{ share_url }}";
+                if (navigator.share) {
+                    navigator.share({ title: document.title, url: url }).catch(function () {});
+                } else if (navigator.clipboard) {
+                    navigator.clipboard.writeText(url).then(function () {
+                        const original = shareProfileBtn.innerHTML;
+                        shareProfileBtn.innerHTML = 'Copied!';
+                        setTimeout(function () {
+                            shareProfileBtn.innerHTML = original;
+                        }, 1800);
+                    });
+                }
+            });
+        }
+
+        const friendToggleBtn = document.getElementById('friendToggleBtn');
+        if (friendToggleBtn) {
+            friendToggleBtn.addEventListener('click', function () {
+                const icon = document.getElementById('friendHeartIcon');
+                const code = friendToggleBtn.dataset.friendCode;
+                fetch('/friends/toggle', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ friend_code: code })
+                }).then(function (res) {
+                    return res.json();
+                }).then(function (data) {
+                    if (data.ok) {
+                        const isFriend = data.is_friend;
+                        icon.setAttribute('fill', isFriend ? 'var(--user-dark)' : 'none');
+                        friendToggleBtn.setAttribute('aria-pressed', String(isFriend));
+                        friendToggleBtn.title = isFriend ? 'Remove from friends' : 'Add to friends';
+                    } else if (data.error) {
+                        console.error(data.error);
+                    }
+                }).catch(function (err) {
+                    console.error(err);
+                });
+            });
+        }
 
         const scrollHeader = document.getElementById('scrollHeader');
         if (scrollHeader) {
