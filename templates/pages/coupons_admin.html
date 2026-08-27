@@ -18,22 +18,22 @@
             <form method="post" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <input type="hidden" name="action" value="create">
                 <div>
-                    <label class="block text-xs uppercase tracking-widest text-gray-400 mb-1">Coupon code</label>
+                    <label class="block text-xs uppercase tracking-widest text-[var(--user-soft)] mb-1">Coupon code</label>
                     <input type="text" name="coupon_code" required
                         class="w-full bg-[var(--user-base)] border border-[var(--user-transparent)] text-white rounded-lg px-4 py-2.5 text-sm outline-none focus:border-[var(--user-light)]">
                 </div>
                 <div>
-                    <label class="block text-xs uppercase tracking-widest text-gray-400 mb-1">Issuer</label>
+                    <label class="block text-xs uppercase tracking-widest text-[var(--user-soft)] mb-1">Issuer</label>
                     <input type="text" name="issuer" value="WiiLink"
                         class="w-full bg-[var(--user-base)] border border-[var(--user-transparent)] text-white rounded-lg px-4 py-2.5 text-sm outline-none focus:border-[var(--user-light)]">
                 </div>
                 <div>
-                    <label class="block text-xs uppercase tracking-widest text-gray-400 mb-1">Max uses (-1 = unlimited)</label>
+                    <label class="block text-xs uppercase tracking-widest text-[var(--user-soft)] mb-1">Max uses (-1 = unlimited)</label>
                     <input type="number" name="max_uses" value="1" required
                         class="w-full bg-[var(--user-base)] border border-[var(--user-transparent)] text-white rounded-lg px-4 py-2.5 text-sm outline-none focus:border-[var(--user-light)]">
                 </div>
                 <div>
-                    <label class="block text-xs uppercase tracking-widest text-gray-400 mb-1">Theme reward (optional)</label>
+                    <label class="block text-xs uppercase tracking-widest text-[var(--user-soft)] mb-1">Theme reward (optional)</label>
                     <select name="theme"
                         class="w-full bg-[var(--user-base)] border border-[var(--user-transparent)] text-white rounded-lg px-4 py-2.5 text-sm outline-none focus:border-[var(--user-light)]">
                         <option value="">None</option>
@@ -43,7 +43,7 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs uppercase tracking-widest text-gray-400 mb-1">Points reward (optional)</label>
+                    <label class="block text-xs uppercase tracking-widest text-[var(--user-soft)] mb-1">Points reward (optional)</label>
                     <input type="number" name="points" min="0" placeholder="e.g. 100"
                         class="w-full bg-[var(--user-base)] border border-[var(--user-transparent)] text-white rounded-lg px-4 py-2.5 text-sm outline-none focus:border-[var(--user-light)]">
                 </div>
@@ -63,7 +63,7 @@
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead>
-                        <tr class="text-left text-gray-400 text-xs uppercase tracking-widest">
+                        <tr class="text-left text-[var(--user-soft)] text-xs uppercase tracking-widest">
                             <th class="px-5 py-3">Code</th>
                             <th class="px-5 py-3">Issuer</th>
                             <th class="px-5 py-3">Rewards</th>
@@ -76,18 +76,18 @@
                         {% for coupon in coupons %}
                         <tr class="border-t border-[var(--user-transparent)]">
                             <td class="px-5 py-3 font-semibold text-white">{{ coupon.coupon_code }}</td>
-                            <td class="px-5 py-3 text-gray-300">{{ coupon.issuer }}</td>
-                            <td class="px-5 py-3 text-gray-300">
+                            <td class="px-5 py-3 text-[var(--user-soft)]">{{ coupon.issuer }}</td>
+                            <td class="px-5 py-3 text-[var(--user-soft)]">
                                 {% for item in coupon.redeemables %}
                                 <span class="inline-block mr-1 mb-0.5 theme-chip text-white px-2 py-0.5 rounded-md text-xs">
                                     {% if item.type == 'points' %}{{ item.value }} pts{% elif item.type == 'theme' %}{{ item.value }}{% else %}{{ item.type }}: {{ item.value }}{% endif %}
                                 </span>
                                 {% endfor %}
                             </td>
-                            <td class="px-5 py-3 text-gray-300">
+                            <td class="px-5 py-3 text-[var(--user-soft)]">
                                 {{ coupon.uses_count }}{% if coupon.max_uses != -1 %} / {{ coupon.max_uses }}{% else %} / unlimited{% endif %}
                             </td>
-                            <td class="px-5 py-3 text-gray-400">
+                            <td class="px-5 py-3 text-[var(--user-soft)]">
                                 {{ coupon.redeemer_count|default(0) }}
                             </td>
                             <td class="px-5 py-3 text-right">
@@ -96,7 +96,7 @@
                                     <input type="hidden" name="action" value="delete">
                                     <input type="hidden" name="coupon_uuid" value="{{ coupon.uuid }}">
                                     <button type="submit"
-                                        class="theme-btn border rounded-lg px-3 py-1.5 text-xs text-gray-300">Delete</button>
+                                        class="theme-btn border rounded-lg px-3 py-1.5 text-xs text-[var(--user-soft)]">Delete</button>
                                 </form>
                             </td>
                         </tr>
@@ -106,7 +106,7 @@
             </div>
             {% else %}
             <div class="p-8 text-center">
-                <p class="text-gray-400">No coupons yet.</p>
+                <p class="text-[var(--user-soft)]">No coupons yet.</p>
             </div>
             {% endif %}
         </section>
