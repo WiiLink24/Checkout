@@ -16,7 +16,7 @@
                     "rgb": "26, 26, 26",
                     "dark_rgb": "13, 13, 13",
                     "transparent": "rgba(26, 26, 26, 0.22)",
-                    "font": "FOT-RodinNTLGPro-DB, sans-serif",
+                    "font": "",
                     "background": "",
                     "bgm": ""
                 },
@@ -32,7 +32,7 @@
                     "rgb": "211, 47, 47",
                     "dark_rgb": "154, 0, 7",
                     "transparent": "rgba(211, 47, 47, 0.22)",
-                    "font": "Arial, sans-serif",
+                    "font": "",
                     "background": "",
                     "bgm": ""
                 },
@@ -48,7 +48,7 @@
                     "rgb": "25, 118, 210",
                     "dark_rgb": "0, 75, 160",
                     "transparent": "rgba(25, 118, 210, 0.22)",
-                    "font": "Helvetica, sans-serif",
+                    "font": "",
                     "background": "",
                     "bgm": ""
                 },
@@ -64,7 +64,7 @@
                     "rgb": "56, 142, 60",
                     "dark_rgb": "0, 96, 15",
                     "transparent": "rgba(56, 142, 60, 0.22)",
-                    "font": "Roboto, sans-serif",
+                    "font": "",
                     "background": "",
                     "bgm": ""
                 },
@@ -80,7 +80,7 @@
                     "rgb": "251, 192, 45",
                     "dark_rgb": "196, 144, 0",
                     "transparent": "rgba(251, 192, 45, 0.22)",
-                    "font": "Futura, sans-serif",
+                    "font": "",
                     "background": "",
                     "bgm": ""
                 },
@@ -96,7 +96,7 @@
                     "rgb": "245, 124, 0",
                     "dark_rgb": "187, 77, 0",
                     "transparent": "rgba(245, 124, 0, 0.22)",
-                    "font": "Trebuchet MS, sans-serif",
+                    "font": "",
                     "background": "",
                     "bgm": ""
                 },
@@ -112,7 +112,7 @@
                     "rgb": "123, 31, 162",
                     "dark_rgb": "74, 0, 114",
                     "transparent": "rgba(123, 31, 162, 0.22)",
-                    "font": "Verdana, sans-serif",
+                    "font": "",
                     "background": "",
                     "bgm": ""
                 },
@@ -128,7 +128,7 @@
                     "rgb": "194, 24, 91",
                     "dark_rgb": "140, 0, 50",
                     "transparent": "rgba(194, 24, 91, 0.22)",
-                    "font": "Century Gothic, sans-serif",
+                    "font": "",
                     "background": "",
                     "bgm": ""
                 },
@@ -144,7 +144,7 @@
                     "rgb": "0, 121, 107",
                     "dark_rgb": "0, 76, 64",
                     "transparent": "rgba(0, 121, 107, 0.22)",
-                    "font": "Gill Sans, sans-serif",
+                    "font": "",
                     "background": "",
                     "bgm": ""
                 },
@@ -160,7 +160,7 @@
                     "rgb": "0, 151, 167",
                     "dark_rgb": "0, 105, 120",
                     "transparent": "rgba(0, 151, 167, 0.22)",
-                    "font": "Segoe UI, sans-serif",
+                    "font": "",
                     "background": "",
                     "bgm": ""
                 },
@@ -176,26 +176,8 @@
                     "rgb": "48, 63, 159",
                     "dark_rgb": "0, 25, 112",
                     "transparent": "rgba(48, 63, 159, 0.22)",
-                    "font": "Impact, sans-serif",
-                    "background": "",
-                    "bgm": ""
-                },
-                {
-                    "id": "theme-id-placeholder",
-                    "name": "Your Theme Name",
-                    "description": "Your description",
-                    "price": 100,
-                    "hidden": true,
-                    "base": "",
-                    "dark": "",
-                    "light": "",
-                    "soft": "",
-                    "rgb": "",
-                    "dark_rgb": "",
-                    "transparent": "",
                     "font": "",
                     "background": "",
-                    "bg-transparent": true,
                     "bgm": ""
                 }
             ]
@@ -207,16 +189,16 @@
                 {
                     "id": "wii-tennis",
                     "name": "Wii Tennis",
-                    "description": "Head off to the court in this Tennis theme.",
+                    "description": "Shoot your shot against your rivals.",
                     "price": 300,
                     "base": "#b5d300",
-                    "dark": "#647400",
-                    "light": "#cde152",
-                    "soft": "#e3ee9e",
+                    "dark": "#97b30c",
+                    "light": "#58721e",
+                    "soft": "#f1f7a1",
                     "rgb": "181, 211, 0",
-                    "dark_rgb": "100, 116, 0",
+                    "dark_rgb": "151, 179, 12",
                     "transparent": "rgba(181, 211, 0, 0.18)",
-                    "font": "",
+                    "font": "rodin",
                     "background": "Wii_Tennis.jpg",
                     "bgm": "Wii_Tennis.mp3",
                     "bg-type": 1,

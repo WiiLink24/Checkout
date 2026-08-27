@@ -51,6 +51,15 @@
                 </div>
                 {% elif item.type == 'theme' and item.theme %}
                 {% set theme = item.theme %}
+                {% if theme.font %}
+                <style>
+                    @font-face {
+                        font-family: {{ theme.font.split(',')[0].strip() }};
+                        src: url('/static/themes/fonts/{{ theme.font }}.ttf') format('truetype');
+                        font-display: swap;
+                    }
+                </style>
+                {% endif %}
                 <div
                     class="flex flex-col items-center gap-4 rounded-xl bg-[var(--user-dark)] border border-[var(--user-transparent)] p-4">
                     <div class="flex flex-row items-start h-[200px] rounded-xl overflow-hidden relative"
