@@ -25,7 +25,7 @@ WiiLink Checkout | Login
     <div class="max-w-4xl w-full">
         <img src="static/img/logo.png" alt="WiiLink Logo" class="h-20 mx-auto mb-10">
 
-        <div class="mt-10 grid grid-cols-2 xl:grid-cols-3 gap-4">
+        <div class="hidden lg:grid mt-10 grid-cols-2 xl:grid-cols-3 gap-4">
             <div class="flex items-center gap-4 theme-card bg-[var(--user-base)] border rounded-xl px-4 py-3">
                 <div class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
                     <img src="/static/icon/clock.svg" alt="" class="w-6 h-6 invert">
@@ -82,6 +82,7 @@ WiiLink Checkout | Login
             </div>
         </div>
 
+        <span class="left-1/2 -translate-x-1/2 max-w-[400px] block relative">
         <a href="{{ url_for('oidc_auth.login') }}" class="pt-10 w-full block">
             <button
                 class="w-full px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition duration-200 flex items-center justify-center text-base font-medium">
@@ -103,6 +104,7 @@ WiiLink Checkout | Login
                 Search WiiLink Checkout without logging in
             </button>
         </a>
+        </span>
 
         <div class="mt-10 text-center">
             <p class="text-[var(--user-soft)] text-sm">© 2026 WiiLink</p>
@@ -115,6 +117,7 @@ WiiLink Checkout | Login
         top: 0px;
         left: 50%;
         transform: translate(-50%, 0);
+        mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 30%);
         width: 100%;
         min-width: 1000px;
         max-width: 2000px;
