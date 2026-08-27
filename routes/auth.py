@@ -80,7 +80,7 @@ def _enrich_redeemables(redeemables, catalog):
 
 def _apply_coupon(coupon, payload, user):
     """Apply a coupon's redeemables to the user's achievements payload and save it."""
-    from utils.utils import update_user_attributes
+    from utils.utils import update_user_achievements
 
     applied = []
     for item in coupon.get("redeemables") or []:
@@ -103,9 +103,7 @@ def _apply_coupon(coupon, payload, user):
     if not applied:
         return applied
 
-    attributes = (user.get("attributes") or {}).copy()
-    attributes["achievements"] = payload
-    update_user_attributes(user, attributes)
+    update_user_achievements(user, payload)
     return applied
 
 
@@ -193,11 +191,9 @@ def themes():
         elif action == "deactivate":
             theme_state["active"] = None
 
-        attributes = (user.get("attributes") or {}).copy()
-        attributes["achievements"] = payload
-        from utils.utils import update_user_attributes
+        from utils.utils import update_user_achievements
 
-        update_user_attributes(user, attributes)
+        update_user_achievements(user, payload)
 
     if user_info is not None:
         user_info["achievements"] = payload
@@ -348,12 +344,10 @@ def toggle_friend():
         friends.append(friend_code)
         is_friend = True
 
-    attributes = (own_user.get("attributes") or {}).copy()
-    attributes["achievements"] = payload
-    from utils.utils import update_user_attributes
+    from utils.utils import update_user_achievements
 
     try:
-        update_user_attributes(own_user, attributes)
+        update_user_achievements(own_user, payload)
         cache.delete(f"friends:{user_info['linked_wii_no'][0]}")
     except Exception as e:
         print(f"[FRIENDS] Failed to save friends: {e}")
