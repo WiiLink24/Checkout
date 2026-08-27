@@ -61,7 +61,7 @@
                 {% endif %}
                 <article class="theme-card border rounded-2xl overflow-hidden">
                 <div class="flex flex-row items-start h-[200px] overflow-hidden relative"
-                    style="background-color: {{ theme.base }}; color: {{ theme.soft }}; font-family: {{ theme.font or 'inherit' }};">
+                    style="background-color: {{ theme.base }}; color: {{ theme.soft }}; font-family: {{ theme.font or 'inherit' }}; !important">
                     {% if theme.bgm %}
                     <img src="/static/icon/audio-lines.svg" alt="BGM" class="w-5 h-5 mt-3 absolute top-0 right-4 invert">
                     {% endif %}

@@ -195,7 +195,7 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
         <span class="text-2xl mb-1 text-white font-bold truncate leading-tight">{{ viewed_user.username }}</span>
         <span class="flex flex-wrap items-center gap-1.5">
             {% for linked_wii in viewed_user.linked_wii_no %}
-            <span class="px-2 py-0.5 theme-chip rounded-lg text-[var(--user-soft)] text-lg">{{
+            <span class="px-2 py-0.5 theme-chip rounded-lg text-[var(--user-soft)] text-md">{{
                 linked_wii|format_serial }}</span>
             {% endfor %}
         </span>
