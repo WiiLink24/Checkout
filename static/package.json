@@ -10,7 +10,12 @@
     "bulma-ribbon": "^0.1.1",
     "esbuild": "^0.14.34"
   },
+  "devDependencies": {
+    "tailwindcss": "^3.4.17"
+  },
   "scripts": {
-    "build": "esbuild --bundle app.css --loader:.ttf=dataurl --loader:.woff2=dataurl --outdir=output/"
+    "build": "esbuild --bundle app.css --loader:.ttf=dataurl --loader:.woff2=dataurl --outdir=output/",
+    "build:css": "tailwindcss -i ./css/input.css -o ./css/main.css --minify",
+    "watch:css": "tailwindcss -i ./css/input.css -o ./css/main.css --watch"
   }
 }

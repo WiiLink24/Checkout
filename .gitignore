@@ -13,3 +13,4 @@ config.py
 /routes/__pycache__
 /utils/__pycache__
 theme_customizer.html
+*/node_modules/
