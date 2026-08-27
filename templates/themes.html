@@ -50,6 +50,15 @@
                 {% for theme in category.themes %}
                 {% set owned = theme.id in theme_data.themes.unlocked %}
                 {% set active = (theme.id == 'default' and not theme_data.themes.active) or (theme_data.themes.active == theme.id) %}
+                {% if theme.font %}
+                <style>
+                    @font-face {
+                        font-family: {{ theme.font.split(',')[0].strip() }};
+                        src: url('/static/themes/fonts/{{ theme.font }}.ttf') format('truetype');
+                        font-display: swap;
+                    }
+                </style>
+                {% endif %}
                 <article class="theme-card border rounded-2xl overflow-hidden">
                 <div class="flex flex-row items-start h-[200px] overflow-hidden relative"
                     style="background-color: {{ theme.base }}; color: {{ theme.soft }}; font-family: {{ theme.font or 'inherit' }};">

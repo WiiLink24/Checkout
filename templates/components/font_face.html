@@ -1,0 +1,18 @@
+{% set theme_source = viewed_user if viewed_user else user_info %}
+{% set active_theme_id = theme_source.achievements.themes.active if theme_source and theme_source.achievements and theme_source.achievements.themes and theme_source.achievements.themes.active != 'default' else None %}
+{% if user_theme is defined and user_theme %}
+{% set theme = user_theme %}
+{% elif theme_source %}
+{% set theme = theme_source.profile_picture|user_theme(active_theme_id) %}
+{% else %}
+{% set theme = None %}
+{% endif %}
+{% if theme and theme.font %}
+<style>
+    @font-face {
+        font-family: {{ theme.font.split(',')[0].strip() }};
+        src: url('static/themes/fonts/{{ theme.font }}.ttf') format('truetype');
+        font-display: swap;
+    }
+</style>
+{% endif %}

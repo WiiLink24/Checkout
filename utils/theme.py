@@ -9,7 +9,6 @@ from utils.utils import cache
 _THEME_CACHE_TTL = 24 * 60 * 60
 _THEME_CATALOG_PATH = Path(__file__).resolve().parent.parent / "static" / "themes.json"
 
-
 def _catalog_asset_url(directory, filename):
     if not filename:
         return ""
@@ -56,8 +55,7 @@ def get_theme_catalog():
                 "backgrounds", theme.get("background", "")
             )
             theme["bgm"] = _catalog_asset_url("audio", theme.get("bgm", ""))
-            font = theme.get("font", "")
-            theme["font"] = "'Minecraft', sans-serif" if font == "minecraft" else font
+            theme["font"] = theme.get("font", "")
             normalized[theme["id"]] = theme
     return normalized
 
