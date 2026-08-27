@@ -13,13 +13,13 @@ WiiLink Checkout | Time Played for {{ viewed_user.username }}
     class="fixed bottom-5 left-1/2 -translate-x-1/2 md:-translate-x-[calc(50%-140px)] p-3 rounded-xl bg-gray-800/70 backdrop-blur-lg flex flex-row items-center justify-center gap-2 mt-6 z-10">
     {% set sort_base = base_url ~ '/time_played' if base_url else '/time_played' %}
     <a href="{{ sort_base }}?sort=time_played"
-        class="px-4 py-2 rounded-lg border transition {% if sort_by == 'time_played' %}bg-indigo-600 border-indigo-500 text-white{% else %}bg-gray-800 border-gray-700 text-gray-300 hover:border-indigo-500{% endif %}">
+        class="px-4 py-2 rounded-lg border transition {% if sort_by == 'time_played' %}bg-indigo-600 border-indigo-500 text-white{% else %}bg-gray-800 border-gray-700 text-[var(--user-soft)] hover:border-indigo-500{% endif %}">
         <img src="/static/icon/clock.svg" alt="Minutes Played" class="invert"></a>
     <a href="{{ sort_base }}?sort=times_played"
-        class="px-4 py-2 rounded-lg border transition {% if sort_by == 'times_played' %}bg-indigo-600 border-indigo-500 text-white{% else %}bg-gray-800 border-gray-700 text-gray-300 hover:border-indigo-500{% endif %}">
+        class="px-4 py-2 rounded-lg border transition {% if sort_by == 'times_played' %}bg-indigo-600 border-indigo-500 text-white{% else %}bg-gray-800 border-gray-700 text-[var(--user-soft)] hover:border-indigo-500{% endif %}">
         <img src="/static/icon/hash.svg" alt="Times Played" class="invert"></a></a>
     <a href="{{ sort_base }}?sort=last_played"
-        class="px-4 py-2 rounded-lg border transition {% if sort_by == 'last_played' %}bg-indigo-600 border-indigo-500 text-white{% else %}bg-gray-800 border-gray-700 text-gray-300 hover:border-indigo-500{% endif %}"><img
+        class="px-4 py-2 rounded-lg border transition {% if sort_by == 'last_played' %}bg-indigo-600 border-indigo-500 text-white{% else %}bg-gray-800 border-gray-700 text-[var(--user-soft)] hover:border-indigo-500{% endif %}"><img
             src="/static/icon/calendar.svg" alt="Last Played" class="invert"></a></a>
 </div>
 {% endif %}

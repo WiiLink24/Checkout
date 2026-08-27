@@ -7,8 +7,8 @@
                 {{ latest_digicard.date_created.strftime('%Y-%m-%d') if latest_digicard.date_created else 'Unknown' }}
             </span>
         </span>
-        <p class="text-xs text-gray-400 mb-1">
-            Order ID: <code class="text-gray-300">{{ latest_digicard.order_id }}</code>
+        <p class="text-xs text-[var(--user-soft)] mb-1">
+            Order ID: <code class="text-[var(--user-soft)]">{{ latest_digicard.order_id }}</code>
         </p>
     </div>
 

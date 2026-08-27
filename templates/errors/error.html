@@ -15,14 +15,14 @@
                 <h2 class="text-xl font-bold text-red-300">{{ error_title }}</h2>
             </div>
             <div class="mb-6">
-                <p class="text-gray-300 mb-4">An error occurred while processing your request:</p>
+                <p class="text-[var(--user-soft)] mb-4">An error occurred while processing your request:</p>
                 <div class="bg-gray-900/50 backdrop-blur-sm rounded-lg p-4 border border-gray-700 mb-6">
                     <p class="text-md text-red-300">{{ error_message }}</p>
-                    <p class="text-sm font-mono text-gray-300"><br><b>For more information:</b><br>{{ error_details }}</p>
+                    <p class="text-sm font-mono text-[var(--user-soft)]"><br><b>For more information:</b><br>{{ error_details }}</p>
                 </div>
-                <p class="text-gray-300 mb-4">Please try again later or contact a developer if the issue persists.</p>
+                <p class="text-[var(--user-soft)] mb-4">Please try again later or contact a developer if the issue persists.</p>
                 <div class="flex justify-end">
-                    <a href="/" class="px-5 py-2 border border-gray-600 rounded-lg shadow-sm text-sm font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 transition-colors duration-200">
+                    <a href="/" class="px-5 py-2 border border-gray-600 rounded-lg shadow-sm text-sm font-medium text-[var(--user-soft)] bg-gray-700 hover:bg-gray-600 transition-colors duration-200">
                         Back to Home
                     </a>
                 </div>

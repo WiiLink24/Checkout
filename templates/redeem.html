@@ -8,12 +8,12 @@
         <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
             <div>
                 <h1 class="text-4xl font-bold text-white">Redeem Coupon</h1>
-                <p class="text-gray-400 mt-2">Enter a coupon code to see what it contains, then redeem it.</p>
+                <p class="text-[var(--user-soft)] mt-2">Enter a coupon code to see what it contains, then redeem it.</p>
             </div>
             <div class="theme-card border rounded-xl px-5 py-3 text-right">
-                <p class="text-xs uppercase tracking-widest text-gray-400">Your balance</p>
+                <p class="text-xs uppercase tracking-widest text-[var(--user-soft)]">Your balance</p>
                 <p class="text-2xl font-bold text-white">{{ theme_data.points.balance|default(0) }} <span
-                        class="text-sm text-gray-400">points</span></p>
+                        class="text-sm text-[var(--user-soft)]">points</span></p>
             </div>
         </div>
 
@@ -23,7 +23,7 @@
                 <img src="/static/icon/badge-dollar-sign.svg" alt="Coupon" class="w-8 h-8 invert opacity-70">
                 <div class="min-w-0">
                     <h2 class="text-xl font-bold text-white">Redeem this coupon?</h2>
-                    <p class="text-sm text-gray-400 mt-0.5">Issued by <strong class="text-white">{{
+                    <p class="text-sm text-[var(--user-soft)] mt-0.5">Issued by <strong class="text-white">{{
                             coupon_preview.issuer }}</strong></p>
                 </div>
                 <span
@@ -46,7 +46,7 @@
                     </div>
                     <div>
                         <p class="text-lg font-bold text-white">{{ item.value }} points</p>
-                        <p class="text-sm text-gray-400">Added to your points balance</p>
+                        <p class="text-sm text-[var(--user-soft)]">Added to your points balance</p>
                     </div>
                 </div>
                 {% elif item.type == 'theme' and item.theme %}
@@ -83,13 +83,13 @@
                 </div>
                     <div class="min-w-0">
                         <p class="text-base font-bold text-white">{{ theme.name }} theme</p>
-                        <p class="text-sm text-gray-400 mt-1">{{ theme.description }}</p>
+                        <p class="text-sm text-[var(--user-soft)] mt-1">{{ theme.description }}</p>
                     </div>
                 </div>
                 {% else %}
                 <div
                     class="flex items-center gap-3 rounded-xl bg-[var(--user-dark)] border border-[var(--user-transparent)] p-4">
-                    <p class="text-sm text-gray-200">{{ item.type }}: {{ item.value }}</p>
+                    <p class="text-sm text-[var(--user-soft)]">{{ item.type }}: {{ item.value }}</p>
                 </div>
                 {% endif %}
                 {% endfor %}
@@ -104,7 +104,7 @@
                         redeem it</button>
                 </form>
                 <a href="{{ url_for('auth_routes.coupons_redeem') }}"
-                    class="theme-btn border rounded-lg px-6 py-2.5 text-sm text-gray-300">Don't redeem</a>
+                    class="theme-btn border rounded-lg px-6 py-2.5 text-sm text-[var(--user-soft)]">Don't redeem</a>
             </div>
         </section>
         {% else %}
@@ -135,7 +135,7 @@
                 <div class="flex flex-col sm:flex-row sm:items-center gap-3 p-5">
                     <div class="min-w-0 flex-1">
                         <p class="font-semibold text-white">{{ redemption.coupon_code }}</p>
-                        <p class="text-sm text-gray-400">From {{ redemption.issuer }}
+                        <p class="text-sm text-[var(--user-soft)]">From {{ redemption.issuer }}
                             {% if redemption.redeemed_at %} • {{ redemption.redeemed_at.strftime('%Y-%m-%d %H:%M') }}{% endif %}</p>
                     </div>
                     <div class="flex flex-wrap gap-2">
@@ -150,7 +150,7 @@
             </div>
             {% else %}
             <div class="p-8 text-center">
-                <p class="text-gray-400">You haven't redeemed any coupons yet.</p>
+                <p class="text-[var(--user-soft)]">You haven't redeemed any coupons yet.</p>
             </div>
             {% endif %}
         </section>

@@ -42,7 +42,7 @@
                         <span class="block px-4 py-3 text-sm text-white-300 bg-gray-500/10">{{ item.name }}</span>
                         {% else %}
                         <a href="{% if base_url %}{{ base_url }}{{ item.path }}{% else %}{{ item.path }}{% endif %}"
-                            class="block px-4 py-3 text-sm text-gray-300 hover:bg-[var(--user-base)] transition">{{ item.name
+                            class="block px-4 py-3 text-sm text-[var(--user-soft)] hover:bg-[var(--user-base)] transition">{{ item.name
                             }}</a>
                         {% endif %}
                         {% endfor %}
@@ -51,7 +51,7 @@
             </h1>
             <span class="flex flex-wrap items-center justify-center gap-2 mt-3">
                 {% for linked_wii in viewed_user.linked_wii_no %}
-                <p class="px-3 py-1 theme-chip rounded-md text-gray-300">{{ linked_wii|format_serial }}</p>
+                <p class="px-3 py-1 theme-chip rounded-md text-[var(--user-soft)]">{{ linked_wii|format_serial }}</p>
                 {% endfor %}
             </span>
         </div>

@@ -306,6 +306,15 @@ def update_user_attributes(user, attributes):
     return response.json()
 
 
+def update_user_achievements(user, payload):
+    fresh_user = get_authentik_user(user)
+    if not fresh_user:
+        raise ValueError("User not found")
+    attributes = (fresh_user.get("attributes") or {}).copy()
+    attributes["achievements"] = payload
+    return update_user_attributes(fresh_user, attributes)
+
+
 def search_authentik_users_by_name(search_query):
     """
     Search Authentik users by username.

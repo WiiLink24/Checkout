@@ -25,10 +25,10 @@
                     <span class="flex flex-col gap-3">
                         <div>
                             <h2 class="text-2xl font-bold text-white">{{ game.title_en or game.title }}</h2>
-                            <p class="text-sm text-gray-400 mt-1">{{ game.game_id }}{% if game.release_year %} • {{
+                            <p class="text-sm text-[var(--user-soft)] mt-1">{{ game.game_id }}{% if game.release_year %} • {{
                                 game.release_year }}{% endif %}</p>
                         </div>
-                        <div class="flex flex-wrap items-center gap-2 text-xs text-gray-200">
+                        <div class="flex flex-wrap items-center gap-2 text-xs text-[var(--user-soft)]">
                             {% if game.rating_type and game.rating_value %}<img src="/static/ratings/{{
                                 game.rating_type }}-{{ game.rating_value }}.jpg" alt="Rating"
                                 class="h-8 object-contain">{% endif %}
@@ -69,34 +69,34 @@
             </div>
             <div class="mt-4 grid grid-cols-2 gap-3 text-sm">
                 <div class="rounded-xl theme-card-inner p-3">
-                    <p class="text-xs uppercase text-gray-400">Avg Score</p>
-                    <p class="text-2xl font-bold text-green-400 mt-1">{{ "%.1f"|format(game.avg_recommendation) }}%</p>
+                    <p class="text-xs uppercase text-[var(--user-soft)]">Avg Score</p>
+                    <p class="text-2xl font-bold text-white mt-1">{{ "%.1f"|format(game.avg_recommendation) }}%</p>
                 </div>
                 <div class="rounded-xl theme-card-inner p-3">
-                    <p class="text-xs uppercase text-gray-400">Reviewers</p>
-                    <p class="text-2xl font-bold text-blue-400 mt-1">{{ game.reviewer_count }}</p>
+                    <p class="text-xs uppercase text-[var(--user-soft)]">Reviewers</p>
+                    <p class="text-2xl font-bold text-white mt-1">{{ game.reviewer_count }}</p>
                 </div>
             </div>
             {% elif score_type == "most_played" %}
             <div class="mt-5 flex flex-col sm:grid sm:grid-cols-3 gap-3 text-sm">
                 <div class="rounded-xl theme-card-inner p-3">
-                    <p class="text-xs uppercase text-gray-400">Total Time</p>
-                    <p class="text-lg font-bold text-indigo-400 mt-1">{{ game.total_time_played|format_playtime }}</p>
+                    <p class="text-xs uppercase text-[var(--user-soft)]">Total Time</p>
+                    <p class="text-lg font-bold text-white mt-1">{{ game.total_time_played|format_playtime }}</p>
                 </div>
                 <div class="rounded-xl theme-card-inner p-3">
-                    <p class="text-xs uppercase text-gray-400">Players</p>
-                    <p class="text-2xl font-bold text-purple-400 mt-1">{{ game.player_count }}</p>
+                    <p class="text-xs uppercase text-[var(--user-soft)]">Players</p>
+                    <p class="text-2xl font-bold text-white mt-1">{{ game.player_count }}</p>
                 </div>
                 <div class="rounded-xl theme-card-inner p-3">
-                    <p class="text-xs uppercase text-gray-400">Avg per Player</p>
-                    <p class="text-lg font-bold text-pink-400 mt-1">{{ game.avg_time_per_player|format_playtime }}</p>
+                    <p class="text-xs uppercase text-[var(--user-soft)]">Avg per Player</p>
+                    <p class="text-lg font-bold text-white mt-1">{{ game.avg_time_per_player|format_playtime }}</p>
                 </div>
             </div>
             {% elif score_type == "most_favorited" %}
             <div class="mt-5 grid grid-cols-2 gap-3 text-sm">
                 <div class="rounded-xl theme-card-inner p-3">
-                    <p class="text-xs uppercase text-gray-400">Favorites</p>
-                    <p class="text-2xl font-bold text-rose-400 mt-1">{{ game.favorite_count }}</p>
+                    <p class="text-xs uppercase text-[var(--user-soft)]">Favorites</p>
+                    <p class="text-2xl font-bold text-white mt-1">{{ game.favorite_count }}</p>
                 </div>
             </div>
             {% endif %}

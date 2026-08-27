@@ -109,7 +109,7 @@
                 <div class="mb-3 flex justify-between items-start">
                     <img src="/static/img/logo.png" alt="Logo" class="h-10 mb-6" />
 
-                    <button id="closeSidebarBtn" class="md:hidden text-gray-400 hover:text-white">
+                    <button id="closeSidebarBtn" class="md:hidden text-[var(--user-soft)] hover:text-white">
                         <img src="/static/icon/x.svg" alt="Close" class="w-6 h-6 invert" />
                     </button>
                 </div>
@@ -117,7 +117,7 @@
                 {# Variable 'sidebar_menu' is used to add custom items to this page's sidebar menu. #}
 
                 {% macro menu_section(title) %}
-                <p class="menu-label text-gray-400 text-sm font-medium mt-6 mb-2 uppercase">
+                <p class="menu-label text-[var(--user-soft)] text-sm font-medium mt-6 mb-2 uppercase">
                     {{ title }}
                 </p>
                 {% endmacro %}
@@ -283,17 +283,17 @@
                         style="visibility: hidden;">
                         {% if friends %}
                         {% for friend in friends %}
-                        <a href="{{ friend.profile_url }}" target="_blank"
+                        <a href="{{ friend.profile_url }}"
                             class="block w-full px-2 py-1.5 theme-menu-btn text-white rounded-xl transition duration-200 flex items-center gap-2">
                             <img src="{{ friend.avatar }}" alt="" class="w-8 h-8 rounded-lg object-cover flex-shrink-0" />
                             <span class="min-w-0">
                                 <span class="block text-sm truncate">{{ friend.username }}</span>
-                                <span class="block text-xs text-gray-400">{{ friend.code }}</span>
+                                <span class="block text-xs text-[var(--user-soft)]">{{ friend.code }}</span>
                             </span>
                         </a>
                         {% endfor %}
                         {% else %}
-                        <p class="px-3 py-2 text-sm text-gray-400">No friends yet.</p>
+                        <p class="px-3 py-2 text-sm text-[var(--user-soft)]">No friends yet.</p>
                         {% endif %}
                     </div>
                 </div>
@@ -378,7 +378,7 @@
                                 <img src="/static/icon/info.svg" alt="Info" class="w-5 h-5 invert mr-2 opacity-70" />
                                 <h3 class="text-sm font-medium text-[var(--user-soft)]">Best Experience</h3>
                             </div>
-                            <p class="text-sm text-gray-400">
+                            <p class="text-sm text-[var(--user-soft)]">
                                 Sign in to access personalized recommendations, your gaming stats, and game discovery.
                             </p>
                         </div>
@@ -407,21 +407,21 @@
 
                         <div class="min-w-0 flex-1">
                             <div class="text-white font-medium truncate">{{ user_info.username }}</div>
-                            <div class="text-gray-400 text-sm truncate">{{ user_info.full_name }}</div>
+                            <div class="text-[var(--user-soft)] text-sm truncate">{{ user_info.full_name }}</div>
                         </div>
                     </div>
                 </a>
                 {% endif %}
                 {% if g.oidc_user.logged_in %}
                 <a href="{{ url_for('misc_routes.logout') }}"
-                    class="hover:bg-red-600/30 p-2 rounded-xl flex items-center space-x-2 text-gray-400 hover:text-white transition-colors group mb-6">
+                    class="hover:bg-red-600/30 p-2 rounded-xl flex items-center space-x-2 text-[var(--user-soft)] hover:text-white transition-colors group mb-6">
                     <img src="/static/icon/log-out.svg" alt="Logout"
                         class="w-5 h-5 invert group-hover:translate-x-1 transition-transform duration-200" />
                     <span>Logout</span>
                 </a>
                 {% endif %}
 
-                <p class="text-sm text-gray-500">© 2026 WiiLink Team</p>
+                <p class="text-sm text-[var(--user-soft)]">© 2026 WiiLink Team</p>
             </div>
         </div>
 
@@ -446,7 +446,7 @@
         style="display: none;">
         <div class="bg-[var(--user-dark)] border border-[var(--user-transparent)] rounded-xl p-6 max-w-md w-full mx-4">
             <h2 class="text-xl font-bold text-white mb-4">Select Your Mii Artisan</h2>
-            <p class="text-gray-400 mb-4">You have multiple artisan profiles. Which one would you like to open?</p>
+            <p class="text-[var(--user-soft)] mb-4">You have multiple artisan profiles. Which one would you like to open?</p>
             <div class="space-y-2 mb-6">
                 {% for artisan in artisan_ids %}
                 <button onclick="navigateToArtisan('{{ artisan.artisan_id }}')"
@@ -457,7 +457,7 @@
                             <span>{{ artisan.name }}</span>
                         </span>
                     </div>
-                    <div class="flex items-center gap-4 text-sm text-gray-300">
+                    <div class="flex items-center gap-4 text-sm text-[var(--user-soft)]">
                         <span class="flex items-center gap-1">
                             <img src="/static/icon/user.svg" alt="Posts" class="w-4 h-4 invert" />
                             {{ artisan.number_of_posts }} posts
@@ -471,7 +471,7 @@
                 {% endfor %}
             </div>
             <button onclick="closeArtisanModal()"
-                class="w-full px-4 py-2 theme-menu-btn text-gray-300 rounded-lg transition duration-200">
+                class="w-full px-4 py-2 theme-menu-btn text-[var(--user-soft)] rounded-lg transition duration-200">
                 Cancel
             </button>
         </div>
