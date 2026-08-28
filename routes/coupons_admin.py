@@ -82,7 +82,7 @@ def panel():
 
     themes = [theme for tid, theme in catalog.items() if tid != "default"]
     return render_template(
-        "pages/coupons_admin.html",
+        "coupons_admin.html",
         user_info=user_info,
         coupons=list_coupons(),
         themes=themes,

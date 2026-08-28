@@ -22,9 +22,11 @@ from utils.utils import (
     generate_gravatar_url,
     format_serial,
     cache,
+    _resolve_wii_number,
 )
 from utils.achievements import refresh_achievements_for_user
 from utils.theme import get_theme_catalog
+from utils.wiis import build_wii_breakdown, attach_time_breakdown
 from channels.nc import (
     fetch_recommendations,
     fetch_time_played,
@@ -476,6 +478,7 @@ def recommendations():
     results = fetch_recommendations(
         serial_prefixes, sort_by=sort_by, limit=per_page, offset=offset
     )
+
     return render_template(
         "recommendations.html",
         recommendations=results,
@@ -548,6 +551,8 @@ def time_played():
     results = fetch_time_played(
         serial_prefixes, sort_by=sort_by, limit=per_page, offset=offset
     )
+    attach_time_breakdown(results, serial_prefixes)
+
     return render_template(
         "time_played.html",
         time_played=results,
@@ -586,6 +591,7 @@ def favorites():
     total_pages = (total_count + per_page - 1) // per_page
 
     games = fetch_favorites(serial_prefixes, limit=per_page, offset=offset)
+
     return render_template(
         "favorites.html",
         games=games,
@@ -640,6 +646,7 @@ def polls():
     polls_data = fetch_user_polls(
         wii_numbers, limit=per_page, offset=offset, db_url=config.evc_db_url
     )
+
     return render_template(
         "polls.html",
         polls=polls_data,
@@ -676,6 +683,7 @@ def suggestions():
     suggestions_data = fetch_user_suggestions(
         wii_numbers, limit=per_page, offset=offset, db_url=config.evc_db_url
     )
+
     return render_template(
         "suggestions.html",
         suggestions=suggestions_data,
@@ -963,6 +971,8 @@ def index():
             user_counts["suggestions"] = 0
             user_counts["contest_submissions"] = 0
 
+        wii_breakdown = build_wii_breakdown(serial_prefixes, wii_numbers)
+
         recent_contests = (
             fetch_contest_submissions(wii_numbers, limit=3) if wii_numbers else []
         )
@@ -971,15 +981,6 @@ def index():
             if wii_numbers
             else []
         )
-
-        if wii_numbers:
-            user_counts["polls"] = count_user_polls(wii_numbers)
-            user_counts["suggestions"] = count_user_suggestions(wii_numbers)
-            user_counts["contest_submissions"] = count_contest_submissions(wii_numbers)
-        else:
-            user_counts["polls"] = 0
-            user_counts["suggestions"] = 0
-            user_counts["contest_submissions"] = 0
 
         # Render Mii images for recent contests
         for submission in recent_contests:
@@ -1014,6 +1015,7 @@ def index():
             latest_reviews=latest_reviews,
             user_stats=user_stats,
             user_counts=user_counts,
+            wii_breakdown=wii_breakdown,
             recent_contests=recent_contests,
             recent_polls=recent_polls,
             latest_digicard=latest_digicard,

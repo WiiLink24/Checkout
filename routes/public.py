@@ -30,6 +30,7 @@ from channels.cmoc import (
 )
 from channels.tag_generator import generate_user_tag
 from utils.achievements import refresh_achievements_for_user
+from utils.wiis import build_wii_breakdown, attach_time_breakdown
 from channels.nc import (
     fetch_user_latest_games,
     fetch_user_latest_reviews,
@@ -199,6 +200,7 @@ def time_played_by_serial(wii_no):
         time_played = fetch_time_played(
             serial_prefixes, sort_by=sort_by, limit=per_page, offset=offset
         )
+        attach_time_breakdown(time_played, serial_prefixes)
 
         viewed_user = build_viewed_user_info(authentik_user)
 
@@ -240,6 +242,7 @@ def time_played_by_serial(wii_no):
     time_played = fetch_time_played(
         serial_prefixes, sort_by=sort_by, limit=per_page, offset=offset
     )
+    attach_time_breakdown(time_played, serial_prefixes)
 
     logged_in_user_picture = user_info.get("profile_picture") if user_info else None
     viewed_user = build_unclaimed_user_info(wii_no, logged_in_user_picture)
@@ -526,6 +529,8 @@ def friend_code_home(friend_code):
         user_counts["suggestions"] = 0
         user_counts["contest_submissions"] = 0
 
+    wii_breakdown = build_wii_breakdown(serial_prefixes, wii_numbers)
+
     recent_contests = (
         fetch_contest_submissions(wii_numbers, limit=3) if wii_numbers else []
     )
@@ -534,15 +539,6 @@ def friend_code_home(friend_code):
         if wii_numbers
         else []
     )
-
-    if wii_numbers:
-        user_counts["polls"] = count_user_polls(wii_numbers)
-        user_counts["suggestions"] = count_user_suggestions(wii_numbers)
-        user_counts["contest_submissions"] = count_contest_submissions(wii_numbers)
-    else:
-        user_counts["polls"] = 0
-        user_counts["suggestions"] = 0
-        user_counts["contest_submissions"] = 0
 
     # Render Mii images for recent contests
     for submission in recent_contests:
@@ -565,6 +561,7 @@ def friend_code_home(friend_code):
         latest_reviews=latest_reviews,
         user_stats=user_stats,
         user_counts=user_counts,
+        wii_breakdown=wii_breakdown,
         recent_contests=recent_contests,
         recent_polls=recent_polls,
         is_unclaimed=False,

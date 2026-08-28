@@ -158,7 +158,7 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
 {% set vt_seen = namespace(ids=[]) %}
 {% set active_theme_id = viewed_user.achievements.themes.active if viewed_user.achievements and viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'default' else None %}
 {% set user_theme = viewed_user.profile_picture|user_theme(active_theme_id) %}
-{% set share_url = (base_url ~ '/') if base_url else ('/' ~ viewed_user.linked_wii_no[0] ~ '/') %}
+{% set share_url = "https://checkout.wiilink.ca/" ~ viewed_user.linked_wii_no[0] ~ '/' %}
 {% set bg_type = user_theme.get('bg-type') if user_theme else 0 %}
 {% if user_theme %}
 {% if bg_type == 0 %}
@@ -195,8 +195,12 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
         <span class="text-2xl mb-1 text-white font-bold truncate leading-tight">{{ viewed_user.username }}</span>
         <span class="flex flex-wrap items-center gap-1.5">
             {% for linked_wii in viewed_user.linked_wii_no %}
-            <span class="px-2 py-0.5 theme-chip rounded-lg text-[var(--user-soft)] text-md">{{
-                linked_wii|format_serial }}</span>
+            <span class="group relative inline-flex items-center gap-1.5 px-2 py-0.5 theme-chip rounded-lg text-[var(--user-soft)] text-md overflow-hidden"
+                title="Wii {{ loop.index }}">
+                <span class="inline-block w-2 h-2 rounded-full flex-shrink-0"
+                    style="background: {{ fetch_wii_color_from_number(linked_wii) }}"></span>
+                <span class="transition-opacity duration-300 group-hover:opacity-0">{{ linked_wii|format_serial }}</span>
+            </span>
             {% endfor %}
         </span>
     </span>
@@ -257,9 +261,13 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                 <div class="flex flex-wrap items-center gap-2">
                     {% for linked_wii in viewed_user.linked_wii_no %}
                     <button
-                        class="px-3 py-1 theme-chip rounded-md text-[var(--user-soft)] transition-colors duration-200 cursor-pointer border-0 text-left"
-                        data-wii-number="{{ linked_wii }}" onclick="copyToClipboard(this, '{{ linked_wii }}')">
-                        {{ linked_wii|format_serial }}
+                        class="relative inline-flex items-center gap-1.5 px-3 py-1 theme-chip rounded-md text-[var(--user-soft)] transition-colors duration-200 cursor-pointer border-0 text-left overflow-hidden"
+                        data-wii-number="{{ linked_wii }}" onclick="copyToClipboard(this, '{{ linked_wii }}')"
+                        title="Wii {{ loop.index }}">
+                        <span class="inline-block w-2 h-2 rounded-full flex-shrink-0"
+                            style="background: {{ fetch_wii_color_from_number(linked_wii) }}"></span>
+                        <span class="transition-opacity duration-300">{{ linked_wii|format_serial
+                            }}</span>
                     </button>
                     {% endfor %}
                     {% if not base_url %}
@@ -314,7 +322,7 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
         <span class="flex flex-col xl:flex-row items-center justify-between gap-3">
             <div class="home-reveal w-full grid grid-cols-2 sm:grid-cols-3 gap-4 mb-10">
                 <a href="{% if base_url %}{{ base_url }}/time_played{% else %}/time_played{% endif %}"
-                    class="group theme-card-hover rounded-2xl p-3 flex items-center gap-3">
+                    class="group relative theme-card-hover rounded-2xl p-3 flex items-center gap-3">
                     <div class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
                         <img src="/static/icon/clock.svg" alt="" class="w-6 h-6 invert">
                     </div>
@@ -324,9 +332,12 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                         <p class="text-xl font-bold text-white">{{
                             user_stats.total_minutes|format_playtime }}</p>
                     </div>
+                    {% set metric = 'minutes' %}
+                    {% set fmt = 'playtime' %}
+                    {% include "components/wii_popover.html" %}
                 </a>
                 <a href="{% if base_url %}{{ base_url }}/recommendations{% else %}/recommendations{% endif %}"
-                    class="group theme-card-hover rounded-2xl p-3 flex items-center gap-3">
+                    class="group relative theme-card-hover rounded-2xl p-3 flex items-center gap-3">
                     <div class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
                         <img src="/static/icon/star.svg" alt="" class="w-6 h-6 invert">
                     </div>
@@ -337,9 +348,12 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                         <p class="text-xl font-bold text-white">{{
                             user_stats.total_reviews|int }}</p>
                     </div>
+                    {% set metric = 'reviews' %}
+                    {% set fmt = 'int' %}
+                    {% include "components/wii_popover.html" %}
                 </a>
                 <a href="{% if base_url %}{{ base_url }}/favorites{% else %}/favorites{% endif %}"
-                    class="group theme-card-hover rounded-2xl p-3 flex items-center gap-3">
+                    class="group relative theme-card-hover rounded-2xl p-3 flex items-center gap-3">
                     <div class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
                         <img src="/static/icon/heart.svg" alt="" class="w-6 h-6 invert">
                     </div>
@@ -349,9 +363,12 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                         <p class="text-xl font-bold text-white">{{
                             user_counts.favorites }}</p>
                     </div>
+                    {% set metric = 'favorites' %}
+                    {% set fmt = 'int' %}
+                    {% include "components/wii_popover.html" %}
                 </a>
                 <a href="{% if base_url %}{{ base_url }}/time_played{% else %}/time_played{% endif %}"
-                    class="group theme-card-hover rounded-2xl p-3 flex items-center gap-3">
+                    class="group relative theme-card-hover rounded-2xl p-3 flex items-center gap-3">
                     <div class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
                         <img src="/static/icon/gamepad.svg" alt="" class="w-6 h-6 invert">
                     </div>
@@ -362,9 +379,12 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                         <p class="text-xl font-bold text-white">{{
                             user_counts.games_played }}</p>
                     </div>
+                    {% set metric = 'games' %}
+                    {% set fmt = 'int' %}
+                    {% include "components/wii_popover.html" %}
                 </a>
                 <a href="{% if base_url %}{{ base_url }}/polls{% else %}/polls{% endif %}"
-                    class="group theme-card-hover rounded-2xl p-3 flex items-center gap-3">
+                    class="group relative theme-card-hover rounded-2xl p-3 flex items-center gap-3">
                     <div class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
                         <img src="/static/icon/chart-line.svg" alt="" class="w-6 h-6 invert">
                     </div>
@@ -375,9 +395,12 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                         <p class="text-xl font-bold text-white">{{
                             user_counts.polls }}</p>
                     </div>
+                    {% set metric = 'polls' %}
+                    {% set fmt = 'int' %}
+                    {% include "components/wii_popover.html" %}
                 </a>
                 <a href="{% if base_url %}{{ base_url }}/contest_submissions{% else %}/contest_submissions{% endif %}"
-                    class="group theme-card-hover rounded-2xl p-3 flex items-center gap-3">
+                    class="group relative theme-card-hover rounded-2xl p-3 flex items-center gap-3">
                     <div class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
                         <img src="/static/icon/send-horizontal.svg" alt="" class="w-6 h-6 invert">
                     </div>
@@ -387,6 +410,9 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                         <p class="text-xl font-bold text-white">{{
                             user_counts.contest_submissions }}</p>
                     </div>
+                    {% set metric = 'contests' %}
+                    {% set fmt = 'int' %}
+                    {% include "components/wii_popover.html" %}
                 </a>
             </div>
 
@@ -462,7 +488,10 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                         onerror="if (!this.dataset.tried && this.dataset.fallback) { this.dataset.tried = '1'; this.src = this.dataset.fallback; } else { this.style.display = 'none'; }"
                         class="relative z-10 w-full h-full object-contain object-bottom rounded">
                     <div class="bottom-0 p-3 z-30 absolute w-full">
-                        <p class="text-white font-semibold break-words">{{ game.title_en or game.title }}</p>
+                        <p class="text-white font-semibold break-words">{% if game.wii_number %}<span
+                                class="inline-block w-2 h-2 rounded-full align-middle mr-1.5"
+                                style="background: {{ fetch_wii_color_from_number(game.wii_number) }}"></span>{% endif %}{{ game.title_en or
+                            game.title }}</p>
                     </div>
                     <div
                         class="bottom-0 absolute z-20 bg-gradient-to-t from-black/70 to-transparent w-full h-40 rounded">
@@ -529,7 +558,9 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                                 onerror="if (!this.dataset.tried && this.dataset.fallback) { this.dataset.tried = '1'; this.src = this.dataset.fallback; } else { var placeholder = document.createElement('div'); placeholder.className = 'w-full h-auto theme-card-inner rounded flex-shrink-0'; this.parentNode.replaceChild(placeholder, this); }"
                                 class="relative z-10 w-full h-full object-contain object-bottom rounded">
                             <div class="bottom-0 p-3 z-30 absolute w-full">
-                                <p class="text-white font-semibold break-words">{{ game.title_en or game.title }}
+                                <p class="text-white font-semibold break-words">{% if game.wii_numbers %}{% for wii_number in game.wii_numbers %}<span
+                                class="inline-block w-2 h-2 rounded-full align-middle mr-1.5"
+                                style="background: {{ fetch_wii_color_from_number(wii_number) }}"></span>{% endfor %}{% endif %}{{ game.title_en or game.title }}
                                 </p>
                                 <p class="text-sm text-[var(--user-soft)]">{{
                                     game.time_played|format_playtime }} played</p>
@@ -594,7 +625,10 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
                                 onerror="if (!this.dataset.tried && this.dataset.fallback) { this.dataset.tried = '1'; this.src = this.dataset.fallback; } else { this.style.display = 'none'; }"
                                 class="relative z-10 w-full h-full object-contain object-bottom rounded">
                             <div class="bottom-0 p-3 z-30 absolute w-full">
-                                <p class="text-white font-semibold break-words">{{ game.title_en or game.title }}
+                                <p class="text-white font-semibold break-words">{% if game.wii_number %}<span
+                                class="inline-block w-2 h-2 rounded-full align-middle mr-1.5"
+                                style="background: {{ fetch_wii_color_from_number(game.wii_number) }}"></span>{% endif %}{{ game.title_en or
+                                    game.title }}
                                 </p>
                                 {% set score_percent = game.recommendation_percent or 0 %}
                                 {% if score_percent >= 80 %}

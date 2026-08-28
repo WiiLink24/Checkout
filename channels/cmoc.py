@@ -105,6 +105,7 @@ def fetch_contest_submissions(
         SELECT
             cm.contest_id,
             cm.artisan_id,
+            cm.wii_number,
             cm.likes,
             cm.rank,
             cm.entry_id,
@@ -155,3 +156,26 @@ def count_contest_submissions(wii_numbers, db_url=None, use_cache=True):
     """
     result = _run_query(query, wii_numbers, db_url, use_cache=use_cache)
     return result[0].get("count", 0) if result else 0
+
+
+def count_contest_submissions_per_wii(wii_numbers, db_url=None, use_cache=True):
+    """Per-Wii contest submission counts: {wii_number: count}."""
+    if db_url is None:
+        db_url = getattr(config, "cmoc_db_url", None)
+    if not db_url or not wii_numbers:
+        return {}
+
+    if isinstance(wii_numbers, str):
+        wii_numbers = [wii_numbers]
+
+    placeholders = ",".join(["%s"] * len(wii_numbers))
+    where_clause = f"wii_number IN ({placeholders})"
+
+    query = f"""
+        SELECT wii_number, COUNT(*) AS count
+        FROM contest_miis
+        WHERE {where_clause}
+        GROUP BY wii_number
+    """
+    rows = _run_query(query, wii_numbers, db_url, use_cache=use_cache)
+    return {row["wii_number"]: row["count"] for row in rows}

@@ -35,6 +35,10 @@
                     <img class="w-12 h-12 rounded-lg object-cover border-2 border-gray-300"
                         src="https://mcc-panel.wiilink.ca/assets/contest/{{ submission.contest_id }}/thumbnail.jpg"
                         alt="Contest thumbnail" />
+                    {% if submission.wii_number %}
+                    <span class="inline-block w-2 h-2 rounded-full align-middle"
+                        style="background: {{ fetch_wii_color_from_number(submission.wii_number) }}"></span>
+                    {% endif %}
                     <h1 class="text-2xl font-bold text-gray-800">{{ submission.english_name }}</h1>
                 </div>
                 <div class="flex justify-between gap-4 mt-2 text-lg text-gray-700">

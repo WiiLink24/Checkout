@@ -8,6 +8,7 @@ import config
 from flask_oidc import OpenIDConnect
 from flask_session import Session
 from redis import Redis
+from utils.wiis import fetch_wii_color_from_number
 
 from utils.utils import (
     format_serial,
@@ -78,6 +79,9 @@ def inject_artisan_id():
         is_coupon_admin = config.coupon_admin_group_uuid in groups
     return dict(artisan_ids=artisan_ids, is_coupon_admin=is_coupon_admin)
 
+@app.context_processor
+def utility_processor():
+    return dict(fetch_wii_color_from_number=fetch_wii_color_from_number)
 
 # Set OIDC instance for blueprints that need it
 set_oidc_auth(oidc)

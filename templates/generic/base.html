@@ -510,15 +510,15 @@
         // Copy to clipboard function
         function copyToClipboard(element, text) {
             navigator.clipboard.writeText(text).then(() => {
-                const originalText = element.textContent;
+                const originalHTML = element.innerHTML;
                 const originalClasses = element.className;
 
-                element.textContent = "Copied!";
+                element.innerHTML = "Copied!";
                 element.classList.add("bg-emerald-600");
                 element.classList.remove("bg-gray-700", "hover:bg-gray-600", "active:bg-indigo-600");
 
                 setTimeout(() => {
-                    element.textContent = originalText;
+                    element.innerHTML = originalHTML;
                     element.className = originalClasses;
                 }, 2000);
             }).catch(err => {

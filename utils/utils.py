@@ -189,6 +189,55 @@ def find_user_by_wii_number(wii_number, attempt=0):
         return None
 
 
+def find_wii_number_by_serial(serial_number, attempt=0):
+    """
+    Find the Wii number (friend code) for a console serial number.
+    Returns the wii_number, or None if no linked Wii has that serial.
+    """
+    serial_number = serial_number[
+        :12
+    ]  # Only use the first 12 characters of the serial for matching
+    if not serial_number:
+        return None
+    base_url = config.authentik_api_url.rstrip("/")
+    url = f'{base_url}/core/users/?page_size=30&attributes=%7B%22wiis__{attempt}__serial_number%22%3A+"{serial_number}"%7D'
+    headers = {
+        "Accept": "application/json",
+        "Authorization": f"Bearer {config.authentik_service_account_token}",
+    }
+    try:
+        response = requests.get(url, headers=headers, timeout=15)
+        response.raise_for_status()
+        data = response.json()
+        results = data.get("results", [])
+        if (
+            not results and attempt < 10
+        ):  # Honestly fuck you if you have more than 9 Wiis.
+            return find_wii_number_by_serial(serial_number, attempt=attempt + 1)
+        if not results:
+            return None
+        for wii in results[0].get("attributes", {}).get("wiis", []):
+            if isinstance(wii, dict) and wii.get("serial_number") == serial_number:
+                return wii.get("wii_number")
+        return None
+    except requests.RequestException as e:
+        print(f"Authentik API error: {e}")
+        return None
+
+
+def _resolve_wii_number(serial):
+    """Resolve a serial number to its wii_number (cached to limit API calls)."""
+    if not serial:
+        return None
+    cache_key = f"wii_number_by_serial:{serial}"
+    wii_number = cache.get(cache_key)
+    if wii_number is None:
+        wii_number = find_wii_number_by_serial(serial)
+        if wii_number:
+            cache.set(cache_key, wii_number, timeout=600)
+    return wii_number
+
+
 def fetch_authentik_users():
     """
     Fetch all Authentik users that have their profile set to public.

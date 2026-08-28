@@ -1,4 +1,5 @@
 <div class="relative rounded-2xl theme-card border shadow-xl overflow-hidden">
+    {% set wii_breakdown = rec.wii_breakdown %}
     {% set cover = namespace(url='', fallback='') %}
     {% set vt_name = namespace(name='') %}
     {% set cover_game = rec %}
@@ -11,14 +12,20 @@
         <span>
             <div class="flex items-center justify-between gap-6">
                 <span class="flex items-center gap-4">
-                    <img src="{{ cover.url }}" alt="{{ rec.title }} Cover" data-fallback="{{ cover.fallback }}"
-                        {% if vt_name.name %}style="view-transition-name: {{ vt_name.name }};"{% endif %}
+                    <img src="{{ cover.url }}" alt="{{ rec.title }} Cover" data-fallback="{{ cover.fallback }}" {% if
+                        vt_name.name %}style="view-transition-name: {{ vt_name.name }};" {% endif %}
                         onerror="if (!this.dataset.tried && this.dataset.fallback) { this.dataset.tried = '1'; this.src = this.dataset.fallback; } else { var placeholder = document.createElement('div'); placeholder.className = 'w-24 h-32 bg-gray-700 rounded-lg flex-shrink-0'; this.parentNode.replaceChild(placeholder, this); }"
                         class="h-32 object-cover rounded-lg flex-shrink-0">
                     <span class="flex flex-col gap-3">
                         <div>
                             <h2 class="text-2xl font-bold text-white">{{ rec.title_en or rec.title }}</h2>
-                            <p class="text-sm text-[var(--user-soft)] mt-1">{{ rec.game_id }}{% if rec.release_year %} • {{
+                            <p class="text-sm text-[var(--user-soft)] mt-1 flex flex-row items-center">{% if
+                                rec.wii_numbers %}{% for wii_number in rec.wii_numbers %}
+                                <span class="inline-flex items-center gap-1.5 align-middle mr-1.5"><span
+                                        class="inline-block w-2 h-2 rounded-full"
+                                        style="background: {{ fetch_wii_color_from_number(wii_number) }}"></span>
+                                {% endfor %}{% endif %}
+                                {{ rec.game_id }}{% if rec.release_year %} • {{
                                 rec.release_year }}{% endif %}</p>
                         </div>
                         <div class="flex flex-wrap items-center gap-2 text-xs text-[var(--user-soft)]">
@@ -41,13 +48,21 @@
                 <div class="hidden"></div>
             </div>
             <span class="grid grid-cols-2 gap-4 mt-5">
-                <div class="rounded-xl theme-card-inner p-3 flex flex-col gap-3">
+                <div class="relative group rounded-xl theme-card-inner p-3 flex flex-col gap-3">
                     <p class="text-xs uppercase text-[var(--user-soft)]">Times Played</p>
                     <p class="text-lg font-semibold text-white">{{ rec.times_played }}</p>
+                    {% set metric = 'times_played' %}
+                    {% set fmt = 'int' %}
+                    {% set position_class = 'h-full bottom-0 right-0 overflow-y-scroll' %}
+                    {% include "components/wii_popover.html" %}
                 </div>
-                <div class="rounded-xl theme-card-inner p-3 flex flex-col gap-3">
+                <div class="relative group rounded-xl theme-card-inner p-3 flex flex-col gap-3">
                     <p class="text-xs uppercase text-[var(--user-soft)]">Time Played</p>
                     <p class="text-lg font-semibold text-white">{{ rec.time_played|format_playtime }}</p>
+                    {% set metric = 'time_played' %}
+                    {% set fmt = 'playtime' %}
+                    {% set position_class = 'h-full bottom-0 right-0 overflow-y-scroll' %}
+                    {% include "components/wii_popover.html" %}
                 </div>
             </span>
         </span>
