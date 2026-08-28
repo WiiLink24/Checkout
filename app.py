@@ -32,6 +32,7 @@ from routes.misc import misc_routes_bp
 from routes.coupons_admin import coupons_admin_bp
 from utils.cache import init_cache, generate_top_page_cache
 from utils.achievements import sync_achievements
+from utils.db import init_db
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = config.db_url
@@ -54,6 +55,9 @@ Session(app)
 init_cache(app)
 app.config["CACHE_TYPE"] = "SimpleCache"
 query_cache.init_app(app)
+
+# SQLAlchemy scoped session teardown for the checkout database
+init_db(app)
 
 # Register template filters
 app.jinja_env.filters["format_serial"] = format_serial
@@ -79,9 +83,11 @@ def inject_artisan_id():
         is_coupon_admin = config.coupon_admin_group_uuid in groups
     return dict(artisan_ids=artisan_ids, is_coupon_admin=is_coupon_admin)
 
+
 @app.context_processor
 def utility_processor():
     return dict(fetch_wii_color_from_number=fetch_wii_color_from_number)
+
 
 # Set OIDC instance for blueprints that need it
 set_oidc_auth(oidc)

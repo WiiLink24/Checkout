@@ -34,6 +34,12 @@
                     {{ coupon_preview.uses_left }} use{{ 's' if coupon_preview.uses_left != 1 else '' }} left
                     {% endif %}
                 </span>
+                {% if coupon_preview.expires_at %}
+                <span
+                    class="ml-auto theme-chip text-white px-3 py-1.5 rounded-full text-xs font-semibold flex-shrink-0">
+                    Expires {{ coupon_preview.expires_at.strftime('%b %d, %Y %H:%M UTC') }}
+                </span>
+                {% endif %}
             </div>
 
             <div class="p-5 sm:p-6 flex flex-col gap-4">

@@ -273,6 +273,7 @@ def coupons_redeem():
                                 0, coupon["max_uses"] - (coupon["uses_count"] or 0)
                             )
                         ),
+                        "expires_at": coupon.get("expires_at"),
                         "redeemables": _enrich_redeemables(
                             coupon.get("redeemables") or [], catalog
                         ),

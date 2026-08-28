@@ -1,51 +1,88 @@
-import json
+from datetime import datetime, timezone
 
-import config
-from psycopg2.extras import Json
-from utils.utils import _run_query, _execute
-
-
-def _db_url(db_url=None):
-    return db_url or getattr(config, "checkout_db_url", None)
+from sqlalchemy import exists, func, or_, select
+from utils.db import Coupon, CouponRedemption, SessionLocal
 
 
-def fetch_coupon_by_code(coupon_code, db_url=None):
-    db_url = _db_url(db_url)
-    if not db_url or not coupon_code:
-        return None
-    query = "SELECT * FROM coupons WHERE coupon_code = %s LIMIT 1"
-    rows = _run_query(query, [coupon_code], db_url, use_cache=False)
-    return rows[0] if rows else None
-
-
-def fetch_coupon_by_uuid(coupon_uuid, db_url=None):
-    db_url = _db_url(db_url)
-    if not db_url or not coupon_uuid:
-        return None
-    query = "SELECT * FROM coupons WHERE uuid = %s LIMIT 1"
-    rows = _run_query(query, [coupon_uuid], db_url, use_cache=False)
-    return rows[0] if rows else None
-
-
-def user_redeemed(coupon_uuid, username, db_url=None):
-    """True if this user has already redeemed the coupon."""
-    db_url = _db_url(db_url)
-    if not db_url or not coupon_uuid or not username:
+def _is_expired(coupon):
+    """True if the coupon has an expires_at in the past (None = never)."""
+    expires_at = coupon.get("expires_at") if coupon else None
+    if not expires_at:
         return False
-    query = """
-        SELECT 1 FROM coupon_redemptions
-        WHERE coupon_uuid = %s AND redeemed_by = %s
-        LIMIT 1
-    """
-    rows = _run_query(query, [coupon_uuid, username], db_url, use_cache=False)
-    return bool(rows)
+    if isinstance(expires_at, str):
+        try:
+            expires_at = datetime.fromisoformat(expires_at)
+        except ValueError:
+            return False
+    if expires_at.tzinfo is None:
+        expires_at = expires_at.replace(tzinfo=timezone.utc)
+    return expires_at <= datetime.now(timezone.utc)
 
 
-def coupon_available(coupon, username=None, db_url=None):
-    """Return (ok, reason). A user can only redeem a coupon once; max_uses of -1
-    means unlimited total uses (still once per user)."""
+def _coupon_dict(coupon, redeemer_count=None):
+    data = {
+        "uuid": coupon.uuid,
+        "coupon_code": coupon.coupon_code,
+        "issuer": coupon.issuer,
+        "issued_at": coupon.issued_at,
+        "redeemables": coupon.redeemables,
+        "max_uses": coupon.max_uses,
+        "uses_count": coupon.uses_count,
+        "expires_at": coupon.expires_at,
+    }
+    if redeemer_count is not None:
+        data["redeemer_count"] = redeemer_count
+    return data
+
+
+def fetch_coupon_by_code(coupon_code):
+    if not coupon_code:
+        return None
+    try:
+        session = SessionLocal()
+        coupon = session.query(Coupon).filter(Coupon.coupon_code == coupon_code).first()
+        return _coupon_dict(coupon) if coupon else None
+    finally:
+        SessionLocal.remove()
+
+
+def fetch_coupon_by_uuid(coupon_uuid):
+    if not coupon_uuid:
+        return None
+    try:
+        session = SessionLocal()
+        coupon = session.query(Coupon).filter(Coupon.uuid == coupon_uuid).first()
+        return _coupon_dict(coupon) if coupon else None
+    finally:
+        SessionLocal.remove()
+
+
+def user_redeemed(coupon_uuid, username):
+    """True if this user has already redeemed the coupon."""
+    if not coupon_uuid or not username:
+        return False
+    try:
+        session = SessionLocal()
+        row = (
+            session.query(CouponRedemption.id)
+            .filter(
+                CouponRedemption.coupon_uuid == coupon_uuid,
+                CouponRedemption.redeemed_by == username,
+            )
+            .first()
+        )
+        return row is not None
+    finally:
+        SessionLocal.remove()
+
+
+def coupon_available(coupon, username=None):
+    """Return (ok, reason). Checks expiration, once-per-user, and max_uses
+    (max_uses of -1 means unlimited total uses, still once per user)."""
+    if _is_expired(coupon):
+        return False, "This coupon has expired."
     if username:
-        if user_redeemed(coupon["uuid"], username, db_url):
+        if user_redeemed(coupon["uuid"], username):
             return False, "You have already redeemed this coupon."
     if coupon.get("max_uses") == -1:
         return True, None
@@ -55,102 +92,139 @@ def coupon_available(coupon, username=None, db_url=None):
     return True, None
 
 
-def consume_coupon(coupon_uuid, redeemed_by, db_url=None):
-    """Atomically mark a coupon as redeemed by a user (once per user) and record it."""
-    db_url = _db_url(db_url)
-    if not db_url:
+def consume_coupon(coupon_uuid, redeemed_by):
+    """Atomically mark a coupon as redeemed by a user (once per user) and record
+    it. Refuses expired or exhausted coupons at the SQL level."""
+    if not coupon_uuid or not redeemed_by:
         return False
-    query = """
-        WITH updated AS (
-            UPDATE coupons
-            SET uses_count = uses_count + 1
-            WHERE uuid = %s
-              AND (max_uses = -1 OR uses_count < max_uses)
-              AND NOT EXISTS (
-                  SELECT 1 FROM coupon_redemptions
-                  WHERE coupon_uuid = coupons.uuid AND redeemed_by = %s
-              )
-            RETURNING uuid
+    try:
+        session = SessionLocal()
+        already_redeemed = exists(
+            select(CouponRedemption.id).where(
+                CouponRedemption.coupon_uuid == Coupon.uuid,
+                CouponRedemption.redeemed_by == redeemed_by,
+            )
         )
-        INSERT INTO coupon_redemptions (coupon_uuid, redeemed_by)
-        SELECT uuid, %s FROM updated
-        RETURNING coupon_uuid
-    """
-    rows = _run_query(
-        query,
-        [coupon_uuid, redeemed_by, redeemed_by],
-        db_url,
-        use_cache=False,
-    )
-    return bool(rows)
+        updated = (
+            session.query(Coupon)
+            .filter(
+                Coupon.uuid == coupon_uuid,
+                or_(
+                    Coupon.max_uses == -1,
+                    Coupon.uses_count < Coupon.max_uses,
+                ),
+                or_(
+                    Coupon.expires_at.is_(None),
+                    Coupon.expires_at > func.now(),
+                ),
+                ~already_redeemed,
+            )
+            .update(
+                {"uses_count": Coupon.uses_count + 1},
+                synchronize_session=False,
+            )
+        )
+        if not updated:
+            session.rollback()
+            return False
+        session.add(CouponRedemption(coupon_uuid=coupon_uuid, redeemed_by=redeemed_by))
+        session.commit()
+        return True
+    finally:
+        SessionLocal.remove()
 
 
-def refund_coupon(coupon_uuid, redeemed_by, db_url=None):
+def refund_coupon(coupon_uuid, redeemed_by):
     """Undo a redemption: decrement uses and remove the history record."""
-    db_url = _db_url(db_url)
-    if not db_url or not redeemed_by:
+    if not coupon_uuid or not redeemed_by:
         return
-    _execute(
-        "UPDATE coupons SET uses_count = GREATEST(uses_count - 1, 0) WHERE uuid = %s",
-        [coupon_uuid],
-        db_url,
-    )
-    _execute(
-        "DELETE FROM coupon_redemptions WHERE coupon_uuid = %s AND redeemed_by = %s",
-        [coupon_uuid, redeemed_by],
-        db_url,
-    )
-
-
-def user_redeem_history(username, db_url=None):
-    db_url = _db_url(db_url)
-    if not db_url or not username:
-        return []
-    query = """
-        SELECT c.coupon_code, c.issuer, c.redeemables, r.redeemed_at
-        FROM coupon_redemptions r
-        JOIN coupons c ON c.uuid = r.coupon_uuid
-        WHERE r.redeemed_by = %s
-        ORDER BY r.redeemed_at DESC
-    """
-    return _run_query(query, [username], db_url, use_cache=False)
-
-
-def list_coupons(db_url=None):
-    db_url = _db_url(db_url)
-    if not db_url:
-        return []
-    query = """
-        SELECT c.uuid, c.coupon_code, c.issuer, c.issued_at, c.max_uses, c.uses_count,
-               c.redeemables,
-               (SELECT COUNT(*) FROM coupon_redemptions r WHERE r.coupon_uuid = c.uuid)
-                   AS redeemer_count
-        FROM coupons c
-        ORDER BY c.issued_at DESC
-    """
-    return _run_query(query, [], db_url, use_cache=False)
-
-
-def create_coupon(coupon_code, issuer, redeemables, max_uses, db_url=None):
-    db_url = _db_url(db_url)
-    if not db_url:
-        return False
-    query = """
-        INSERT INTO coupons (coupon_code, issuer, redeemables, max_uses)
-        VALUES (%s, %s, %s, %s)
-    """
-    return (
-        _execute(
-            query,
-            [coupon_code, issuer, Json(redeemables), int(max_uses)],
-            db_url,
+    try:
+        session = SessionLocal()
+        session.query(Coupon).filter(Coupon.uuid == coupon_uuid).update(
+            {"uses_count": func.greatest(Coupon.uses_count - 1, 0)},
+            synchronize_session=False,
         )
-        == 1
-    )
+        session.query(CouponRedemption).filter(
+            CouponRedemption.coupon_uuid == coupon_uuid,
+            CouponRedemption.redeemed_by == redeemed_by,
+        ).delete()
+        session.commit()
+    finally:
+        SessionLocal.remove()
 
 
-def delete_coupon(coupon_uuid, db_url=None):
-    db_url = _db_url(db_url)
-    if not db_url:
+def user_redeem_history(username):
+    if not username:
+        return []
+    try:
+        session = SessionLocal()
+        rows = (
+            session.query(Coupon, CouponRedemption.redeemed_at)
+            .join(
+                CouponRedemption,
+                CouponRedemption.coupon_uuid == Coupon.uuid,
+            )
+            .filter(CouponRedemption.redeemed_by == username)
+            .order_by(CouponRedemption.redeemed_at.desc())
+            .all()
+        )
+        return [
+            {
+                "coupon_code": coupon.coupon_code,
+                "issuer": coupon.issuer,
+                "redeemables": coupon.redeemables,
+                "redeemed_at": redeemed_at,
+            }
+            for coupon, redeemed_at in rows
+        ]
+    finally:
+        SessionLocal.remove()
+
+
+def list_coupons():
+    try:
+        session = SessionLocal()
+        rows = (
+            session.query(Coupon, func.count(CouponRedemption.id))
+            .outerjoin(
+                CouponRedemption,
+                CouponRedemption.coupon_uuid == Coupon.uuid,
+            )
+            .group_by(Coupon)
+            .order_by(Coupon.issued_at.desc())
+            .all()
+        )
+        return [_coupon_dict(coupon, redeemer_count=count) for coupon, count in rows]
+    finally:
+        SessionLocal.remove()
+
+
+def create_coupon(coupon_code, issuer, redeemables, max_uses, expires_at=None):
+    session = SessionLocal()
+    try:
+        session.add(
+            Coupon(
+                coupon_code=coupon_code,
+                issuer=issuer,
+                redeemables=redeemables,
+                max_uses=int(max_uses),
+                expires_at=expires_at,
+            )
+        )
+        session.commit()
+        return True
+    except Exception:
+        session.rollback()
         return False
-    return _execute("DELETE FROM coupons WHERE uuid = %s", [coupon_uuid], db_url) > 0
+    finally:
+        SessionLocal.remove()
+
+
+def delete_coupon(coupon_uuid):
+    try:
+        session = SessionLocal()
+        deleted = session.query(Coupon).filter(Coupon.uuid == coupon_uuid).delete()
+        session.commit()
+        return deleted > 0
+    finally:
+        SessionLocal.remove()
