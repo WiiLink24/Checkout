@@ -56,6 +56,16 @@ from channels.cmoc import (
 import config
 from channels.discover import find_game_recommendation
 from channels.digi import fetch_orders_by_email, render_card_to_image, get_card_name
+from channels.friends import (
+    follow,
+    unfollow,
+    is_following,
+    fetch_following,
+    fetch_followers,
+    count_following,
+    count_followers,
+    resolve_user_cards,
+)
 
 auth_routes_bp = Blueprint("auth_routes", __name__)
 oidc = None
@@ -319,49 +329,33 @@ def toggle_friend():
     if not user_info or not user_info.get("linked_wii_no"):
         return jsonify({"ok": False, "error": "No Wii linked to your account."}), 400
 
+    own_wii = user_info["linked_wii_no"][0]
+
     data = request.get_json(silent=True) or {}
     friend_code = (
         data.get("friend_code") or request.form.get("friend_code") or ""
     ).strip()
     if not friend_code:
         return jsonify({"ok": False, "error": "Missing friend code."}), 400
+    if friend_code == own_wii:
+        return jsonify({"ok": False, "error": "You cannot follow yourself."}), 400
 
-    own_user = find_user_by_wii_number(user_info["linked_wii_no"][0])
-    if not own_user:
-        return jsonify({"ok": False, "error": "Account not found."}), 400
-
-    payload, _ = refresh_achievements_for_user(own_user)
-    if not payload:
-        return jsonify({"ok": False, "error": "Could not load achievements."}), 500
-
-    friends = payload.setdefault("friends", [])
-    if not isinstance(friends, list):
-        friends = []
-        payload["friends"] = friends
-
-    if friend_code in friends:
-        friends.remove(friend_code)
+    if is_following(own_wii, friend_code):
+        unfollow(own_wii, friend_code)
         is_friend = False
     else:
-        friends.append(friend_code)
+        follow(own_wii, friend_code)
         is_friend = True
 
-    from utils.utils import update_user_achievements
-
-    try:
-        update_user_achievements(own_user, payload)
-        cache.delete(f"friends:{user_info['linked_wii_no'][0]}")
-    except Exception as e:
-        print(f"[FRIENDS] Failed to save friends: {e}")
-        return jsonify({"ok": False, "error": "Failed to save friends."}), 500
-
-    return jsonify({"ok": True, "is_friend": is_friend, "friend_count": len(friends)})
+    cache.delete(f"friends:{own_wii}")
+    return jsonify(
+        {"ok": True, "is_friend": is_friend, "friend_count": count_following(own_wii)}
+    )
 
 
-def _resolve_friends(payload, wii_number):
-    """Resolve friend codes into user details, cached briefly for the sidebar."""
-    friend_codes = (payload or {}).get("friends") or []
-    if not isinstance(friend_codes, list) or not friend_codes:
+def _resolve_friends(wii_number):
+    codes = fetch_following(wii_number)
+    if not codes:
         return []
 
     cache_key = f"friends:{wii_number}"
@@ -369,24 +363,45 @@ def _resolve_friends(payload, wii_number):
     if cached is not None:
         return cached
 
-    friends = []
-    for code in friend_codes:
-        friend_user = find_user_by_wii_number(code)
-        if not friend_user:
-            continue
-        email = friend_user.get("email", "")
-        friends.append(
-            {
-                "username": friend_user.get("username", "Unknown"),
-                "avatar": generate_gravatar_url(email),
-                "wii_number": code,
-                "code": format_serial(code),
-                "profile_url": f"/{code}/",
-            }
-        )
-
+    friends = resolve_user_cards(codes)
     cache.set(cache_key, friends, timeout=120)
     return friends
+
+
+@auth_routes_bp.route("/followers", endpoint="followers_page")
+def followers_page():
+    return _social_page("Followers")
+
+
+@auth_routes_bp.route("/following", endpoint="following_page")
+def following_page():
+    return _social_page("Following")
+
+
+def _social_page(mode):
+    if not oidc or not oidc.user_loggedin:
+        return redirect(url_for("auth_routes.index"))
+    user_info = get_logged_in_user_info()
+    if not user_info or not user_info.get("linked_wii_no"):
+        return render_template("errors/not_linked.html", user_info=user_info), 400
+
+    wii_number = user_info["linked_wii_no"][0]
+    codes = (
+        fetch_followers(wii_number)
+        if mode == "Followers"
+        else fetch_following(wii_number)
+    )
+    return render_template(
+        "social.html",
+        page_title=mode,
+        users=resolve_user_cards(codes),
+        user_info=user_info,
+        viewed_user=user_info,
+        is_unclaimed=False,
+        base_url=None,
+        follower_count=count_followers(wii_number),
+        following_count=count_following(wii_number),
+    )
 
 
 def set_oidc(oidc_instance):
@@ -413,9 +428,7 @@ def get_logged_in_user_info():
                 payload = None
             if payload:
                 user_info["achievements"] = payload
-            user_info["friends"] = _resolve_friends(
-                payload, user_info["linked_wii_no"][0]
-            )
+            user_info["friends"] = _resolve_friends(user_info["linked_wii_no"][0])
         return user_info
     return None
 
@@ -973,6 +986,11 @@ def index():
 
         wii_breakdown = build_wii_breakdown(serial_prefixes, wii_numbers)
 
+        # Follow graph counts for the viewer's own profile chips
+        own_primary_wii = wii_numbers[0] if wii_numbers else None
+        follower_count = count_followers(own_primary_wii) if own_primary_wii else 0
+        following_count = count_following(own_primary_wii) if own_primary_wii else 0
+
         recent_contests = (
             fetch_contest_submissions(wii_numbers, limit=3) if wii_numbers else []
         )
@@ -1019,6 +1037,8 @@ def index():
             recent_contests=recent_contests,
             recent_polls=recent_polls,
             latest_digicard=latest_digicard,
+            follower_count=follower_count,
+            following_count=following_count,
         )
     else:
         return render_template("login.html", user_info=None)

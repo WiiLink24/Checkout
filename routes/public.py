@@ -6,6 +6,7 @@ from utils.utils import (
     extract_serial_prefix,
     build_viewed_user_info,
     build_unclaimed_user_info,
+    format_serial,
 )
 from channels.nc import (
     fetch_favorites,
@@ -31,6 +32,14 @@ from channels.cmoc import (
 from channels.tag_generator import generate_user_tag
 from utils.achievements import refresh_achievements_for_user
 from utils.wiis import build_wii_breakdown, attach_time_breakdown
+from channels.friends import (
+    is_following,
+    fetch_following,
+    fetch_followers,
+    count_following,
+    count_followers,
+    resolve_user_cards,
+)
 from channels.nc import (
     fetch_user_latest_games,
     fetch_user_latest_reviews,
@@ -531,6 +540,24 @@ def friend_code_home(friend_code):
 
     wii_breakdown = build_wii_breakdown(serial_prefixes, wii_numbers)
 
+    viewer_wii = (
+        user_info.get("linked_wii_no", [None])[0]
+        if user_info and user_info.get("linked_wii_no")
+        else None
+    )
+    primary_wii = viewed_user.get("linked_wii_no", [None])[0] if viewed_user else None
+    follow_counts = (
+        {
+            "is_following": bool(
+                viewer_wii and primary_wii and is_following(viewer_wii, primary_wii)
+            ),
+            "follower_count": count_followers(primary_wii) if primary_wii else 0,
+            "following_count": count_following(primary_wii) if primary_wii else 0,
+        }
+        if primary_wii
+        else {"is_following": False, "follower_count": 0, "following_count": 0}
+    )
+
     recent_contests = (
         fetch_contest_submissions(wii_numbers, limit=3) if wii_numbers else []
     )
@@ -568,4 +595,43 @@ def friend_code_home(friend_code):
         base_url=f"/{friend_code}",
         serial_not_linked=serial_not_linked,
         friend_code=friend_code_normalized,
+        **follow_counts,
     )
+
+
+def _social_by_serial(wii_no, mode):
+    wii_no = normalize_serial(wii_no)
+    user_info = get_logged_in_user_info()
+    authentik_user = find_user_by_wii_number(wii_no)
+
+    if authentik_user:
+        viewed_user = build_viewed_user_info(authentik_user)
+        is_unclaimed = False
+    else:
+        logged_in_user_picture = user_info.get("profile_picture") if user_info else None
+        viewed_user = build_unclaimed_user_info(wii_no, logged_in_user_picture)
+        is_unclaimed = True
+
+    codes = fetch_followers(wii_no) if mode == "Followers" else fetch_following(wii_no)
+    return render_template(
+        "social.html",
+        page_title=mode,
+        users=resolve_user_cards(codes),
+        user_info=user_info,
+        viewed_user=viewed_user,
+        is_unclaimed=is_unclaimed,
+        unclaimed_serial=format_serial(wii_no),
+        base_url=f"/{wii_no}",
+        follower_count=count_followers(wii_no),
+        following_count=count_following(wii_no),
+    )
+
+
+@public_routes_bp.route("/<wii_no>/followers", endpoint="followers_by_serial")
+def followers_by_serial(wii_no):
+    return _social_by_serial(wii_no, "Followers")
+
+
+@public_routes_bp.route("/<wii_no>/following", endpoint="following_by_serial")
+def following_by_serial(wii_no):
+    return _social_by_serial(wii_no, "Following")

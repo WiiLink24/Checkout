@@ -1,0 +1,57 @@
+{% extends "generic/base.html" %}
+
+{% block title %}
+WiiLink Checkout | {{ viewed_user.username if viewed_user else '' }} {{ page_title }}
+{% endblock %}
+
+{% block content %}
+{% include "components/page_header.html" %}
+
+<div class="min-h-screen sm:px-6 lg:px-8 py-12">
+    <div class="max-w-3xl mx-auto">
+        <div class="flex items-center justify-center gap-3 mb-8">
+            <a href="{% if base_url %}{{ base_url }}/followers{% else %}/followers{% endif %}"
+                class="inline-flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-semibold transition {% if page_title == 'Followers' %}theme-btn text-white{% else %}text-[var(--user-soft)] hover:text-white{% endif %}">
+                <img src="/static/icon/users.svg" alt="" class="w-4 h-4 invert">
+                {{ follower_count }} Follower{% if follower_count != 1 %}s{% endif %}
+            </a>
+            <a href="{% if base_url %}{{ base_url }}/following{% else %}/following{% endif %}"
+                class="inline-flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-semibold transition {% if page_title == 'Following' %}theme-btn text-white{% else %}text-[var(--user-soft)] hover:text-white{% endif %}">
+                <img src="/static/icon/heart.svg" alt="" class="w-4 h-4 invert">
+                {{ following_count }} Following
+            </a>
+        </div>
+
+        {% if users %}
+        <div class="flex flex-col gap-3">
+            {% for user in users %}
+            <a href="{{ user.profile_url }}"
+                class="flex items-center gap-4 theme-card rounded-2xl p-4 border shadow-lg transition duration-200 hover:shadow-xl">
+                <img src="{{ user.avatar }}" alt="{{ user.username }}"
+                    class="w-12 h-12 rounded-xl object-cover flex-shrink-0">
+                <span class="min-w-0">
+                    <span class="block text-lg font-bold text-white truncate">{{ user.username }}</span>
+                    <span
+                        class="inline-flex items-center gap-1.5 text-sm text-[var(--user-soft)] mt-0.5"><span
+                            class="inline-block w-2 h-2 rounded-full flex-shrink-0"
+                            style="background: {{ fetch_wii_color_from_number(user.wii_number) }}"></span>{{
+                        user.code }}</span>
+                </span>
+                <img src="/static/icon/chevron-right.svg" alt="" class="w-5 h-5 invert ml-auto opacity-40">
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        {% set empty_icon = "users" %}
+        {% if page_title == 'Followers' %}
+        {% set empty_title = "No one is following this Wii yet." %}
+        {% set empty_message = "When people add this Wii Number, they'll show up here." %}
+        {% else %}
+        {% set empty_title = "Not following anyone yet." %}
+        {% set empty_message = "Wii Numbers you add will show up here." %}
+        {% endif %}
+        {% include "components/empty_state.html" %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
