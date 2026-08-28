@@ -2,6 +2,7 @@ flask
 flask-caching
 Flask-Session
 flask_oidc
+flask-sqlalchemy
 psycopg2-binary
 black
 apscheduler
