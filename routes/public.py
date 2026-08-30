@@ -508,26 +508,6 @@ def friend_code_home(friend_code):
         "following_count": count_following(primary_wii),
     }
 
-    wii_breakdown = build_wii_breakdown(serial_prefixes, wii_numbers)
-
-    viewer_wii = (
-        user_info.get("linked_wii_no", [None])[0]
-        if user_info and user_info.get("linked_wii_no")
-        else None
-    )
-    primary_wii = viewed_user.get("linked_wii_no", [None])[0] if viewed_user else None
-    follow_counts = (
-        {
-            "is_following": bool(
-                viewer_wii and primary_wii and is_following(viewer_wii, primary_wii)
-            ),
-            "follower_count": count_followers(primary_wii) if primary_wii else 0,
-            "following_count": count_following(primary_wii) if primary_wii else 0,
-        }
-        if primary_wii
-        else {"is_following": False, "follower_count": 0, "following_count": 0}
-    )
-
     recent_contests = (
         fetch_contest_submissions(wii_numbers, limit=3) if wii_numbers else []
     )
