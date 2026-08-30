@@ -217,7 +217,19 @@ def build_serial_to_wii_mapping(attributes):
 
 
 def resolve_serial(serial, serial_to_wii=None):
-    return serial_to_wii.get(_normalize_serial_prefix(serial or ""))
+    if not serial_to_wii:
+        return None
+    raw = serial or ""
+    key = _normalize_serial_prefix(raw)
+    if key in serial_to_wii:
+        return serial_to_wii[key]
+        
+    # Check if the raw serial starts with any of the prefixes in serial_to_wii
+    for prefix, wii_number in serial_to_wii.items():
+        if raw.startswith(prefix) or key.startswith(prefix):
+            return wii_number
+    return None
+
 
 def fetch_authentik_users():
     """
