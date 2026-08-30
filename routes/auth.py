@@ -18,11 +18,10 @@ from utils.auth import get_user_profile, build_user_info
 from utils.helpers import parse_int
 from utils.utils import (
     get_serial_prefixes,
+    build_serial_to_wii_mapping,
     find_user_by_wii_number,
-    generate_gravatar_url,
-    format_serial,
     cache,
-    _resolve_wii_number,
+    extract_linked_wiis,
 )
 from utils.achievements import refresh_achievements_for_user
 from utils.theme import get_theme_catalog
@@ -71,8 +70,8 @@ auth_routes_bp = Blueprint("auth_routes", __name__)
 oidc = None
 
 
-def _get_owned_user():
-    user_info = get_logged_in_user_info()
+def _get_owned_user(user_info=None):
+    user_info = user_info or get_logged_in_user_info()
     linked_wii = (user_info or {}).get("linked_wii_no", [])
     return find_user_by_wii_number(linked_wii[0]) if linked_wii else None
 
@@ -124,14 +123,12 @@ def themes():
     if not oidc or not oidc.user_loggedin:
         return redirect(url_for("auth_routes.index"))
 
-    user = _get_owned_user()
-    if not user:
-        return render_template("errors/not_linked.html", user_info=None), 400
-
     user_info = get_logged_in_user_info()
+    if not user_info or not user_info.get("linked_wii_no"):
+        return render_template("errors/not_linked.html", user_info=user_info), 400
 
-    payload, _ = refresh_achievements_for_user(user, force=True)
-    payload = payload or {
+    # get_logged_in_user_info already refreshed the payload if stale
+    payload = user_info.get("achievements") or {
         "points": {"balance": 0, "spent": 0, "earned": 0},
         "themes": {"unlocked": [], "active": None},
     }
@@ -178,6 +175,7 @@ def themes():
         ] + categories
 
     if request.method == "POST":
+        user = _get_owned_user(user_info)
         theme_id = request.form.get("theme_id", "")
         action = request.form.get("action", "")
         theme = catalog.get(theme_id)
@@ -226,13 +224,12 @@ def coupons_redeem():
     if not oidc or not oidc.user_loggedin:
         return redirect(url_for("auth_routes.index"))
 
-    user = _get_owned_user()
-    if not user:
-        return render_template("errors/not_linked.html", user_info=None), 400
-
     user_info = get_logged_in_user_info()
-    payload, _ = refresh_achievements_for_user(user, force=True)
-    payload = payload or {
+    if not user_info or not user_info.get("linked_wii_no"):
+        return render_template("errors/not_linked.html", user_info=user_info), 400
+
+    user = _get_owned_user(user_info)
+    payload = user_info.get("achievements") or {
         "points": {"balance": 0, "spent": 0, "earned": 0},
         "themes": {"unlocked": [], "active": None},
     }
@@ -471,6 +468,7 @@ def recommendations():
     profile = get_user_profile()
     user_info = get_logged_in_user_info()
     serial_prefixes = get_serial_prefixes(profile)
+    serial_to_wii = build_serial_to_wii_mapping(profile)
     if not serial_prefixes:
         return render_template("errors/not_linked.html", user_info=user_info), 400
     if not serial_has_time_played(serial_prefixes):
@@ -490,7 +488,11 @@ def recommendations():
     total_pages = (total_count + per_page - 1) // per_page
 
     results = fetch_recommendations(
-        serial_prefixes, sort_by=sort_by, limit=per_page, offset=offset
+        serial_prefixes,
+        sort_by=sort_by,
+        limit=per_page,
+        offset=offset,
+        serial_to_wii=serial_to_wii,
     )
 
     return render_template(
@@ -544,6 +546,7 @@ def time_played():
     profile = get_user_profile()
     user_info = get_logged_in_user_info()
     serial_prefixes = get_serial_prefixes(profile)
+    serial_to_wii = build_serial_to_wii_mapping(profile)
     if not serial_prefixes:
         return render_template("errors/not_linked.html", user_info=user_info), 400
     if not serial_has_time_played(serial_prefixes):
@@ -563,9 +566,13 @@ def time_played():
     total_pages = (total_count + per_page - 1) // per_page
 
     results = fetch_time_played(
-        serial_prefixes, sort_by=sort_by, limit=per_page, offset=offset
+        serial_prefixes,
+        sort_by=sort_by,
+        limit=per_page,
+        offset=offset,
+        serial_to_wii=serial_to_wii,
     )
-    attach_time_breakdown(results, serial_prefixes)
+    attach_time_breakdown(results, serial_prefixes, serial_to_wii=serial_to_wii)
 
     return render_template(
         "time_played.html",
@@ -588,6 +595,7 @@ def favorites():
     profile = get_user_profile()
     user_info = get_logged_in_user_info()
     serial_prefixes = get_serial_prefixes(profile)
+    serial_to_wii = build_serial_to_wii_mapping(profile)
 
     if not serial_prefixes:
         return render_template("errors/not_linked.html", user_info=user_info), 400
@@ -604,7 +612,9 @@ def favorites():
     total_count = count_bookmarks(serial_prefixes)
     total_pages = (total_count + per_page - 1) // per_page
 
-    games = fetch_favorites(serial_prefixes, limit=per_page, offset=offset)
+    games = fetch_favorites(
+        serial_prefixes, limit=per_page, offset=offset, serial_to_wii=serial_to_wii
+    )
 
     return render_template(
         "favorites.html",
@@ -626,6 +636,7 @@ def discover():
     profile = get_user_profile()
     user_info = get_logged_in_user_info()
     serial_prefixes = get_serial_prefixes(profile)
+    serial_to_wii = build_serial_to_wii_mapping(profile)
 
     if not serial_prefixes:
         return render_template("errors/not_linked.html", user_info=user_info), 400
@@ -763,6 +774,7 @@ def takeout():
     user_info = get_logged_in_user_info()
     profile = get_user_profile()
     serial_prefixes = get_serial_prefixes(profile)
+    serial_to_wii = build_serial_to_wii_mapping(profile)
     wii_numbers = user_info.get("linked_wii_no", [])
     email = profile.get("email") if profile else None
 
@@ -813,6 +825,7 @@ def takeout_export():
     user_info = get_logged_in_user_info()
     profile = get_user_profile()
     serial_prefixes = get_serial_prefixes(profile)
+    serial_to_wii = build_serial_to_wii_mapping(profile)
     wii_numbers = user_info.get("linked_wii_no", [])
     email = profile.get("email") if profile else None
 
@@ -948,49 +961,45 @@ def index():
     if oidc and oidc.user_loggedin:
         profile = get_user_profile()
         user_info = get_logged_in_user_info()
-        serial_prefixes = get_serial_prefixes(profile)
+        serial_prefixes, wii_numbers = extract_linked_wiis(profile)
 
         if not serial_prefixes:
             return render_template("errors/not_linked.html", user_info=user_info), 400
 
         # Refresh the logged-in user's points and achievements from live metrics.
-        if user_info and user_info.get("linked_wii_no"):
-            own_user = find_user_by_wii_number(user_info["linked_wii_no"][0])
-            if own_user:
-                fresh_payload, _ = refresh_achievements_for_user(own_user, force=True)
-                if fresh_payload:
-                    user_info["achievements"] = fresh_payload
+        if wii_numbers:
+            fresh_payload, _ = refresh_achievements_for_user(user_info, force=True)
+            if fresh_payload:
+                user_info["achievements"] = fresh_payload
 
-        latest_games = fetch_user_latest_games(serial_prefixes, 6)
-        latest_favorites = fetch_favorites(serial_prefixes, 5)
-        latest_reviews = fetch_user_latest_reviews(serial_prefixes, 6)
+        serial_to_wii = build_serial_to_wii_mapping(profile)
+        latest_games = fetch_user_latest_games(
+            serial_prefixes, 6, serial_to_wii=serial_to_wii
+        )
+        latest_favorites = fetch_favorites(
+            serial_prefixes, 5, serial_to_wii=serial_to_wii
+        )
+        latest_reviews = fetch_user_latest_reviews(
+            serial_prefixes, 6, serial_to_wii=serial_to_wii
+        )
         user_stats = fetch_user_stats(serial_prefixes)
 
         user_counts = {
             "favorites": count_bookmarks(serial_prefixes),
             "games_played": count_time_played(serial_prefixes),
+            "polls": count_user_polls(wii_numbers),
+            "suggestions": count_user_suggestions(wii_numbers),
+            "contest_submissions": count_contest_submissions(wii_numbers),
         }
 
-        # Get user's wii numbers for contests and polls
-        wii_numbers = user_info.get("linked_wii_no", [])
-        if isinstance(wii_numbers, str):
-            wii_numbers = [wii_numbers]
-
-        if wii_numbers:
-            user_counts["polls"] = count_user_polls(wii_numbers)
-            user_counts["suggestions"] = count_user_suggestions(wii_numbers)
-            user_counts["contest_submissions"] = count_contest_submissions(wii_numbers)
-        else:
-            user_counts["polls"] = 0
-            user_counts["suggestions"] = 0
-            user_counts["contest_submissions"] = 0
-
-        wii_breakdown = build_wii_breakdown(serial_prefixes, wii_numbers)
+        wii_breakdown = build_wii_breakdown(
+            serial_prefixes, wii_numbers, serial_to_wii=serial_to_wii
+        )
 
         # Follow graph counts for the viewer's own profile chips
         own_primary_wii = wii_numbers[0] if wii_numbers else None
-        follower_count = count_followers(own_primary_wii) if own_primary_wii else 0
-        following_count = count_following(own_primary_wii) if own_primary_wii else 0
+        follower_count = count_followers(own_primary_wii)
+        following_count = count_following(own_primary_wii)
 
         recent_contests = (
             fetch_contest_submissions(wii_numbers, limit=3) if wii_numbers else []

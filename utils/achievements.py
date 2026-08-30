@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from typing import Callable, Dict, Optional, Set
 from utils.utils import (
     cache,
+    extract_linked_wiis,
     fetch_all_authentik_users,
     fetch_authentik_user_by_username,
     get_authentik_user,
@@ -290,19 +291,7 @@ def parse_achievements(attributes) -> Optional[Dict]:
 
 def _extract_user_identifiers(attributes):
     """Extract serial prefixes and wii numbers from a user's attributes."""
-    serial_prefixes, wii_numbers = [], []
-    wiis = (attributes or {}).get("wiis")
-    if isinstance(wiis, list):
-        for wii in wiis:
-            if not isinstance(wii, dict):
-                continue
-            serial = wii.get("serial_number")
-            if serial:
-                serial_prefixes.append(serial[:12])
-            wii_number = wii.get("wii_number")
-            if wii_number:
-                wii_numbers.append(wii_number)
-    return serial_prefixes, wii_numbers
+    return extract_linked_wiis(attributes)
 
 
 def is_fresh(payload) -> bool:
