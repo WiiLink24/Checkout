@@ -8,7 +8,7 @@ config = context.config
 
 target_metadata = db.metadata
 
-url = getattr(app_config, "checkout_db_url", None) or app_config.db_url
+url = app_config.checkout_db_url
 
 
 _autogenerating = bool(getattr(config.cmd_opts, "autogenerate", False))
