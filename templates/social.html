@@ -11,12 +11,12 @@ WiiLink Checkout | {{ viewed_user.username if viewed_user else '' }} {{ page_tit
     <div class="max-w-3xl mx-auto">
         <div class="flex items-center justify-center gap-3 mb-8">
             <a href="{% if base_url %}{{ base_url }}/followers{% else %}/followers{% endif %}"
-                class="inline-flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-semibold transition {% if page_title == 'Followers' %}theme-btn text-white{% else %}text-[var(--user-soft)] hover:text-white{% endif %}">
+                class="inline-flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-semibold transition {% if page_title == 'Followers' %}bg-[var(--user-soft)] border-[var(--user-dark)] text-white{% else %}border-[var(--user-light)] opacity-60 hover:opacity-100 text-white{% endif %}">
                 <img src="/static/icon/users.svg" alt="" class="w-4 h-4 invert">
                 {{ follower_count }} Follower{% if follower_count != 1 %}s{% endif %}
             </a>
             <a href="{% if base_url %}{{ base_url }}/following{% else %}/following{% endif %}"
-                class="inline-flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-semibold transition {% if page_title == 'Following' %}theme-btn text-white{% else %}text-[var(--user-soft)] hover:text-white{% endif %}">
+                class="inline-flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-semibold transition {% if page_title == 'Following' %}bg-[var(--user-soft)] border-[var(--user-dark)] text-white{% else %}border-[var(--user-light)] opacity-60 hover:opacity-100 text-white{% endif %}">
                 <img src="/static/icon/heart.svg" alt="" class="w-4 h-4 invert">
                 {{ following_count }} Following
             </a>
