@@ -68,8 +68,8 @@ class Friend(db.Model):
     __bind_key__ = CHECKOUT_BIND
     __tablename__ = "friends"
 
-    follower_wii_number: Mapped[str] = mapped_column(String(20), primary_key=True)
-    followed_wii_number: Mapped[str] = mapped_column(String(20), primary_key=True)
+    follower_wii_number: Mapped[str] = mapped_column(String(16), primary_key=True)
+    followed_wii_number: Mapped[str] = mapped_column(String(16), primary_key=True)
     created_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True), server_default=func.now()
     )
