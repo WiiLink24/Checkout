@@ -215,12 +215,12 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
     {% endif %}
 </div>
 {% if bg_type == 2 %}
-<div id="pageContent" class="mt-8 px-4 sm:px-6 lg:px-8 py-8 z-10 relative"
+<div id="pageContent" class="px-4 sm:px-6 lg:px-8 py-8 z-10 relative"
     style="background-image: url('{{ user_theme.background }}'); background-repeat: repeat-y; background-size: 100% auto; background-position: center top;">
     {% else %}
-    <div id="pageContent" class="mt-8 px-4 sm:px-6 lg:px-8 py-8 z-10 relative">
+    <div id="pageContent" class="px-4 sm:px-6 lg:px-8 py-8 z-10 relative">
         {% endif %}
-        <div class="max-w-6xl mx-auto">
+        <div class="mt-8 max-w-6xl mx-auto">
             <div class="flex flex-col sm:flex-row sm:items-center gap-6 mb-10">
                 <div class="relative w-32 h-32 flex items-center justify-center group flex-shrink-0">
                     <img src="{{ viewed_user.profile_picture }}" alt="{{ viewed_user.username }}"

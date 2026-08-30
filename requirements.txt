@@ -10,3 +10,4 @@ pillow
 colorgram.py
 redis
 sqlalchemy
+alembic

@@ -1,12 +1,18 @@
 from datetime import datetime
 from typing import Optional
 
+from datetime import datetime
+from pathlib import Path
+from typing import Optional
+
 import config
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Integer, String, Text, func, text
 from sqlalchemy.dialects.postgresql import JSONB, TIMESTAMP, UUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
+from alembic import command
+from alembic.config import Config
 
 class Base(DeclarativeBase):
     pass
@@ -20,10 +26,17 @@ CHECKOUT_BIND = "checkout"
 def init_db(app):
     """Connect the checkout database as a Flask-SQLAlchemy bind."""
     app.config.setdefault("SQLALCHEMY_BINDS", {})
-    app.config["SQLALCHEMY_BINDS"][CHECKOUT_BIND] = getattr(
-        config, "checkout_db_url", config.checkout_db_url
-    )
+    app.config["SQLALCHEMY_BINDS"][CHECKOUT_BIND] = config.checkout_db_url
+
     db.init_app(app)
+    _run_migrations()
+
+
+def _run_migrations():
+    root = Path(__file__).resolve().parent.parent
+    alembic_cfg = Config(str(root / "alembic.ini"))
+    alembic_cfg.set_main_option("script_location", str(root / "migrations"))
+    command.upgrade(alembic_cfg, "head")
 
 
 class Coupon(db.Model):
