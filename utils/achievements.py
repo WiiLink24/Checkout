@@ -13,7 +13,7 @@ from utils.utils import (
 
 _ACHIEVEMENTS_VERSION = 1
 _ACHIEVEMENTS_REFRESH_HOURS = 2
-_GLOBAL_TALLY_TTL = 24 * 60 * 60
+_GLOBAL_TALLY_TTL = 60 * 60
 _ACHIEVEMENT_POINTS = 50
 
 
@@ -201,9 +201,9 @@ def _build_points(metrics, achieved_ids, previous):
 
     previous_achievements = set(old_milestones.get("achievements", []))
     new_achievements = set(achieved_ids) - previous_achievements
-    play_minutes = max(
-        0, metrics.get("total_minutes", 0) - old_milestones.get("total_minutes", 0)
-    )
+    live_minutes = metrics.get("total_minutes", 0)
+    old_minutes = old_milestones.get("total_minutes", 0)
+    play_minutes = max(0, live_minutes - old_minutes)
     new_reviews = max(0, metrics.get("reviews", 0) - old_milestones.get("reviews", 0))
     new_polls = max(0, metrics.get("polls", 0) - old_milestones.get("polls", 0))
     new_contests = max(
@@ -235,8 +235,12 @@ def _build_points(metrics, achieved_ids, previous):
         "balance": max(0, earned - spent),
         "milestones": {
             **old_milestones,
-            "total_minutes": old_milestones.get("total_minutes", 0)
-            + (play_minutes // 60) * 60,
+            # Live totals can drop below the stored milestone in certain scenarios.
+            "total_minutes": (
+                live_minutes
+                if live_minutes < old_minutes
+                else old_minutes + (play_minutes // 60) * 60
+            ),
             "reviews": metrics.get("reviews", 0),
             "polls": metrics.get("polls", 0),
             "contest_submissions": metrics.get("contest_submissions", 0),
