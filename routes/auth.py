@@ -1001,13 +1001,6 @@ def index():
         follower_count = count_followers(own_primary_wii)
         following_count = count_following(own_primary_wii)
 
-        wii_breakdown = build_wii_breakdown(serial_prefixes, wii_numbers)
-
-        # Follow graph counts for the viewer's own profile chips
-        own_primary_wii = wii_numbers[0] if wii_numbers else None
-        follower_count = count_followers(own_primary_wii) if own_primary_wii else 0
-        following_count = count_following(own_primary_wii) if own_primary_wii else 0
-
         recent_contests = (
             fetch_contest_submissions(wii_numbers, limit=3) if wii_numbers else []
         )
