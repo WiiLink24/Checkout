@@ -47,7 +47,15 @@
                 style="backface-visibility: hidden; transform: rotateY(0deg);">
                 <div
                     class="poll-metadata pt-1 pl-2 pr-2 flex flex-row items-center justify-between text-gray-800 text-sm">
-                    <span class="font-bold">
+                    <span class="font-bold flex flex-row items-center">
+                        {% if poll.wii_number %}<span class="inline-flex items-center gap-1.5 mr-1.5"><span
+                                class="inline-block w-2.5 h-2.5 rounded-full"
+                                style="background: {{ poll.wii_color }}"></span><span class="text-xs">{{
+                                poll.wii_number|format_serial }}</span></span>{% endif %}
+                        {% if poll.wii_no %}
+                        <span class="inline-block w-2 h-2 rounded-full align-middle mr-1.5"
+                            style="background: {{ fetch_wii_color_from_number(poll.wii_no) }}"></span>
+                        {% endif %}
                         {% if poll.type == 'n' %}
                         <i class="fas fa-flag mr-1"></i>National
                         {% else %}
@@ -92,6 +100,10 @@
                 <div
                     class="poll-metadata pt-1 pl-2 pr-2 flex flex-row items-center justify-between text-gray-800 text-sm">
                     <span class="font-bold">
+                        {% if poll.wii_number %}<span class="inline-flex items-center gap-1.5 mr-1.5"><span
+                                class="inline-block w-2.5 h-2.5 rounded-full"
+                                style="background: {{ poll.wii_color }}"></span><span class="text-xs">{{
+                                poll.wii_number|format_serial }}</span></span>{% endif %}
                         Predictions
                     </span>
                     <span class="opacity-70 text-right">

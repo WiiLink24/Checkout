@@ -1,5 +1,11 @@
 import config
-from utils.utils import _build_serial_filter, _run_query
+from utils.utils import (
+    _build_serial_filter,
+    _run_query,
+    find_wii_number_by_serial,
+    _resolve_wii_number,
+    cache,
+)
 
 # Validation functions
 
@@ -125,6 +131,7 @@ def fetch_favorites(serial_prefixes, limit=30, offset=0):
         normalized["title"] = title_value
         normalized["title_en"] = row.get("title_en")
         normalized["synopsis_en"] = row.get("synopsis_en")
+        normalized["wii_number"] = _resolve_wii_number(row.get("serial_number"))
         favorites.append(normalized)
 
     return favorites
@@ -208,7 +215,11 @@ def fetch_recommendations(
         ORDER BY {order_by}
         LIMIT {limit} OFFSET {offset}
     """
-    return _run_query(query, params, config.db_url)
+    results = _run_query(query, params, config.db_url)
+
+    for row in results:
+        row["wii_number"] = _resolve_wii_number(row.get("serial_number"))
+    return results
 
 
 def fetch_recommendation_averages(game_id, gender=None, age_min=None, age_max=None):
@@ -312,17 +323,19 @@ def fetch_time_played(serial_prefixes, sort_by="time_played", limit=30, offset=0
                 f.game_id,
                 SUM(f.times_played) AS times_played,
                 SUM(f.time_played) AS time_played,
-                MAX(f.id) AS latest_id
+                MAX(f.id) AS latest_id,
+                STRING_AGG(DISTINCT LEFT(f.serial_number, 12), ',') AS serials
             FROM filtered f
             GROUP BY f.game_id
         ), ranked AS (
             SELECT
                 spg.game_id, spg.times_played, spg.time_played, spg.latest_id,
+                spg.serials,
                 ROW_NUMBER() OVER (ORDER BY {sort_expr}) AS sort_rank
             FROM summed_per_game spg
         ), detailed_games AS (
             SELECT
-                r.latest_id AS id, r.times_played, r.time_played,
+                r.latest_id AS id, r.times_played, r.time_played, r.serials,
                 COALESCE(t.game_id, r.game_id) AS game_id,
                 COALESCE(t.display_name, t.title_en, r.game_id) AS title,
                 t.title_en, t.display_name, t.synopsis_en, t.genre, t.developer, t.publisher, t.game_type,
@@ -341,7 +354,14 @@ def fetch_time_played(serial_prefixes, sort_by="time_played", limit=30, offset=0
         ORDER BY sort_rank
         LIMIT {limit} OFFSET {offset}
     """
-    return _run_query(query, params, config.db_url)
+    rows = _run_query(query, params, config.db_url)
+
+    for row in rows:
+        serials = (row.get("serials") or "").split(",")
+        row["wii_numbers"] = [
+            _resolve_wii_number(serial) for serial in serials if serial
+        ]
+    return rows
 
 
 def fetch_time_played_stats(game_id):
@@ -446,3 +466,80 @@ def fetch_user_stats(serial_prefixes, use_cache=True):
     total_reviews = reviews_result[0]["total_reviews"] if reviews_result else 0
 
     return {"total_minutes": total_minutes, "total_reviews": total_reviews}
+
+
+def fetch_metrics_per_wii(serial_prefixes, use_cache=True):
+    """Per-serial aggregates: {serial_prefix: {"minutes","reviews","favorites","games"}}."""
+    if not serial_prefixes:
+        return {}
+
+    tp_where, tp_params = _build_serial_filter("tp.serial_number", serial_prefixes)
+    tp_rows = _run_query(
+        f"""
+        SELECT tp.serial_number AS serial,
+               COALESCE(SUM(tp.time_played), 0) AS minutes,
+               COUNT(DISTINCT tp.game_id) AS games
+        FROM time_played tp
+        WHERE {tp_where}
+        GROUP BY tp.serial_number
+        """,
+        tp_params,
+        config.db_url,
+        use_cache=use_cache,
+    )
+
+    r_where, r_params = _build_serial_filter("r.serial_number", serial_prefixes)
+    r_rows = _run_query(
+        f"""
+        SELECT r.serial_number AS serial, COUNT(*) AS reviews
+        FROM recommendations r
+        WHERE {r_where}
+        GROUP BY r.serial_number
+        """,
+        r_params,
+        config.db_url,
+        use_cache=use_cache,
+    )
+
+    b_where, b_params = _build_serial_filter("b.serial_number", serial_prefixes)
+    b_rows = _run_query(
+        f"""
+        SELECT b.serial_number AS serial, COUNT(DISTINCT b.game_id) AS favorites
+        FROM bookmarks b
+        WHERE {b_where}
+        GROUP BY b.serial_number
+        """,
+        b_params,
+        config.db_url,
+        use_cache=use_cache,
+    )
+
+    metrics = {}
+    for row in tp_rows:
+        metrics.setdefault(row["serial"][:12], {}).update(
+            minutes=row["minutes"], games=row["games"]
+        )
+    for row in r_rows:
+        metrics.setdefault(row["serial"][:12], {}).update(reviews=row["reviews"])
+    for row in b_rows:
+        metrics.setdefault(row["serial"][:12], {}).update(favorites=row["favorites"])
+    return metrics
+
+
+def fetch_time_played_per_wii(serial_prefixes, use_cache=True):
+    """Per-serial-prefix, per-game playtime rows for a set of serial prefixes."""
+    if not serial_prefixes:
+        return []
+    where_clause, params = _build_serial_filter("tp.serial_number", serial_prefixes)
+    return _run_query(
+        f"""
+        SELECT LEFT(tp.serial_number, 12) AS serial, tp.game_id,
+               SUM(tp.time_played) AS time_played, SUM(tp.times_played) AS times_played
+        FROM time_played tp
+        WHERE {where_clause}
+        GROUP BY LEFT(tp.serial_number, 12), tp.game_id
+        """,
+        params,
+        config.db_url,
+        use_cache=use_cache,
+    )

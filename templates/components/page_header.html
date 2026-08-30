@@ -15,7 +15,9 @@
 {'name': 'Favorites', 'path': '/favorites', 'active': page_title == 'Favorites'},
 {'name': 'Polls', 'path': '/polls', 'active': page_title == 'Polls'},
 {'name': 'Suggestions', 'path': '/suggestions', 'active': page_title == 'Suggestions'},
-{'name': 'Contest Submissions', 'path': '/contest_submissions', 'active': page_title == 'Contest Submissions'}
+{'name': 'Contest Submissions', 'path': '/contest_submissions', 'active': page_title == 'Contest Submissions'},
+{'name': 'Followers', 'path': '/followers', 'active': page_title == 'Followers'},
+{'name': 'Following', 'path': '/following', 'active': page_title == 'Following'}
 ] %}
 <div class="min-h-screen px-4 sm:px-6 lg:px-8 py-12">
     <div class="max-w-6xl mx-auto">
@@ -51,7 +53,12 @@
             </h1>
             <span class="flex flex-wrap items-center justify-center gap-2 mt-3">
                 {% for linked_wii in viewed_user.linked_wii_no %}
-                <p class="px-3 py-1 theme-chip rounded-md text-[var(--user-soft)]">{{ linked_wii|format_serial }}</p>
+                <p class="inline-flex items-center gap-1.5 px-3 py-1 theme-chip rounded-md text-[var(--user-soft)]"
+                    title="Wii {{ loop.index }}">
+                    <span class="inline-block w-2 h-2 rounded-full flex-shrink-0"
+                        style="background: {{ fetch_wii_color_from_number(linked_wii) }}"></span>
+                    {{ linked_wii|format_serial }}
+                </p>
                 {% endfor %}
             </span>
         </div>

@@ -23,12 +23,18 @@ WiiLink Checkout | Suggestions
 
                         <div class="w-full h-full bg-gray-200 rounded-[20px]"
                             style="backface-visibility: hidden; transform: rotateY(0deg);">
-                            <div
-                                class="pt-2 pb-3 p-1.5 rounded-2xl bg-gradient-to-b from-gray-900 to-gray-700 h-full flex flex-col">
-                                <h3 class="border-black border-2 bg-black rounded-t-xl rounded-b-md text-center text-lg text-white font-bold p-2 line-clamp-2"
-                                    title="{{ suggestion.content }}">
-                                    {{ suggestion.content }}
-                                </h3>
+<div
+                            class="pt-2 pb-3 p-1.5 rounded-2xl bg-gradient-to-b from-gray-900 to-gray-700 h-full flex flex-col">
+                            <h3 class="border-black border-2 bg-black rounded-t-xl rounded-b-md text-center text-lg text-white font-bold p-2 line-clamp-2"
+                                title="{{ suggestion.content }}">
+                                                            {% if suggestion.wii_no %}
+                            <div class="flex items-center gap-1.5 pb-1 text-gray-200 text-xs">
+                                <span class="inline-block w-2.5 h-2.5 rounded-full"
+                                    style="background: {{ fetch_wii_color_from_number(suggestion.wii_no) }}"></span>
+                            </div>
+                            {% endif %}
+                                {{ suggestion.content }}
+                            </h3>
 
                                 <div class="mt-2 w-full flex-1 grid grid-cols-2 gap-3">
                                     <div

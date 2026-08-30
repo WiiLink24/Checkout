@@ -18,7 +18,11 @@
                     <span class="flex flex-col gap-3">
                         <div>
                             <h2 class="text-2xl font-bold text-white">{{ rec.title_en or rec.title }}</h2>
-                            <p class="text-sm text-[var(--user-soft)] mt-1">{{ rec.game_id }}{% if rec.release_year %} • {{
+                            <p class="text-sm text-[var(--user-soft)] mt-1 flex flex-row items-center">{% if rec.wii_number %}<span
+                                    class="inline-flex items-center gap-1.5 align-middle mr-1.5"><span
+                                        class="inline-block w-2 h-2 rounded-full"
+                                        style="background: {{ fetch_wii_color_from_number(rec.wii_number) }}"></span></span>{% endif %}{{
+                                rec.game_id }}{% if rec.release_year %} • {{
                                 rec.release_year }}{% endif %}</p>
                         </div>
                         <div class="flex flex-wrap items-center gap-2 text-xs text-[var(--user-soft)]">

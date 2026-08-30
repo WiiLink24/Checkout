@@ -47,6 +47,11 @@
                     <input type="number" name="points" min="0" placeholder="e.g. 100"
                         class="w-full bg-[var(--user-base)] border border-[var(--user-transparent)] text-white rounded-lg px-4 py-2.5 text-sm outline-none focus:border-[var(--user-light)]">
                 </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-[var(--user-soft)] mb-1">Expires at (optional)</label>
+                    <input type="datetime-local" name="expires_at"
+                        class="w-full bg-[var(--user-base)] border border-[var(--user-transparent)] text-white rounded-lg px-4 py-2.5 text-sm outline-none focus:border-[var(--user-light)] [color-scheme:dark]">
+                </div>
                 <div class="md:col-span-2 flex items-end">
                     <button type="submit"
                         class="theme-btn bg-[var(--user-soft)] border rounded-lg px-6 py-2.5 text-sm text-white font-semibold">Create
@@ -68,6 +73,7 @@
                             <th class="px-5 py-3">Issuer</th>
                             <th class="px-5 py-3">Rewards</th>
                             <th class="px-5 py-3">Uses</th>
+                            <th class="px-5 py-3">Expires</th>
                             <th class="px-5 py-3">Redeemed by</th>
                             <th class="px-5 py-3"></th>
                         </tr>
@@ -86,6 +92,17 @@
                             </td>
                             <td class="px-5 py-3 text-[var(--user-soft)]">
                                 {{ coupon.uses_count }}{% if coupon.max_uses != -1 %} / {{ coupon.max_uses }}{% else %} / unlimited{% endif %}
+                            </td>
+                            <td class="px-5 py-3">
+                                {% if coupon.expires_at %}
+                                <span
+                                    class="inline-block px-2 py-0.5 rounded-md text-xs {% if coupon.is_expired %}bg-rose-500/20 text-rose-300{% else %}theme-chip text-white{% endif %}">
+                                    {% if coupon.is_expired %}Expired{% else %}Expires{% endif %} {{
+                                    coupon.expires_at.strftime('%b %d, %Y %H:%M UTC') }}
+                                </span>
+                                {% else %}
+                                <span class="text-[var(--user-soft)]">Never</span>
+                                {% endif %}
                             </td>
                             <td class="px-5 py-3 text-[var(--user-soft)]">
                                 {{ coupon.redeemer_count|default(0) }}

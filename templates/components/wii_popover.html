@@ -1,0 +1,23 @@
+{% set position_class = position_class or "left-1/2 -translate-x-1/2 top-full mt-2" %}
+{% if wii_breakdown and wii_breakdown|selectattr(metric)|list %}
+<div class="absolute {{ position_class }} w-full max-w-[400px] rounded-xl border border-[var(--user-transparent)] bg-[var(--user-dark)] shadow-xl p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-30">
+    <div class="flex flex-col gap-1.5">
+        {% for w in wii_breakdown %}
+        {% if w[metric] %}
+        <div class="flex items-center gap-2 text-sm">
+            <span class="inline-block w-2.5 h-2.5 rounded-full flex-shrink-0"
+                style="background: {{ fetch_wii_color_from_number(w.wii_number) }}"></span>
+            {% if w.wii_number %}
+            <span class="text-[var(--user-soft)] truncate">...{{ (w.wii_number|format_serial)[-4:] }}</span>
+            {% else %}
+            <span class="text-[var(--user-soft)] truncate opacity-60">Unknown Wii</span>
+            {% endif %}
+            <span class="ml-auto text-white font-semibold">
+                {% if fmt == 'playtime' %}{{ w[metric]|format_playtime }}{% else %}{{ w[metric] }}{% endif %}
+            </span>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+{% endif %}

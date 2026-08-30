@@ -38,6 +38,27 @@ def count_user_polls(wii_numbers, db_url=None, use_cache=True):
     return result[0].get("count", 0) if result else 0
 
 
+def count_user_polls_per_wii(wii_numbers, db_url=None, use_cache=True):
+    """Per-Wii poll vote counts: {wii_no: count}."""
+    if db_url is None:
+        db_url = getattr(config, "evc_db_url", None)
+    if not db_url or not wii_numbers:
+        return {}
+
+    if isinstance(wii_numbers, str):
+        wii_numbers = [wii_numbers]
+
+    placeholders = ",".join(["%s"] * len(wii_numbers))
+    query = f"""
+        SELECT wii_no, COUNT(DISTINCT question_id) AS count
+        FROM votes
+        WHERE wii_no IN ({placeholders}) AND type_cd = 0
+        GROUP BY wii_no
+    """
+    rows = _run_query(query, wii_numbers, db_url, use_cache=use_cache)
+    return {row["wii_no"]: row["count"] for row in rows}
+
+
 def count_user_suggestions(wii_numbers, db_url=None):
     """Count total suggestions for given Wii numbers."""
     if db_url is None:
@@ -151,7 +172,7 @@ def fetch_user_suggestions(wii_numbers, limit=30, offset=0, db_url=None):
 
     query = f"""
         SELECT
-            id, country_code, region_code, language_code, content,
+            id, country_code, region_code, language_code, content, wii_no
             choice1, choice2, wii_no
         FROM suggestions
         WHERE {where_clause}

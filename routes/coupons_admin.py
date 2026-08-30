@@ -1,4 +1,5 @@
 from functools import wraps
+from datetime import datetime, timezone
 
 import config
 from flask import (
@@ -11,7 +12,12 @@ from flask import (
     abort,
 )
 
-from channels.coupons import list_coupons, create_coupon, delete_coupon
+from channels.coupons import (
+    list_coupons,
+    create_coupon,
+    delete_coupon,
+    _is_expired,
+)
 from routes.auth import get_logged_in_user_info
 from utils.theme import get_theme_catalog
 
@@ -66,10 +72,25 @@ def panel():
 
             if not coupon_code or not redeemables:
                 flash("A coupon code and at least one reward are required.")
-            elif create_coupon(coupon_code, issuer, redeemables, max_uses):
-                flash(f"Coupon {coupon_code} created.")
             else:
-                flash("Failed to create coupon.")
+                expires_at = None
+                expires_raw = (request.form.get("expires_at") or "").strip()
+                if expires_raw:
+                    try:
+                        parsed = datetime.fromisoformat(expires_raw)
+                        # datetime-local has no timezone: assume server-local time
+                        if parsed.tzinfo is None:
+                            parsed = parsed.astimezone()
+                        expires_at = parsed.astimezone(timezone.utc)
+                    except ValueError:
+                        flash("Invalid expiration date; coupon not created.")
+                        return redirect(url_for("coupons_admin.panel"))
+                if create_coupon(
+                    coupon_code, issuer, redeemables, max_uses, expires_at
+                ):
+                    flash(f"Coupon {coupon_code} created.")
+                else:
+                    flash("Failed to create coupon.")
 
         elif action == "delete":
             coupon_uuid = (request.form.get("coupon_uuid") or "").strip()
@@ -81,9 +102,12 @@ def panel():
         return redirect(url_for("coupons_admin.panel"))
 
     themes = [theme for tid, theme in catalog.items() if tid != "default"]
+    coupons = list_coupons()
+    for coupon in coupons:
+        coupon["is_expired"] = _is_expired(coupon)
     return render_template(
-        "pages/coupons_admin.html",
+        "coupons_admin.html",
         user_info=user_info,
-        coupons=list_coupons(),
+        coupons=coupons,
         themes=themes,
     )
