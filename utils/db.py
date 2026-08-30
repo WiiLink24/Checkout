@@ -21,7 +21,7 @@ def init_db(app):
     """Connect the checkout database as a Flask-SQLAlchemy bind."""
     app.config.setdefault("SQLALCHEMY_BINDS", {})
     app.config["SQLALCHEMY_BINDS"][CHECKOUT_BIND] = getattr(
-        config, "checkout_db_url", config.db_url
+        config, "checkout_db_url", config.checkout_db_url
     )
     db.init_app(app)
 
