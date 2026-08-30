@@ -1,4 +1,5 @@
 import psycopg2
+import re
 import config
 import requests
 import hashlib
@@ -8,20 +9,25 @@ import time
 from flask_caching import Cache
 
 
-def get_serial_prefixes(user_info):
-    wiis = user_info.get("wiis")
-    if not wiis:
-        return []
-
-    serials = []
+def extract_linked_wiis(attributes):
+    """(serial_prefixes, wii_numbers) for every linked Wii in an attributes dict."""
+    serial_prefixes, wii_numbers = [], []
+    wiis = (attributes or {}).get("wiis")
     if isinstance(wiis, list):
         for wii in wiis:
-            if isinstance(wii, dict):
-                serial = wii.get("serial_number")
-                if serial:
-                    serials.append(serial)
+            if not isinstance(wii, dict):
+                continue
+            serial = wii.get("serial_number")
+            wii_number = wii.get("wii_number")
+            if serial:
+                serial_prefixes.append(serial[:12])
+            if wii_number:
+                wii_numbers.append(wii_number)
+    return serial_prefixes, wii_numbers
 
-    return [serial[:12] for serial in serials if serial]
+
+def get_serial_prefixes(user_info):
+    return extract_linked_wiis(user_info)[0]
 
 
 def _build_serial_filter(column_name, serial_prefixes):
@@ -189,54 +195,29 @@ def find_user_by_wii_number(wii_number, attempt=0):
         return None
 
 
-def find_wii_number_by_serial(serial_number, attempt=0):
-    """
-    Find the Wii number (friend code) for a console serial number.
-    Returns the wii_number, or None if no linked Wii has that serial.
-    """
-    serial_number = serial_number[
-        :12
-    ]  # Only use the first 12 characters of the serial for matching
-    if not serial_number:
-        return None
-    base_url = config.authentik_api_url.rstrip("/")
-    url = f'{base_url}/core/users/?page_size=30&attributes=%7B%22wiis__{attempt}__serial_number%22%3A+"{serial_number}"%7D'
-    headers = {
-        "Accept": "application/json",
-        "Authorization": f"Bearer {config.authentik_service_account_token}",
-    }
-    try:
-        response = requests.get(url, headers=headers, timeout=15)
-        response.raise_for_status()
-        data = response.json()
-        results = data.get("results", [])
-        if (
-            not results and attempt < 10
-        ):  # Honestly fuck you if you have more than 9 Wiis.
-            return find_wii_number_by_serial(serial_number, attempt=attempt + 1)
-        if not results:
-            return None
-        for wii in results[0].get("attributes", {}).get("wiis", []):
-            if isinstance(wii, dict) and wii.get("serial_number") == serial_number:
-                return wii.get("wii_number")
-        return None
-    except requests.RequestException as e:
-        print(f"Authentik API error: {e}")
-        return None
+def _normalize_serial_prefix(serial):
+    """Console identity: strip the device id (everything from the first
+    '+' or space separator). Serials are 11 or 12 chars before it, so a
+    plain [:12] cut is not enough."""
+    return re.split("[ +]", serial or "", 1)[0]
+
+def build_serial_to_wii_mapping(attributes):
+    """We resolve the serial locally once the user object is in hand."""
+    mapping = {}
+    wiis = (attributes or {}).get("wiis")
+    if isinstance(wiis, list):
+        for wii in wiis:
+            if not isinstance(wii, dict):
+                continue
+            serial = wii.get("serial_number")
+            wii_number = wii.get("wii_number")
+            if serial and wii_number:
+                mapping[_normalize_serial_prefix(serial)] = wii_number
+    return mapping
 
 
-def _resolve_wii_number(serial):
-    """Resolve a serial number to its wii_number (cached to limit API calls)."""
-    if not serial:
-        return None
-    cache_key = f"wii_number_by_serial:{serial}"
-    wii_number = cache.get(cache_key)
-    if wii_number is None:
-        wii_number = find_wii_number_by_serial(serial)
-        if wii_number:
-            cache.set(cache_key, wii_number, timeout=600)
-    return wii_number
-
+def resolve_serial(serial, serial_to_wii=None):
+    return serial_to_wii.get(_normalize_serial_prefix(serial or ""))
 
 def fetch_authentik_users():
     """

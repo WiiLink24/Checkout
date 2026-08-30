@@ -1,7 +1,7 @@
 from channels.cmoc import count_contest_submissions_per_wii
 from channels.evc import count_user_polls_per_wii
 from channels.nc import fetch_metrics_per_wii, fetch_time_played_per_wii
-from utils.utils import _resolve_wii_number
+from utils.utils import resolve_serial
 
 
 def fetch_wii_color_from_number(wii_number):
@@ -26,7 +26,7 @@ def fetch_wii_color_from_number(wii_number):
     return "#{:02X}{:02X}{:02X}".format(r, g, b)
 
 
-def build_wii_breakdown(serial_prefixes, wii_numbers):
+def build_wii_breakdown(serial_prefixes, wii_numbers, serial_to_wii=None):
     """Per-Wii metric rows for the home stat-tile popovers."""
     metrics = fetch_metrics_per_wii(serial_prefixes)
     polls = count_user_polls_per_wii(wii_numbers) if wii_numbers else {}
@@ -34,7 +34,7 @@ def build_wii_breakdown(serial_prefixes, wii_numbers):
 
     breakdown = {}
     for serial, m in metrics.items():
-        wii_number = _resolve_wii_number(serial)
+        wii_number = resolve_serial(serial, serial_to_wii)
         entry = breakdown.setdefault(wii_number, {"wii_number": wii_number})
         entry.update(m)
     for wii_number, count in polls.items():
@@ -44,20 +44,16 @@ def build_wii_breakdown(serial_prefixes, wii_numbers):
     return list(breakdown.values())
 
 
-def attach_time_breakdown(rows, serial_prefixes):
+def attach_time_breakdown(rows, serial_prefixes, serial_to_wii=None):
     """Attach per-Wii time/times-played rows to each game family."""
     per_wii = fetch_time_played_per_wii(serial_prefixes)
     if not per_wii:
         return
-    serial_to_wii = {}
-    for row in per_wii:
-        if row["serial"] not in serial_to_wii:
-            serial_to_wii[row["serial"]] = _resolve_wii_number(row["serial"])
     families = {}
     for row in per_wii:
         families.setdefault(row["game_id"][:4], []).append(
             {
-                "wii_number": serial_to_wii[row["serial"]],
+                "wii_number": resolve_serial(row["serial"], serial_to_wii),
                 "time_played": row["time_played"],
                 "times_played": row["times_played"],
             }

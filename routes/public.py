@@ -4,6 +4,8 @@ from utils.utils import (
     find_user_by_wii_number,
     normalize_serial,
     extract_serial_prefix,
+    extract_linked_wiis,
+    build_serial_to_wii_mapping,
     build_viewed_user_info,
     build_unclaimed_user_info,
     format_serial,
@@ -75,26 +77,16 @@ def recommendations_by_serial(wii_no):
 
     user_info = get_logged_in_user_info()
     authentik_user = find_user_by_wii_number(wii_no)
-    user_serial = None
     if authentik_user:
         if not is_public_profile(authentik_user, user_info):
             return (
                 render_template("errors/private_profile.html", user_info=user_info),
                 400,
             )
+        serial_prefixes, _ = extract_linked_wiis(authentik_user.get("attributes"))
+        serial_to_wii = build_serial_to_wii_mapping(authentik_user.get("attributes"))
 
-        wiis = authentik_user.get("attributes", {}).get("wiis") or authentik_user.get(
-            "wiis", []
-        )
-        if isinstance(wiis, list):
-            for wii in wiis:
-                if isinstance(wii, dict) and wii.get("serial_number"):
-                    user_serial = wii.get("serial_number")
-                    break
-
-    if authentik_user and user_serial:
-        serial_prefixes = extract_serial_prefix(user_serial)
-
+    if authentik_user and serial_prefixes:
         page = parse_int(request.args.get("page", "1"))
         if page < 1:
             page = 1
@@ -108,7 +100,11 @@ def recommendations_by_serial(wii_no):
         total_count = count_recommendations(serial_prefixes)
         total_pages = (total_count + per_page - 1) // per_page
         recommendations = fetch_recommendations(
-            serial_prefixes, sort_by=sort_by, limit=per_page, offset=offset
+            serial_prefixes,
+            sort_by=sort_by,
+            limit=per_page,
+            offset=offset,
+            serial_to_wii=serial_to_wii,
         )
 
         viewed_user = build_viewed_user_info(authentik_user)
@@ -175,25 +171,15 @@ def time_played_by_serial(wii_no):
 
     user_info = get_logged_in_user_info()
     authentik_user = find_user_by_wii_number(wii_no)
-    user_serial = None
     if authentik_user:
         if not is_public_profile(authentik_user, user_info):
             return (
                 render_template("errors/private_profile.html", user_info=user_info),
                 400,
             )
-
-        wiis = authentik_user.get("attributes", {}).get("wiis") or authentik_user.get(
-            "wiis", []
-        )
-        if isinstance(wiis, list):
-            for wii in wiis:
-                if isinstance(wii, dict) and wii.get("serial_number"):
-                    user_serial = wii.get("serial_number")
-                    break
-    if authentik_user and user_serial:
-        serial_prefixes = extract_serial_prefix(user_serial)
-
+        serial_prefixes, _ = extract_linked_wiis(authentik_user.get("attributes"))
+        serial_to_wii = build_serial_to_wii_mapping(authentik_user.get("attributes"))
+    if authentik_user and serial_prefixes:
         page = parse_int(request.args.get("page", "1"))
         if page < 1:
             page = 1
@@ -207,9 +193,13 @@ def time_played_by_serial(wii_no):
         total_count = count_time_played(serial_prefixes)
         total_pages = (total_count + per_page - 1) // per_page
         time_played = fetch_time_played(
-            serial_prefixes, sort_by=sort_by, limit=per_page, offset=offset
+            serial_prefixes,
+            sort_by=sort_by,
+            limit=per_page,
+            offset=offset,
+            serial_to_wii=serial_to_wii,
         )
-        attach_time_breakdown(time_played, serial_prefixes)
+        attach_time_breakdown(time_played, serial_prefixes, serial_to_wii=serial_to_wii)
 
         viewed_user = build_viewed_user_info(authentik_user)
 
@@ -277,26 +267,16 @@ def favorites_by_serial(wii_no):
     user_info = get_logged_in_user_info()
     authentik_user = find_user_by_wii_number(wii_no)
 
-    user_serial = None
     if authentik_user:
         if not is_public_profile(authentik_user, user_info):
             return (
                 render_template("errors/private_profile.html", user_info=user_info),
                 400,
             )
+        serial_prefixes, _ = extract_linked_wiis(authentik_user.get("attributes"))
+        serial_to_wii = build_serial_to_wii_mapping(authentik_user.get("attributes"))
 
-        wiis = authentik_user.get("attributes", {}).get("wiis") or authentik_user.get(
-            "wiis", []
-        )
-        if isinstance(wiis, list):
-            for wii in wiis:
-                if isinstance(wii, dict) and wii.get("serial_number"):
-                    user_serial = wii.get("serial_number")
-                    break
-
-    if authentik_user and user_serial:
-        serial_prefixes = extract_serial_prefix(user_serial)
-
+    if authentik_user and serial_prefixes:
         page = parse_int(request.args.get("page", "1"))
         if page < 1:
             page = 1
@@ -306,7 +286,9 @@ def favorites_by_serial(wii_no):
         total_count = count_bookmarks(serial_prefixes)
         total_pages = (total_count + per_page - 1) // per_page
 
-        games = fetch_favorites(serial_prefixes, limit=per_page, offset=offset)
+        games = fetch_favorites(
+            serial_prefixes, limit=per_page, offset=offset, serial_to_wii=serial_to_wii
+        )
         viewed_user = build_viewed_user_info(authentik_user)
         return render_template(
             "favorites.html",
@@ -477,7 +459,6 @@ def friend_code_home(friend_code):
 
     friend_code_normalized = normalize_serial(friend_code)
     authentik_user = find_user_by_wii_number(friend_code_normalized)
-
     if not authentik_user:
         abort(404)
 
@@ -487,56 +468,45 @@ def friend_code_home(friend_code):
             400,
         )
 
-    wiis = authentik_user.get("attributes", {}).get("wiis")
-    user_serial = None
-    if isinstance(wiis, list):
-        for wii in wiis:
-            if isinstance(wii, dict) and wii.get("serial_number"):
-                user_serial = wii.get("serial_number")
-                break
+    serial_prefixes, wii_numbers = extract_linked_wiis(authentik_user.get("attributes"))
+    serial_to_wii = build_serial_to_wii_mapping(authentik_user.get("attributes"))
+    serial_not_linked = not serial_prefixes
 
-    serial_not_linked = not user_serial
-
-    serial_prefixes = extract_serial_prefix(user_serial) if user_serial else None
-
-    latest_games = (
-        fetch_user_latest_games(serial_prefixes, 6) if serial_prefixes else []
+    latest_games = fetch_user_latest_games(
+        serial_prefixes, 6, serial_to_wii=serial_to_wii
     )
-    latest_favorites = fetch_favorites(serial_prefixes, 5) if serial_prefixes else []
-    latest_reviews = (
-        fetch_user_latest_reviews(serial_prefixes, 6) if serial_prefixes else []
+    latest_favorites = fetch_favorites(serial_prefixes, 5, serial_to_wii=serial_to_wii)
+    latest_reviews = fetch_user_latest_reviews(
+        serial_prefixes, 6, serial_to_wii=serial_to_wii
     )
-    user_stats = (
-        fetch_user_stats(serial_prefixes)
-        if serial_prefixes
-        else {"total_minutes": 0, "total_reviews": 0}
-    )
-    user_counts = (
-        {
-            "favorites": count_bookmarks(serial_prefixes),
-            "games_played": count_time_played(serial_prefixes),
-        }
-        if serial_prefixes
-        else {"favorites": 0, "games_played": 0}
-    )
+    user_stats = fetch_user_stats(serial_prefixes)
+    user_counts = {
+        "favorites": count_bookmarks(serial_prefixes),
+        "games_played": count_time_played(serial_prefixes),
+        "polls": count_user_polls(wii_numbers),
+        "suggestions": count_user_suggestions(wii_numbers),
+        "contest_submissions": count_contest_submissions(wii_numbers),
+    }
 
     viewed_user = build_viewed_user_info(authentik_user)
+    wii_breakdown = build_wii_breakdown(
+        serial_prefixes, wii_numbers, serial_to_wii=serial_to_wii
+    )
 
-    # Get wii numbers for contests and polls
-    wii_numbers = []
-    if isinstance(wiis, list):
-        for wii in wiis:
-            if isinstance(wii, dict) and wii.get("wii_number"):
-                wii_numbers.append(wii.get("wii_number"))
-
-    if wii_numbers:
-        user_counts["polls"] = count_user_polls(wii_numbers)
-        user_counts["suggestions"] = count_user_suggestions(wii_numbers)
-        user_counts["contest_submissions"] = count_contest_submissions(wii_numbers)
-    else:
-        user_counts["polls"] = 0
-        user_counts["suggestions"] = 0
-        user_counts["contest_submissions"] = 0
+    # Follow graph state for the viewed profile's primary Wii
+    primary_wii = wii_numbers[0] if wii_numbers else None
+    viewer_wii = (
+        user_info.get("linked_wii_no", [None])[0]
+        if user_info and user_info.get("linked_wii_no")
+        else None
+    )
+    follow_counts = {
+        "is_following": bool(
+            viewer_wii and primary_wii and is_following(viewer_wii, primary_wii)
+        ),
+        "follower_count": count_followers(primary_wii),
+        "following_count": count_following(primary_wii),
+    }
 
     wii_breakdown = build_wii_breakdown(serial_prefixes, wii_numbers)
 
@@ -569,10 +539,11 @@ def friend_code_home(friend_code):
 
     # Render Mii images for recent contests
     for submission in recent_contests:
-        if submission.get("mii_data"):
-            submission["mii_image_url"] = render_mii_to_url(submission["mii_data"])
-        else:
-            submission["mii_image_url"] = None
+        submission["mii_image_url"] = (
+            render_mii_to_url(submission["mii_data"])
+            if submission.get("mii_data")
+            else None
+        )
 
     # Refresh the viewed user's achievements if their stored payload is stale
     fresh_payload, _ = refresh_achievements_for_user(authentik_user)

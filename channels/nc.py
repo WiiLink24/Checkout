@@ -2,8 +2,7 @@ import config
 from utils.utils import (
     _build_serial_filter,
     _run_query,
-    find_wii_number_by_serial,
-    _resolve_wii_number,
+    resolve_serial,
     cache,
 )
 
@@ -77,7 +76,7 @@ def count_time_played(serial_prefixes, use_cache=True):
 # Bookmarks
 
 
-def fetch_favorites(serial_prefixes, limit=30, offset=0):
+def fetch_favorites(serial_prefixes, limit=30, offset=0, serial_to_wii=None):
     """Fetch user's bookmarked favorite games from the bookmarks table."""
     where_clause, params = _build_serial_filter("b.serial_number", serial_prefixes)
     if not where_clause:
@@ -131,7 +130,9 @@ def fetch_favorites(serial_prefixes, limit=30, offset=0):
         normalized["title"] = title_value
         normalized["title_en"] = row.get("title_en")
         normalized["synopsis_en"] = row.get("synopsis_en")
-        normalized["wii_number"] = _resolve_wii_number(row.get("serial_number"))
+        normalized["wii_number"] = resolve_serial(
+            row.get("serial_number"), serial_to_wii
+        )
         favorites.append(normalized)
 
     return favorites
@@ -178,7 +179,11 @@ def fetch_top_favorites(limit=30):
 
 
 def fetch_recommendations(
-    serial_prefixes, sort_by="recommendation_percent", limit=30, offset=0
+    serial_prefixes,
+    sort_by="recommendation_percent",
+    limit=30,
+    offset=0,
+    serial_to_wii=None,
 ):
     """Fetch recommendations for a given serial number"""
     where_clause, params = _build_serial_filter("serial_number", serial_prefixes)
@@ -218,7 +223,7 @@ def fetch_recommendations(
     results = _run_query(query, params, config.db_url)
 
     for row in results:
-        row["wii_number"] = _resolve_wii_number(row.get("serial_number"))
+        row["wii_number"] = resolve_serial(row.get("serial_number"), serial_to_wii)
     return results
 
 
@@ -300,7 +305,9 @@ def fetch_top_best_games(limit=30):
 # Time Played
 
 
-def fetch_time_played(serial_prefixes, sort_by="time_played", limit=30, offset=0):
+def fetch_time_played(
+    serial_prefixes, sort_by="time_played", limit=30, offset=0, serial_to_wii=None
+):
     """Fetch time played data for a given serial number"""
     where_clause, params = _build_serial_filter("tp.serial_number", serial_prefixes)
     if not where_clause:
@@ -359,7 +366,7 @@ def fetch_time_played(serial_prefixes, sort_by="time_played", limit=30, offset=0
     for row in rows:
         serials = (row.get("serials") or "").split(",")
         row["wii_numbers"] = [
-            _resolve_wii_number(serial) for serial in serials if serial
+            resolve_serial(serial, serial_to_wii) for serial in serials if serial
         ]
     return rows
 
@@ -421,15 +428,19 @@ def fetch_top_most_played(limit=30):
 # User Latest Activity
 
 
-def fetch_user_latest_games(serial_prefixes, limit=5):
+def fetch_user_latest_games(serial_prefixes, limit=5, serial_to_wii=None):
     """Fetch user's most recently played games."""
-    games = fetch_time_played(serial_prefixes, sort_by="last_played")
+    games = fetch_time_played(
+        serial_prefixes, sort_by="last_played", serial_to_wii=serial_to_wii
+    )
     return games[:limit]
 
 
-def fetch_user_latest_reviews(serial_prefixes, limit=5):
+def fetch_user_latest_reviews(serial_prefixes, limit=5, serial_to_wii=None):
     """Fetch user's most recent game recommendations/reviews."""
-    reviews = fetch_recommendations(serial_prefixes, sort_by="last_recommended")
+    reviews = fetch_recommendations(
+        serial_prefixes, sort_by="last_recommended", serial_to_wii=serial_to_wii
+    )
     return reviews[:limit]
 
 
