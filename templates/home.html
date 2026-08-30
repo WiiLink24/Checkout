@@ -530,8 +530,7 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                         <div class="bottom-0 p-3 z-30 absolute w-full">
                             <p class="text-white font-semibold break-words">{% if game.wii_number %}<span
                                     class="inline-block w-2 h-2 rounded-full align-middle mr-1.5"
-                                    style="background: {{ fetch_wii_color_from_number(game.wii_number) }}"></span>{%
-                                endif %}{{ game.title_en or
+                                    style="background: {{ fetch_wii_color_from_number(game.wii_number) }}"></span>{% endif %}{{ game.title_en or
                                 game.title }}</p>
                         </div>
                         <div
@@ -676,8 +675,7 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                                 <div class="bottom-0 p-3 z-30 absolute w-full">
                                     <p class="text-white font-semibold break-words">{% if game.wii_number %}<span
                                             class="inline-block w-2 h-2 rounded-full align-middle mr-1.5"
-                                            style="background: {{ fetch_wii_color_from_number(game.wii_number) }}"></span>{%
-                                        endif %}{{ game.title_en or
+                                            style="background: {{ fetch_wii_color_from_number(game.wii_number) }}"></span>{% endif %}{{ game.title_en or
                                         game.title }}
                                     </p>
                                     {% set score_percent = game.recommendation_percent or 0 %}
