@@ -91,7 +91,9 @@ def fetch_favorites(serial_prefixes, limit=30, offset=0, serial_to_wii=None):
             ORDER BY b.game_id, b.id DESC
         )
         SELECT
-            lb.id AS bookmark_id, lb.serial_number, lb.game_id AS bookmarked_game_id,
+            lb.id AS bookmark_id,
+            lb.serial_number,
+            lb.game_id AS bookmarked_game_id,
             COALESCE(stats.favorite_count, 0) AS favorite_count,
             COALESCE(stats.user_count, 0) AS user_count,
             t.*, t.input_players
@@ -101,10 +103,11 @@ def fetch_favorites(serial_prefixes, limit=30, offset=0, serial_to_wii=None):
                 COUNT(*) AS favorite_count,
                 COUNT(DISTINCT b2.serial_number) AS user_count
             FROM bookmarks b2
-            WHERE b2.game_id = lb.game_id OR b2.game_id LIKE lb.game_id || '%%'
+            WHERE SUBSTRING(b2.game_id, 1, 3) = SUBSTRING(lb.game_id, 1, 3)
         ) stats ON true
         LEFT JOIN LATERAL (
-            SELECT * FROM titles t
+            SELECT *
+            FROM titles t
             WHERE SUBSTRING(t.game_id, 1, 4) = SUBSTRING(lb.game_id, 1, 4)
             ORDER BY LENGTH(t.game_id) DESC, t.game_id
             LIMIT 1

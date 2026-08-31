@@ -106,7 +106,7 @@
         <div id="sidebar"
             class="w-full max-w-[300px] h-screen backdrop-blur-xl border-r p-6 fixed top-0 left-0 flex flex-col justify-between transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-40 overflow-scroll sm:overflow-visible"
             style="background-color: var(--user-dark); background-image: linear-gradient(180deg, rgba(var(--user-rgb, 17, 24, 39), 0.4), rgba(var(--user-rgb, 17, 24, 39), 0.1)); border-color: var(--user-transparent, rgba(17, 24, 39, 0.14));">
-            <div class="overflow-scroll sm:overflow-visible h-full">
+            <div class="overflow-y-scroll sm:overflow-visible h-full">
                 <div class="mb-3 flex justify-between items-start">
                     <img src="/static/img/logo.png" alt="Logo" class="h-10 mb-6" />
 
@@ -275,7 +275,7 @@
                             <img src="/static/icon/users.svg" alt="Friends" class="w-5 h-5 invert mr-2" />
                             Friends
                         </span>
-                        <span class="inline-block mr-1 transform"><img src="/static/icon/chevron-right.svg"
+                        <span class="inline-block transform"><img src="/static/icon/chevron-right.svg"
                                 alt="Arrow Down" class="w-4 h-4 invert" /></span>
                     </button>
 
@@ -363,7 +363,13 @@
                         {{ you_menu(channels) }}
                         {{ friends_menu(user_info.friends) }}
                         <div class="mt-6 sm:hidden"></div>
-                        {{ menu_item('Themes', 'auth_routes.themes', 'palette') }}
+                        <a href="{{ url_for('auth_routes.themes') }}"
+                    class="block w-full px-4 py-2 theme-menu-btn text-white rounded-xl transition duration-200 flex items-center justify-between">
+                    <span class="flex items-center">
+                        <img src="/static/icon/palette.svg" alt="{{ name }}" class="w-5 h-5 invert mr-2" />Themes
+                    </span>
+                    <span class="text-xs px-2 py-1 rounded-md bg-[var(--user-dark)] text-[var(--user-soft)]">{{ user_info.achievements.points.balance|default(0) }} pts.</span>
+                </a>
                         {% if is_coupon_admin %}
                         {{ menu_item('Coupon Admin', 'coupons_admin.panel', 'badge-dollar-sign') }}
                         {% endif %}
