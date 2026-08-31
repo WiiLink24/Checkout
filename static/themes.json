@@ -183,8 +183,68 @@
             ]
         },
         {
+            "title": "Classic Mario Bros.",
+            "description": "Revisit Mario's first adventures.",
+            "themes": [
+                {
+                    "id": "super-mario-bros",
+                    "name": "Super Mario Bros",
+                    "description": "The princess is in another castle!",
+                    "price": 0,
+                    "base": "#c72323",
+                    "dark": "#6d1313",
+                    "light": "#d96969",
+                    "soft": "#eaabab",
+                    "rgb": "199, 35, 35",
+                    "dark_rgb": "109, 19, 19",
+                    "transparent": "rgba(199, 35, 35, 0.18)",
+                    "font": "SuperMarioBrosNES",
+                    "background": "SMB1.png",
+                    "bgm": "SMB1.mp3",
+                    "bg-type": 1,
+                    "hidden": true
+                },
+                {
+                    "id": "super-mario-bros-2",
+                    "name": "Super Mario Bros. 2",
+                    "description": "An adventure made of fantasy and dreams.",
+                    "price": 0,
+                    "base": "#c97500",
+                    "dark": "#6f4000",
+                    "light": "#daa151",
+                    "soft": "#eacb9e",
+                    "rgb": "201, 117, 0",
+                    "dark_rgb": "111, 64, 0",
+                    "transparent": "rgba(201, 117, 0, 0.18)",
+                    "font": "SuperMarioBrosNES",
+                    "background": "SMB2.webp",
+                    "bgm": "SMB2.mp3",
+                    "bg-type": 1,
+                    "hidden": true
+                },
+                {
+                    "id": "super-mario-bros-3",
+                    "name": "Super Mario Bros. 3",
+                    "description": "All you had to do was ask.",
+                    "price": 0,
+                    "base": "#1651b1",
+                    "dark": "#0c2d61",
+                    "light": "#6189ca",
+                    "soft": "#a6bde1",
+                    "rgb": "22, 81, 177",
+                    "dark_rgb": "12, 45, 97",
+                    "transparent": "rgba(22, 81, 177, 0.18)",
+                    "font": "SuperMarioBrosNES",
+                    "background": "SMB3.png",
+                    "bgm": "SMB3.mp3",
+                    "bg-type": 1,
+                    "hidden": true
+                }
+            ]
+        },
+        {
             "title": "Wii Sports",
-            "description": "Celebrate the Wii Sports Anniversary with these exclusive themes!",
+            "description": "Celebrating 20 years of our beloved console.",
             "themes": [
                 {
                     "id": "wii-tennis",
@@ -259,7 +319,7 @@
                     "hidden": true
                 },
                 {
-                    "id": "wii-golfing",
+                    "id": "wii-golf",
                     "name": "Wii Golf",
                     "description": "You might get a lucky shot with this one.",
                     "price": 300,
@@ -278,65 +338,5 @@
                 }
             ]
         },
-        {
-            "title": "Mario Bros.",
-            "description": "Celebrating the plumber's Anniversary with these exclusive themes!",
-            "themes": [
-                {
-                    "id": "mario-bros",
-                    "name": "Super Mario Bros",
-                    "description": "The princess is in another castle!",
-                    "price": 0,
-                    "base": "#c72323",
-                    "dark": "#6d1313",
-                    "light": "#d96969",
-                    "soft": "#eaabab",
-                    "rgb": "199, 35, 35",
-                    "dark_rgb": "109, 19, 19",
-                    "transparent": "rgba(199, 35, 35, 0.18)",
-                    "font": "SuperMarioBrosNES",
-                    "background": "SMB1.png",
-                    "bgm": "SMB1.mp3",
-                    "bg-type": 1,
-                    "hidden": true
-                },
-                {
-                    "id": "super-mario-bros-2",
-                    "name": "Super Mario Bros. 2",
-                    "description": "An adventure made of fantasy and dreams.",
-                    "price": 0,
-                    "base": "#c97500",
-                    "dark": "#6f4000",
-                    "light": "#daa151",
-                    "soft": "#eacb9e",
-                    "rgb": "201, 117, 0",
-                    "dark_rgb": "111, 64, 0",
-                    "transparent": "rgba(201, 117, 0, 0.18)",
-                    "font": "SuperMarioBrosNES",
-                    "background": "SMB2.webp",
-                    "bgm": "SMB2.mp3",
-                    "bg-type": 1,
-                    "hidden": true
-                },
-                {
-                    "id": "super-mario-bros-3",
-                    "name": "Super Mario Bros. 3",
-                    "description": "All you had to do was ask.",
-                    "price": 0,
-                    "base": "#1651b1",
-                    "dark": "#0c2d61",
-                    "light": "#6189ca",
-                    "soft": "#a6bde1",
-                    "rgb": "22, 81, 177",
-                    "dark_rgb": "12, 45, 97",
-                    "transparent": "rgba(22, 81, 177, 0.18)",
-                    "font": "SuperMarioBrosNES",
-                    "background": "SMB3.png",
-                    "bgm": "SMB3.mp3",
-                    "bg-type": 1,
-                    "hidden": true
-                }
-            ]
-        }
     ]
 }
