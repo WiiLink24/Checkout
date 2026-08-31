@@ -3,7 +3,7 @@ import atexit
 import re
 from datetime import timedelta
 from apscheduler.schedulers.background import BackgroundScheduler
-from flask import Flask, has_request_context, render_template
+from flask import Flask, has_request_context, render_template, send_file
 import config
 from flask_oidc import OpenIDConnect
 from flask_session import Session
@@ -58,6 +58,16 @@ query_cache.init_app(app)
 
 # SQLAlchemy scoped session teardown for the checkout database
 init_db(app)
+
+
+@app.route("/sw.js")
+def service_worker():
+    """Serve the service worker at the origin root so its scope covers the site."""
+    response = send_file(os.path.join(os.path.dirname(__file__), "static", "sw.js"))
+    response.headers["Service-Worker-Allowed"] = "/"
+    response.headers["Cache-Control"] = "no-cache"
+    return response
+
 
 # Register template filters
 app.jinja_env.filters["format_serial"] = format_serial

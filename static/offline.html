@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="theme-color" content="#1F2937" />
+        <title>WiiLink Checkout | No Network</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            body {
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: #1a1a1a;
+                color: #fff;
+                font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+                padding: 24px;
+            }
+            .card {
+                max-width: 420px;
+                width: 100%;
+                text-align: center;
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                background: #0d0d0d;
+                border-radius: 20px;
+                padding: 40px 28px;
+            }
+            .icon {
+                width: 56px;
+                height: 56px;
+                stroke: #7f7f7f;
+                margin: 0 auto 20px;
+                display: block;
+            }
+            h1 {
+                font-size: 22px;
+                font-weight: 700;
+                margin-bottom: 10px;
+            }
+            p {
+                color: #7f7f7f;
+                font-size: 14px;
+                line-height: 1.6;
+                margin-bottom: 24px;
+            }
+            button {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                background: transparent;
+                border: 1px solid rgba(255, 255, 255, 0.14);
+                color: #fff;
+                font-size: 13px;
+                font-weight: 600;
+                letter-spacing: 0.04em;
+                padding: 12px 24px;
+                border-radius: 12px;
+                cursor: pointer;
+                transition: background 0.2s;
+            }
+            button:hover {
+                background: rgba(255, 255, 255, 0.08);
+            }
+            button svg {
+                width: 16px;
+                height: 16px;
+                stroke: #fff;
+            }
+        </style>
+    </head>
+    <body>
+        <main class="card">
+            <svg
+                class="icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+            >
+                <path d="M12 20h.01" />
+                <path d="M8.5 16.429a5 5 0 0 1 7 0" />
+                <path d="M5 12.859a10 10 0 0 1 5.17-2.69" />
+                <path d="M19 12.859a10 10 0 0 0-2.007-1.523" />
+                <path d="M2 8.82a15 15 0 0 1 4.177-2.643" />
+                <path d="M22 8.82a15 15 0 0 0-11.288-3.764" />
+                <path d="m2 2 20 20" />
+            </svg>
+            <h1>No network connection</h1>
+            <p>You're offline right now. Checkout needs an internet connection to load your data. Check your Wi-Fi and try again.</p>
+            <button type="button" onclick="location.reload()">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
+                    <path d="M21 3v5h-5" />
+                </svg>
+                Refresh
+            </button>
+        </main>
+        <script>
+            // Reconnect automatically when the device regains network.
+            window.addEventListener("online", function () {
+                location.reload();
+            });
+        </script>
+    </body>
+</html>
