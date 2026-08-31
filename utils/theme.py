@@ -9,6 +9,7 @@ from utils.utils import cache
 _THEME_CACHE_TTL = 24 * 60 * 60
 _THEME_CATALOG_PATH = Path(__file__).resolve().parent.parent / "static" / "themes.json"
 
+
 def _catalog_asset_url(directory, filename):
     if not filename:
         return ""

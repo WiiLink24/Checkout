@@ -201,6 +201,7 @@ def _normalize_serial_prefix(serial):
     plain [:12] cut is not enough."""
     return re.split("[ +]", serial or "", 1)[0]
 
+
 def build_serial_to_wii_mapping(attributes):
     """We resolve the serial locally once the user object is in hand."""
     mapping = {}
@@ -223,7 +224,7 @@ def resolve_serial(serial, serial_to_wii=None):
     key = _normalize_serial_prefix(raw)
     if key in serial_to_wii:
         return serial_to_wii[key]
-        
+
     # Check if the raw serial starts with any of the prefixes in serial_to_wii
     for prefix, wii_number in serial_to_wii.items():
         if raw.startswith(prefix) or key.startswith(prefix):
