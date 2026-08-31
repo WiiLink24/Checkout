@@ -171,9 +171,7 @@ def fetch_user_suggestions(wii_numbers, limit=30, offset=0, db_url=None):
     where_clause = f"wii_no IN ({placeholders})"
 
     query = f"""
-        SELECT
-            id, country_code, region_code, language_code, content, wii_no
-            choice1, choice2, wii_no
+        SELECT * 
         FROM suggestions
         WHERE {where_clause}
         ORDER BY id DESC
