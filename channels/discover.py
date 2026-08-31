@@ -68,7 +68,7 @@ def find_game_recommendation(serial_prefixes):
         row.get("game_id")[:3] for row in played_rows if row.get("game_id")
     }
 
-    # Fetch candidate games and score them
+    # EXPANDED CANDIDATES: Changed LIMIT from 100 to 300 to increase pool diversity
     candidates_query = f"""
         {_PREFERRED_TITLES_CTE}
         SELECT t.game_id, t.display_name, t.title_en, t.synopsis_en, t.genre, t.developer,
@@ -79,59 +79,55 @@ def find_game_recommendation(serial_prefixes):
         WHERE t.display_name IS NOT NULL AND t.genre IS NOT NULL
         GROUP BY t.game_id, t.display_name, t.title_en, t.synopsis_en, t.genre, t.developer,
                  t.game_type, t.release_year, t.rating_type, t.rating_value, t.region
-        ORDER BY rating_count DESC LIMIT 100
+        ORDER BY rating_count DESC LIMIT 300
     """
     candidates = _run_query(candidates_query, [], config.db_url)
 
-    best_score = -1
-    best_game = None
-    top_genre = None
+    scored_candidates = []
 
     for candidate in candidates:
         game_id = candidate.get("game_id")
         if not game_id or game_id[:3] in played_prefixes:
             continue
 
-        # How many times this game's genre appears in user games
         genres = [g.strip() for g in (candidate.get("genre") or "").split(",")]
         genre_match = sum(genre_count.get(g, 0) for g in genres)
 
-        # How many times this game's developer appears in user games
         dev = (candidate.get("developer") or "").strip()
         dev_match = developer_count.get(dev, 0)
 
-        # Normalize rating
         rating = float(candidate.get("avg_rating") or 50)
         rating_score = (rating - 50) / 50
 
-        # Add randomness
+        # INCREASED RANDOMNESS: Lifted random influence from 0.1 max to 0.5 max
         score = (
-            (genre_match * 0.6)
-            + (dev_match * 0.2)
-            + (rating_score * 0.2)
-            + random.uniform(0, 0.1)
+            (genre_match * 0.5)
+            + (dev_match * 0.15)
+            + (rating_score * 0.15)
+            + random.uniform(0, 0.5)
         )
+        
+        # Save valid choices (ensure weights are strictly positive for sampling)
+        if score > 0:
+            scored_candidates.append((score, candidate, genres))
 
-        # If better than current best, update
-        if score > best_score:
-            best_score = score
-            best_game = candidate
-            top_genre = (
-                max(genres, key=lambda g: genre_count.get(g, 0))
-                if genres
-                else "Unknown"
-            )
+    if not scored_candidates:
+        return None
 
-    if best_game:
-        best_game["reason"] = {
-            "genres": [
-                g
-                for g in (best_game.get("genre") or "").split(",")
-                if genre_count.get(g.strip(), 0) > 0
-            ][:3],
-            "matched_genre": top_genre,
-            "score": round(best_score, 2),
-        }
-        return best_game
+    # WEIGHTED SELECTION: Instead of max(), we sample using scores as weights
+    weights = [item[0] for item in scored_candidates]
+    selected_match = random.choices(scored_candidates, weights=weights, k=1)[0]
+    
+    best_score, best_game, genres = selected_match
+    top_genre = max(genres, key=lambda g: genre_count.get(g, 0)) if genres else "Unknown"
 
-    return None
+    best_game["reason"] = {
+        "genres": [
+            g
+            for g in (best_game.get("genre") or "").split(",")
+            if genre_count.get(g.strip(), 0) > 0
+        ][:3],
+        "matched_genre": top_genre,
+        "score": round(best_score, 2),
+    }
+    return best_game

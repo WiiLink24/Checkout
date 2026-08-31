@@ -196,11 +196,11 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
         <span class="flex flex-wrap items-center gap-1.5">
             {% for linked_wii in viewed_user.linked_wii_no %}
             <span
-                class="group relative inline-flex items-center gap-1.5 px-2 py-0.5 theme-chip rounded-lg text-[var(--user-soft)] text-md overflow-hidden"
+                class="relative inline-flex items-center gap-1.5 px-2 py-0.5 theme-chip rounded-lg text-[var(--user-soft)] text-md overflow-hidden"
                 title="Wii {{ loop.index }}">
                 <span class="inline-block w-2 h-2 rounded-full flex-shrink-0"
                     style="background: {{ fetch_wii_color_from_number(linked_wii) }}"></span>
-                <span class="transition-opacity duration-300 group-hover:opacity-0">{{ linked_wii|format_serial
+                <span class="transition-opacity duration-300">{{ linked_wii|format_serial
                     }}</span>
             </span>
             {% endfor %}
@@ -338,9 +338,9 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
 
             {% if not serial_not_linked %}
             <span class="flex flex-col xl:flex-row items-center justify-between gap-3">
-                <div class="home-reveal w-full grid grid-cols-2 sm:grid-cols-3 gap-4 mb-10">
+                <div class="home-reveal w-full grid grid-cols-2 sm:grid-cols-3 gap-4 mb-10 z-10 relative">
                     <a href="{% if base_url %}{{ base_url }}/time_played{% else %}/time_played{% endif %}"
-                        class="group relative theme-card-hover rounded-2xl p-3 flex items-center gap-3">
+                        class="group relative theme-card-hover rounded-2xl p-3 flex items-center gap-3 cursor-help" title="Total time played across all games on all consoles.&#10;&#10;This metric updates once per day once you open the Nintendo Channel (you must opt into data sharing).">
                         <div
                             class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
                             <img src="/static/icon/clock.svg" alt="" class="w-6 h-6 invert">
@@ -358,7 +358,7 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                         {% include "components/wii_popover.html" %}
                     </a>
                     <a href="{% if base_url %}{{ base_url }}/recommendations{% else %}/recommendations{% endif %}"
-                        class="group relative theme-card-hover rounded-2xl p-3 flex items-center gap-3">
+                        class="group relative theme-card-hover rounded-2xl p-3 flex items-center gap-3 cursor-help" title="Total reviews given across all consoles.&#10;&#10;This metric updates when you submit a review for a game on the Nintendo Channel.">
                         <div
                             class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
                             <img src="/static/icon/star.svg" alt="" class="w-6 h-6 invert">
@@ -377,7 +377,7 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                         {% include "components/wii_popover.html" %}
                     </a>
                     <a href="{% if base_url %}{{ base_url }}/favorites{% else %}/favorites{% endif %}"
-                        class="group relative theme-card-hover rounded-2xl p-3 flex items-center gap-3">
+                        class="group relative theme-card-hover rounded-2xl p-3 flex items-center gap-3 cursor-help" title="Total games favorited across all consoles.&#10;&#10;This metric updates when you bookmark a game on the Nintendo Channel.">
                         <div
                             class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
                             <img src="/static/icon/heart.svg" alt="" class="w-6 h-6 invert">
@@ -395,7 +395,7 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                         {% include "components/wii_popover.html" %}
                     </a>
                     <a href="{% if base_url %}{{ base_url }}/time_played{% else %}/time_played{% endif %}"
-                        class="group relative theme-card-hover rounded-2xl p-3 flex items-center gap-3">
+                        class="group relative theme-card-hover rounded-2xl p-3 flex items-center gap-3 cursor-help" title="Total games played across all consoles.&#10;&#10;This metric updates once per day once you open the Nintendo Channel (you must opt into data sharing).">
                         <div
                             class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
                             <img src="/static/icon/gamepad.svg" alt="" class="w-6 h-6 invert">
@@ -414,7 +414,7 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                         {% include "components/wii_popover.html" %}
                     </a>
                     <a href="{% if base_url %}{{ base_url }}/polls{% else %}/polls{% endif %}"
-                        class="group relative theme-card-hover rounded-2xl p-3 flex items-center gap-3">
+                        class="group relative theme-card-hover rounded-2xl p-3 flex items-center gap-3 cursor-help" title="Total polls voted on across all consoles.&#10;&#10;This metric updates every time you vote on a poll on the Everybody Votes Channel.">
                         <div
                             class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
                             <img src="/static/icon/chart-line.svg" alt="" class="w-6 h-6 invert">
@@ -433,7 +433,7 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                         {% include "components/wii_popover.html" %}
                     </a>
                     <a href="{% if base_url %}{{ base_url }}/contest_submissions{% else %}/contest_submissions{% endif %}"
-                        class="group relative theme-card-hover rounded-2xl p-3 flex items-center gap-3">
+                        class="group relative theme-card-hover rounded-2xl p-3 flex items-center gap-3 cursor-help" title="Total contest submissions across all consoles.&#10;&#10;This metric updates when you submit a contest entry on the Check Mii Out Channel.">
                         <div
                             class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
                             <img src="/static/icon/send-horizontal.svg" alt="" class="w-6 h-6 invert">
@@ -455,7 +455,7 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                 {% set all_achievements = viewed_user.achievements.achievements if viewed_user.achievements else [] %}
                 {% if all_achievements %}
                 <section id="achievementsSection" onclick="openAchievementsModal()"
-                    class="home-reveal w-full xl:w-[500px] theme-card-faint border rounded-2xl p-5 sm:p-6 mb-10 cursor-pointer">
+                    class="home-reveal w-full xl:w-[500px] theme-card-faint border rounded-2xl p-5 sm:p-6 mb-10 cursor-pointer z-0">
                     <div class="ach-grid ach-strip xl:max-h-[460px] xl:pr-1">
                         {% for ach in all_achievements if ach.achieved %}
                         <div class="ach-tile-cell relative group rounded-xl aspect-square flex items-center justify-center overflow-visible"
@@ -476,15 +476,6 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                 </section>
                 {% endif %}
             </span>
-            {% if not base_url and viewed_user.achievements and viewed_user.achievements.points %}
-            <a href="{{ url_for('auth_routes.themes') }}"
-                class="home-reveal flex items-center justify-between gap-4 theme-card-hover border rounded-xl px-4 py-3 mb-6">
-                <span class="flex items-center gap-3 text-[var(--user-soft)]"><img src="/static/icon/palette.svg" alt=""
-                        class="w-5 h-5 invert"> Theme Shop</span>
-                <span class="text-sm font-semibold text-white">{{ viewed_user.achievements.points.balance|default(0) }}
-                    points</span>
-            </a>
-            {% endif %}
             {% endif %}
             {% if not serial_not_linked %}
             <section class="home-reveal theme-card border rounded-2xl p-5 mb-5 sm:p-6">
