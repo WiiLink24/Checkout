@@ -81,7 +81,7 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
         width: 110px;
     }
 
-    @media (min-width: 640px) {
+    @media (min-width: 1280px) {
         .ach-strip {
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -255,7 +255,7 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                             {% endif %}
                         </span>
                         <button id="shareProfileBtn" type="button"
-                            class="flex items-center gap-2 px-3 py-1.5 theme-btn border rounded-lg text-[var(--user-soft)] hover:text-white transition-colors duration-200">
+                            class="hidden xl:flex items-center gap-2 px-3 py-1.5 theme-btn border rounded-lg text-[var(--user-soft)] hover:text-white transition-colors duration-200">
                             <img src="/static/icon/share.svg" alt="Share" class="w-4 h-4 invert">
                             Share
                         </button>

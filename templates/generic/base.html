@@ -8,6 +8,8 @@
         content="WiiLink Checkout is the home for all your WiiLink Data. Use your WiiLink Account to access your polls, submissions, gameplay statistics, and more!" />
     <meta name="author" content="WiiLink Team" />
     <meta name="theme-color" content="#1F2937" />
+    <link rel="manifest" href="/static/manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="/static/icons/apple-touch-icon.png" />
     {% block og_image %}
     <meta property="og:image" content="{{ url_for('static', filename='img/og-image.png', _external=True) }}" />
     {% endblock %}
@@ -669,6 +671,13 @@
         }
     </style>
 
+    <script>
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", function () {
+                navigator.serviceWorker.register("/sw.js").catch(function () {});
+            });
+        }
+    </script>
 </body>
 
 </html>
