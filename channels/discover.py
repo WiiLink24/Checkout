@@ -106,7 +106,7 @@ def find_game_recommendation(serial_prefixes):
             + (rating_score * 0.15)
             + random.uniform(0, 0.5)
         )
-        
+
         # Save valid choices (ensure weights are strictly positive for sampling)
         if score > 0:
             scored_candidates.append((score, candidate, genres))
@@ -117,9 +117,11 @@ def find_game_recommendation(serial_prefixes):
     # WEIGHTED SELECTION: Instead of max(), we sample using scores as weights
     weights = [item[0] for item in scored_candidates]
     selected_match = random.choices(scored_candidates, weights=weights, k=1)[0]
-    
+
     best_score, best_game, genres = selected_match
-    top_genre = max(genres, key=lambda g: genre_count.get(g, 0)) if genres else "Unknown"
+    top_genre = (
+        max(genres, key=lambda g: genre_count.get(g, 0)) if genres else "Unknown"
+    )
 
     best_game["reason"] = {
         "genres": [

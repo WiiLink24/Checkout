@@ -14,6 +14,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from alembic import command
 from alembic.config import Config
 
+
 class Base(DeclarativeBase):
     pass
 
