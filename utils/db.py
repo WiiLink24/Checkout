@@ -7,7 +7,16 @@ from typing import Optional
 
 import config
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Integer, String, Text, func, text
+from sqlalchemy import (
+    Boolean,
+    Index,
+    Integer,
+    PrimaryKeyConstraint,
+    String,
+    Text,
+    func,
+    text,
+)
 from sqlalchemy.dialects.postgresql import JSONB, TIMESTAMP, UUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
@@ -65,6 +74,7 @@ class Coupon(db.Model):
 class CouponRedemption(db.Model):
     __bind_key__ = CHECKOUT_BIND
     __tablename__ = "coupon_redemptions"
+    __table_args__ = (Index("idx_coupon_redemptions_coupon", "coupon_uuid"),)
 
     id: Mapped[str] = mapped_column(
         UUID(as_uuid=False),
@@ -81,9 +91,35 @@ class CouponRedemption(db.Model):
 class Friend(db.Model):
     __bind_key__ = CHECKOUT_BIND
     __tablename__ = "friends"
+    __table_args__ = (Index("idx_friends_followed", "followed_wii_number"),)
 
     follower_wii_number: Mapped[str] = mapped_column(String(16), primary_key=True)
     followed_wii_number: Mapped[str] = mapped_column(String(16), primary_key=True)
     created_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True), server_default=func.now()
+    )
+
+
+class PushSubscription(db.Model):
+    __bind_key__ = CHECKOUT_BIND
+    __tablename__ = "push_subscriptions"
+
+    endpoint: Mapped[str] = mapped_column(Text, primary_key=True)
+    username: Mapped[str] = mapped_column(Text, index=True)
+    p256dh: Mapped[str] = mapped_column(Text)
+    auth: Mapped[str] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(
+        TIMESTAMP(timezone=True), server_default=func.now()
+    )
+
+
+class NotificationPreference(db.Model):
+    __bind_key__ = CHECKOUT_BIND
+    __tablename__ = "notification_preferences"
+    __table_args__ = (PrimaryKeyConstraint("username", "category"),)
+
+    username: Mapped[str] = mapped_column(Text, primary_key=True)
+    category: Mapped[str] = mapped_column(Text, primary_key=True)
+    enabled: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, server_default=text("true")
     )

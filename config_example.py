@@ -31,3 +31,12 @@ oidc_client_secrets_json = {
     }
 }
 oidc_logout_url = ""
+
+# Web Push notifications.
+vapid_subject = "mailto:change-me@example.com"
+vapid_public_key = ""
+vapid_private_key = ""
+
+notifications_shared_secret = ""
+
+accountmanager_url = "http://localhost:9011"

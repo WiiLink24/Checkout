@@ -11,3 +11,5 @@ colorgram.py
 redis
 sqlalchemy
 alembic
+requests
+pywebpush

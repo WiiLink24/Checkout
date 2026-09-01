@@ -1,0 +1,69 @@
+{% extends "generic/base.html" %}
+
+{% block title %}WiiLink Checkout | Notification Management{% endblock %}
+
+{% block content %}
+<div class="min-h-screen px-4 sm:px-6 lg:px-8 py-12">
+    <div class="max-w-5xl mx-auto">
+        <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
+            <div>
+                <h1 class="text-4xl font-bold text-white">Notification Management</h1>
+            </div>
+        </div>
+
+        <section class="theme-card border rounded-2xl p-5 sm:p-6 mb-10">
+            <div class="flex items-center gap-3 mb-5">
+                <h2 class="text-xl font-bold text-white">Send Notification</h2>
+            </div>
+            <form method="post" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-[var(--user-soft)] mb-1">Target username (optional)</label>
+                    <input type="text" name="username" placeholder="Leave empty to notify all subscribers"
+                        class="w-full bg-[var(--user-base)] border border-[var(--user-transparent)] text-white rounded-lg px-4 py-2.5 text-sm outline-none focus:border-[var(--user-light)]">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-[var(--user-soft)] mb-1">Category (optional)</label>
+                    <select name="category"
+                        class="w-full bg-[var(--user-base)] border border-[var(--user-transparent)] text-white rounded-lg px-4 py-2.5 text-sm outline-none focus:border-[var(--user-light)]">
+                        <option value="">All categories</option>
+                        {% for category in categories %}
+                        <option value="{{ category }}">{{ category|replace("_", " ")|title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-[var(--user-soft)] mb-1">Title</label>
+                    <input type="text" name="title" required
+                        class="w-full bg-[var(--user-base)] border border-[var(--user-transparent)] text-white rounded-lg px-4 py-2.5 text-sm outline-none focus:border-[var(--user-light)]">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-[var(--user-soft)] mb-1">Tag (optional)</label>
+                    <input type="text" name="tag" placeholder="Notifications sharing a tag replace each other"
+                        class="w-full bg-[var(--user-base)] border border-[var(--user-transparent)] text-white rounded-lg px-4 py-2.5 text-sm outline-none focus:border-[var(--user-light)]">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-xs uppercase tracking-widest text-[var(--user-soft)] mb-1">Body</label>
+                    <textarea name="body" rows="3"
+                        class="w-full bg-[var(--user-base)] border border-[var(--user-transparent)] text-white rounded-lg px-4 py-2.5 text-sm outline-none focus:border-[var(--user-light)]"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-[var(--user-soft)] mb-1">Click URL (where the notification takes you)</label>
+                    <input type="text" name="url" value="/" placeholder="/news or https://example.com"
+                        class="w-full bg-[var(--user-base)] border border-[var(--user-transparent)] text-white rounded-lg px-4 py-2.5 text-sm outline-none focus:border-[var(--user-light)]">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-[var(--user-soft)] mb-1">Icon URL (optional)</label>
+                    <input type="text" name="icon" placeholder="/static/img/logo.png or https://example.com/icon.png"
+                        class="w-full bg-[var(--user-base)] border border-[var(--user-transparent)] text-white rounded-lg px-4 py-2.5 text-sm outline-none focus:border-[var(--user-light)]">
+                </div>
+                <div class="md:col-span-2 flex items-end justify-between gap-4 flex-wrap">
+                    <p class="text-xs text-[var(--user-soft)]">Icon support varies by browser (Safari ignores custom icons and always uses the site icon). Users who disabled the chosen category are skipped.</p>
+                    <button type="submit"
+                        class="theme-btn bg-[var(--user-soft)] border rounded-lg px-6 py-2.5 text-sm text-white font-semibold">Send
+                        notification</button>
+                </div>
+            </form>
+        </section>
+    </div>
+</div>
+{% endblock %}
