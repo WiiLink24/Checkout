@@ -121,7 +121,12 @@
                     <span class="text-[10px] text-[var(--user-soft)]">Friends</span>
                 </button>
                 {% else %}
-                <span></span>
+                <span>
+                    <a href="{{ url_for('trending.top_most_played') }}" aria-label="Most Played" class="nav-tab text-white">
+                        <img src="/static/icon/star.svg" alt="Most Played" class="w-6 h-6 invert" />
+                        <span class="text-[10px] text-[var(--user-soft)]">Most Played</span>
+                    </a>
+                </span>
                 {% endif %}
             </div>
             <a href="{{ url_for('misc_routes.search') }}" aria-label="Search" class="nav-tab justify-self-center text-white">
@@ -582,22 +587,33 @@
         const mobileMenuBtn = document.getElementById("mobileMenuBtn");
         const closeSidebarBtn = document.getElementById("closeSidebarBtn");
         const overlay = document.getElementById("sidebarOverlay");
+        var isSidebarOpen = false;
 
         mobileMenuBtn.addEventListener("click", () => {
             sidebar.classList.remove("translate-y-full");
             overlay.classList.remove("hidden");
             document.body.classList.add("overflow-hidden");
             closeMobileFriendsMenu();
+            setTimeout(() => {
+                isSidebarOpen = true;
+            }, 10);
         });
 
         function closeSidebar() {
             sidebar.classList.add("translate-y-full");
             overlay.classList.add("hidden");
             document.body.classList.remove("overflow-hidden");
+            isSidebarOpen = false;
         }
 
         closeSidebarBtn.addEventListener("click", closeSidebar);
         overlay.addEventListener("click", closeSidebar);
+
+        document.addEventListener("click", (event) => {
+            if (isSidebarOpen) {
+                closeSidebar();
+            }
+        });
 
         window.addEventListener("resize", () => {
             if (window.innerWidth >= 768) {
