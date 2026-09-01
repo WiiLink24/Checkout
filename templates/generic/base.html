@@ -84,37 +84,121 @@
             background-color: var(--user-light);
             border-color: rgba(var(--user-rgb), 0.9);
         }
+
+        .nav-tab {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.75rem;
+            transition: background-color 0.2s;
+        }
+
+        .nav-tab:hover {
+            background-color: rgba(var(--user-rgb, 17, 24, 39), 0.5);
+        }
     </style>
     {% include "components/font_face.html" %}
 </head>
 
 <body class="bg-[var(--user-base)] min-h-screen"
     style="background-color: var(--user-base, #111827); {% block body_theme_vars %}{% include "components/body_theme_vars.html" %}{% endblock %}">
-    <div class="w-screen md:hidden fixed p-6 flex flex-row items-center justify-between z-30">
-        <img src="/static/img/logo.png" alt="Logo" class="h-8" />
-        <span class="flex flex-row items-center gap-2">
-            <button id="mobileThemeEffectsToggle" type="button" title="Toggle theme font and music"
-                aria-pressed="false" class="hidden theme-btn border rounded-lg p-2 text-white shadow-lg">
-                <img src="/static/icon/accessibility.svg" alt="Toggle theme font and music" class="w-6 h-6" />
-            </button>
-            <button id="mobileMenuBtn"
-                class="p-2 theme-btn rounded-lg text-white shadow-lg border focus:outline-none">
+    <nav class="md:hidden fixed bottom-0 inset-x-0 z-30 pb-[env(safe-area-inset-bottom)]"
+        style="background-color: var(--user-dark); background-image: linear-gradient(0deg, rgba(var(--user-rgb, 17, 24, 39), 0.4), rgba(var(--user-rgb, 17, 24, 39), 0.1)); border-color: var(--user-transparent, rgba(17, 24, 39, 0.14));">
+        <button id="mobileThemeEffectsToggle" type="button" title="Toggle theme font and music"
+            aria-pressed="false"
+            class="hidden theme-btn border rounded-lg p-2 text-white shadow-lg absolute right-3 bottom-full mb-3">
+            <img src="/static/icon/accessibility.svg" alt="Toggle theme font and music" class="w-6 h-6" />
+        </button>
+        <div class="backdrop-blur-xl border-t grid grid-cols-5 items-center px-2 pt-1 pb-2"
+            style="border-color: var(--user-transparent, rgba(17, 24, 39, 0.14));">
+            <div class="relative flex justify-center">
+                {% if user_info %}
+                <button id="mobileFriendsBtn" onclick="toggleMobileFriendsMenu(event)" aria-label="Friends"
+                    class="nav-tab text-white">
+                    <img src="/static/icon/users.svg" alt="Friends" class="w-6 h-6 invert" />
+                    <span class="text-[10px] text-[var(--user-soft)]">Friends</span>
+                </button>
+                {% else %}
+                <span></span>
+                {% endif %}
+            </div>
+            <a href="{{ url_for('misc_routes.search') }}" aria-label="Search" class="nav-tab justify-self-center text-white">
+                <img src="/static/icon/search.svg" alt="Search" class="w-6 h-6 invert" />
+                <span class="text-[10px] text-[var(--user-soft)]">Search</span>
+            </a>
+            <a href="{% if user_info %}/{% else %}{{ url_for('oidc_auth.login') }}{% endif %}" aria-label="Your account"
+                class="nav-tab justify-self-center -translate-y-3 text-white">
+                {% if user_info and user_info.profile_picture %}
+                <div
+                    class="absolute -translate-y-8 w-14 h-14 rounded-full bg-[var(--user-base)] overflow-hidden border-2 border-[var(--user-base)]">
+                    <img src="{{ user_info.profile_picture }}" alt="{{ user_info.username }}"
+                        class="w-full h-full object-cover" />
+                </div>
+                {% else %}
+                <div
+                    class="absolute -translate-y-8 w-14 h-14 rounded-full bg-[var(--user-base)] flex items-center justify-center border-2 border-[var(--user-base)]">
+                    <img src="/static/icon/user.svg" alt="Account" class="w-6 h-6 invert" />
+                </div>
+                {% endif %}
+                <span class="translate-y-[27px] text-[10px] text-[var(--user-soft)]">{% if user_info %}You{% else %}Log In{% endif %}</span>
+            </a>
+            <button id="mobileMenuBtn" aria-label="Menu"
+                class="nav-tab justify-self-center text-white focus:outline-none">
                 <img src="/static/icon/menu.svg" alt="Menu" class="w-6 h-6 invert" />
+                <span class="text-[10px] text-[var(--user-soft)]">Menu</span>
             </button>
+            <a href="https://accounts.wiilink.ca/manage" target="_blank" aria-label="Settings"
+                class="nav-tab justify-self-center text-white">
+                <img src="/static/icon/settings.svg" alt="Settings" class="w-6 h-6 invert" />
+                <span class="text-[10px] text-[var(--user-soft)]">Settings</span>
+            </a>
+        </div>
+    </nav>
+
+    {% if user_info %}
+    <div id="mobileFriendsMenu"
+        class="fixed bottom-0 inset-x-0 h-3/4 flex flex-col bg-[var(--user-dark)] backdrop-blur-md rounded-t-2xl shadow-2xl p-1 z-50 pointer-events-none opacity-0 translate-y-full transition-all duration-300 border"
+        style="visibility: hidden; border-color: var(--user-transparent, rgba(17, 24, 39, 0.14));">
+        <div class="mx-auto mt-1 mb-2 h-1 w-10 rounded-full bg-[var(--user-soft)]"></div>
+        <h2 class="text-white text-lg font-medium px-3 mb-2">Friends</h2>
+        <div class="flex-1 overflow-y-auto flex flex-col gap-1">
+            {% if user_info.friends %}
+            {% for friend in user_info.friends %}
+            <a href="{{ friend.profile_url }}"
+                class="block w-full px-2 py-1.5 theme-menu-btn text-white rounded-xl transition duration-200 flex items-center gap-2">
+                <img src="{{ friend.avatar }}" alt="" class="w-8 h-8 rounded-lg object-cover flex-shrink-0" />
+                <span class="min-w-0">
+                    <span class="block text-sm truncate">{{ friend.username }}</span>
+                    <span class="block text-xs text-[var(--user-soft)]">{{ friend.code }}</span>
+                </span>
+            </a>
+            {% endfor %}
+            {% else %}
+            <p class="px-3 py-2 text-sm text-[var(--user-soft)]">No friends yet.</p>
+            {% endif %}
+        </div>
+        <span
+            class="flex border-t border-[var(--user-transparent)] mt-1 pt-1 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+            <a href="/following"
+                class="flex-1 px-3 py-1.5 text-xs text-[var(--user-soft)] hover:text-white transition">Following</a>
+            <a href="/followers"
+                class="flex-1 px-3 py-1.5 text-xs text-[var(--user-soft)] hover:text-white transition text-right">Followers</a>
         </span>
     </div>
+    {% endif %}
 
     <div class="flex">
         <div id="sidebar"
-            class="w-full max-w-[300px] h-screen backdrop-blur-xl border-r p-6 fixed top-0 left-0 flex flex-col justify-between transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-40 overflow-scroll sm:overflow-visible"
+            class="w-full h-3/4 rounded-t-2xl border-t backdrop-blur-xl p-6 fixed bottom-0 inset-x-0 flex flex-col justify-between transform translate-y-full transition-transform duration-300 z-40 overflow-scroll sm:overflow-visible md:h-screen md:max-w-[300px] md:rounded-none md:border-t-0 md:border-r md:bottom-auto md:top-0 md:right-auto md:translate-y-0"
             style="background-color: var(--user-dark); background-image: linear-gradient(180deg, rgba(var(--user-rgb, 17, 24, 39), 0.4), rgba(var(--user-rgb, 17, 24, 39), 0.1)); border-color: var(--user-transparent, rgba(17, 24, 39, 0.14));">
             <div class="overflow-y-scroll sm:overflow-visible h-full">
+                                    <button id="closeSidebarBtn" class="absolute top-1 left-1/2 -translate-x-1/2 md:hidden text-[var(--user-soft)] hover:text-white">
+                        <div class="mx-auto mt-1 mb-2 h-1 w-10 rounded-full bg-[var(--user-soft)]"></div>
+                    </button>
                 <div class="mb-3 flex justify-between items-start">
                     <img src="/static/img/logo.png" alt="Logo" class="h-10 mb-6" />
-
-                    <button id="closeSidebarBtn" class="md:hidden text-[var(--user-soft)] hover:text-white">
-                        <img src="/static/icon/x.svg" alt="Close" class="w-6 h-6 invert" />
-                    </button>
                 </div>
 
                 {# Variable 'sidebar_menu' is used to add custom items to this page's sidebar menu. #}
@@ -442,7 +526,7 @@
 
         <div id="sidebarOverlay" class="fixed inset-0 bg-[var(--user-transparent)] z-30 hidden md:hidden"></div>
 
-        <div class="mt-10 sm:mt-0 w-full md:ml-[300px] md:w-[calc(100%-300px)] min-h-screen animate-fade-up"
+        <div class="pt-10 sm:pt-0 pb-24 md:pb-0 w-full md:ml-[300px] md:w-[calc(100%-300px)] min-h-screen animate-fade-up"
             style="font-family: var(--user-font-family, inherit);">
             {% with messages = get_flashed_messages() %}
             {% for message in messages %}
@@ -500,13 +584,14 @@
         const overlay = document.getElementById("sidebarOverlay");
 
         mobileMenuBtn.addEventListener("click", () => {
-            sidebar.classList.remove("-translate-x-full");
+            sidebar.classList.remove("translate-y-full");
             overlay.classList.remove("hidden");
             document.body.classList.add("overflow-hidden");
+            closeMobileFriendsMenu();
         });
 
         function closeSidebar() {
-            sidebar.classList.add("-translate-x-full");
+            sidebar.classList.add("translate-y-full");
             overlay.classList.add("hidden");
             document.body.classList.remove("overflow-hidden");
         }
@@ -518,6 +603,7 @@
             if (window.innerWidth >= 768) {
                 overlay.classList.add("hidden");
                 document.body.classList.remove("overflow-hidden");
+                closeMobileFriendsMenu();
             }
         });
 
@@ -637,12 +723,46 @@
             }
         }
 
+        function openMobileFriendsMenu() {
+            const menu = document.getElementById('mobileFriendsMenu');
+            if (!menu) return;
+            menu.classList.remove('translate-y-full');
+            menu.style.visibility = 'visible';
+            menu.style.opacity = '1';
+            menu.style.pointerEvents = 'auto';
+            closeSidebar();
+        }
+
+        function closeMobileFriendsMenu() {
+            const menu = document.getElementById('mobileFriendsMenu');
+            if (!menu) return;
+            menu.classList.add('translate-y-full');
+            menu.style.visibility = 'hidden';
+            menu.style.opacity = '0';
+            menu.style.pointerEvents = 'none';
+        }
+
+        function toggleMobileFriendsMenu(event) {
+            if (event) event.stopPropagation();
+            const menu = document.getElementById('mobileFriendsMenu');
+            if (!menu) return;
+            if (menu.style.visibility === 'visible') {
+                closeMobileFriendsMenu();
+            } else {
+                openMobileFriendsMenu();
+            }
+        }
+
         document.addEventListener('click', function (event) {
             const btn = document.getElementById('friendsMenuBtn');
             const menu = document.getElementById('friendsMenu');
-            if (!btn || !menu) return;
-            if (!btn.contains(event.target) && !menu.contains(event.target)) {
+            if (btn && menu && !btn.contains(event.target) && !menu.contains(event.target)) {
                 closeFriendsMenu();
+            }
+            const mobileBtn = document.getElementById('mobileFriendsBtn');
+            const mobileMenu = document.getElementById('mobileFriendsMenu');
+            if (mobileBtn && mobileMenu && !mobileBtn.contains(event.target) && !mobileMenu.contains(event.target)) {
+                closeMobileFriendsMenu();
             }
         });
 
