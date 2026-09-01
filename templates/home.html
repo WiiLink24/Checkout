@@ -188,19 +188,19 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
 </button>
 {% endif %}
 <div id="scrollHeader"
-    class="hidden md:flex fixed top-0 left-0 md:left-[300px] right-0 z-40 bg-[var(--user-base)] border-b border-[var(--user-transparent)] backdrop-blur-xl px-4 py-4 items-center gap-3 transform -translate-y-full opacity-0 transition-all duration-300 pointer-events-none">
+    class="flex fixed top-0 left-0 md:left-[300px] right-0 z-40 bg-[var(--user-base)] border-b border-[var(--user-transparent)] backdrop-blur-xl px-4 py-4 items-center gap-3 transform -translate-y-full opacity-0 transition-all duration-300 pointer-events-none">
     <img src="{{ viewed_user.profile_picture }}" alt="{{ viewed_user.username }}"
         class="w-16 h-16 rounded-xl object-cover border theme-pfp-border flex-shrink-0">
     <span class="flex flex-col min-w-0">
         <span class="text-2xl mb-1 text-white font-bold truncate leading-tight">{{ viewed_user.username }}</span>
-        <span class="flex flex-wrap items-center gap-1.5">
+        <span class="flex flex-no-wrap rounded-lg overflow-scroll items-center gap-1.5">
             {% for linked_wii in viewed_user.linked_wii_no %}
             <span
-                class="relative inline-flex items-center gap-1.5 px-2 py-0.5 theme-chip rounded-lg text-[var(--user-soft)] text-md overflow-hidden"
+                class="relative flex flex-no-wrap items-center gap-1.5 px-2 py-0.5 theme-chip rounded-lg text-[var(--user-soft)] text-md"
                 title="Wii {{ loop.index }}">
                 <span class="inline-block w-2 h-2 rounded-full flex-shrink-0"
                     style="background: {{ fetch_wii_color_from_number(linked_wii) }}"></span>
-                <span class="transition-opacity duration-300">{{ linked_wii|format_serial
+                <span class="transition-opacity duration-300 whitespace-nowrap">{{ linked_wii|format_serial
                     }}</span>
             </span>
             {% endfor %}
@@ -210,7 +210,7 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
     {% if viewed_user.achievements %}
     {% for ach in viewed_user.achievements.achievements if ach.achieved %}
     <img src="/static/icon/{{ ach.icon }}.svg" alt="{{ ach.name }}" title="{{ ach.name }} — {{ ach.description }}"
-        class="w-7 h-7 text-white cursor-help">
+        class="w-7 h-7 text-white cursor-help hidden lg:inline-block">
     {% endfor %}
     {% endif %}
 </div>

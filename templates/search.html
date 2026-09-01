@@ -12,46 +12,74 @@ WiiLink Checkout | {% if search_query %}{{ search_query }}{% endif %} Search
             <p class="text-[var(--user-soft)]">Search for Wii games, publishers, developers and users!</p>
         </div>
 
-        <form method="GET" action="/search" class="mb-8">
-            <div class="flex flex-wrap gap-1 mb-3">
-                <a href="/search?search={{ search_query }}&type=users"
-                    class="group flex items-center gap-2 px-4 py-2 rounded-xl transition duration-200 {% if search_type == 'users' or not search_type %}bg-[var(--user-light)] text-white{% else %}bg-[var(--user-dark)] text-[var(--user-soft)] hover:bg-[var(--user-dark)] hover:text-white{% endif %}">
-                    <img src="/static/icon/users.svg" alt="Users Icon"
-                        class="w-5 h-5 mr-2 inline invert {% if search_type == 'users' or not search_type %}opacity-100{% else %}opacity-50 group-hover:opacity-100{% endif %}">
-                    Users
-                </a>
-                <span class="border-l border-[var(--user-soft)] mx-2 h-6 self-center"></span>
-                <a href="/search?search={{ search_query }}&type=title"
-                    class="group flex items-center gap-2 px-4 py-2 rounded-l-xl rounded-r-md transition duration-200 {% if search_type == 'title' %}bg-[var(--user-light)] text-white{% else %}bg-[var(--user-dark)] text-[var(--user-soft)] hover:bg-[var(--user-dark)] hover:text-white{% endif %}">
-                    <img src="/static/icon/gamepad.svg" alt="Title Icon"
-                        class="w-5 h-5 mr-2 inline invert {% if search_type == 'title' %}opacity-100{% else %}opacity-50 group-hover:opacity-100{% endif %}">
-                    Title / Game ID
-                </a>
-                <a href="/search?search={{ search_query }}&type=publisher"
-                    class="group flex items-center gap-2 px-4 py-2 rounded-md transition duration-200 {% if search_type == 'publisher' %}bg-[var(--user-light)] text-white{% else %}bg-[var(--user-dark)] text-[var(--user-soft)] hover:bg-[var(--user-dark)] hover:text-white{% endif %}">
-                    <img src="/static/icon/book-check.svg" alt="Publisher Icon"
-                        class="w-5 h-5 mr-2 inline invert {% if search_type == 'publisher' %}opacity-100{% else %}opacity-50 group-hover:opacity-100{% endif %}">
-                    Publisher
-                </a>
-                <a href="/search?search={{ search_query }}&type=developer"
-                    class="group flex items-center gap-2 px-4 py-2 rounded-l-md rounded-r-xl transition duration-200 {% if search_type == 'developer' %}bg-[var(--user-light)] text-white{% else %}bg-[var(--user-dark)] text-[var(--user-soft)] hover:bg-[var(--user-dark)] hover:text-white{% endif %}">
-                    <img src="/static/icon/code.svg" alt="Developer Icon"
-                        class="w-5 h-5 mr-2 inline invert {% if search_type == 'developer' %}opacity-100{% else %}opacity-50 group-hover:opacity-100{% endif %}">
-                    Developer
-                </a>
-            </div>
-            <div class="flex flex-col gap-4">
-                <div class="flex gap-1">
-                    <input type="text" name="search" placeholder="What are you looking for?" value="{{ search_query }}"
-                        class="flex-1 px-4 py-3 bg-[var(--user-dark)] border border-[var(--user-soft)] rounded-l-xl rounded-r-md text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
-                    <input type="hidden" name="type" value="{{ search_type }}">
-                    <button type="submit"
-                        class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-l-md rounded-r-xl transition duration-200">
-                        <img src="/static/icon/search.svg" alt="Search Icon" class="w-5 h-5 invert">
-                    </button>
+        <style>
+            @media (max-width: 639.98px) {
+                .search-sticky {
+                    position: sticky;
+                    top: 0;
+                    z-index: 20;
+                    margin-left: -1rem;
+                    margin-right: -1rem;
+                    padding: 0.5rem 1rem 0.75rem;
+                    background-color: rgba(var(--user-rgb, 17, 24, 39), 0.9);
+                    -webkit-backdrop-filter: blur(12px);
+                    backdrop-filter: blur(12px);
+                }
+
+                .search-types {
+                    scrollbar-width: none;
+                    -ms-overflow-style: none;
+                }
+
+                .search-types::-webkit-scrollbar {
+                    display: none;
+                }
+            }
+        </style>
+
+        <div class="search-sticky">
+            <form method="GET" action="/search" class="mb-8">
+                <div class="search-types flex gap-1 mb-3 overflow-x-auto sm:flex-wrap rounded-xl">
+                    <a href="/search?search={{ search_query }}&type=users"
+                        class="group flex shrink-0 items-center gap-2 whitespace-nowrap px-4 py-2.5 rounded-xl transition duration-200 {% if search_type == 'users' or not search_type %}bg-[var(--user-light)] text-white{% else %}bg-[var(--user-dark)] text-[var(--user-soft)] hover:bg-[var(--user-dark)] hover:text-white{% endif %}">
+                        <img src="/static/icon/users.svg" alt="Users Icon"
+                            class="w-5 h-5 mr-2 inline invert {% if search_type == 'users' or not search_type %}opacity-100{% else %}opacity-50 group-hover:opacity-100{% endif %}">
+                        Users
+                    </a>
+                    <span class="border-l border-[var(--user-soft)] mx-2 h-6 self-center shrink-0"></span>
+                    <a href="/search?search={{ search_query }}&type=title"
+                        class="group flex shrink-0 items-center gap-2 whitespace-nowrap px-4 py-2.5 rounded-l-xl rounded-r-md transition duration-200 {% if search_type == 'title' %}bg-[var(--user-light)] text-white{% else %}bg-[var(--user-dark)] text-[var(--user-soft)] hover:bg-[var(--user-dark)] hover:text-white{% endif %}">
+                        <img src="/static/icon/gamepad.svg" alt="Title Icon"
+                            class="w-5 h-5 mr-2 inline invert {% if search_type == 'title' %}opacity-100{% else %}opacity-50 group-hover:opacity-100{% endif %}">
+                        Title / Game ID
+                    </a>
+                    <a href="/search?search={{ search_query }}&type=publisher"
+                        class="group flex shrink-0 items-center gap-2 whitespace-nowrap px-4 py-2.5 rounded-md transition duration-200 {% if search_type == 'publisher' %}bg-[var(--user-light)] text-white{% else %}bg-[var(--user-dark)] text-[var(--user-soft)] hover:bg-[var(--user-dark)] hover:text-white{% endif %}">
+                        <img src="/static/icon/book-check.svg" alt="Publisher Icon"
+                            class="w-5 h-5 mr-2 inline invert {% if search_type == 'publisher' %}opacity-100{% else %}opacity-50 group-hover:opacity-100{% endif %}">
+                        Publisher
+                    </a>
+                    <a href="/search?search={{ search_query }}&type=developer"
+                        class="group flex shrink-0 items-center gap-2 whitespace-nowrap px-4 py-2.5 rounded-l-md rounded-r-xl transition duration-200 {% if search_type == 'developer' %}bg-[var(--user-light)] text-white{% else %}bg-[var(--user-dark)] text-[var(--user-soft)] hover:bg-[var(--user-dark)] hover:text-white{% endif %}">
+                        <img src="/static/icon/code.svg" alt="Developer Icon"
+                            class="w-5 h-5 mr-2 inline invert {% if search_type == 'developer' %}opacity-100{% else %}opacity-50 group-hover:opacity-100{% endif %}">
+                        Developer
+                    </a>
                 </div>
-            </div>
-        </form>
+                <div class="flex flex-col gap-4">
+                    <div class="flex gap-2">
+                        <input type="search" name="search" placeholder="What are you looking for?" value="{{ search_query }}"
+                            enterkeyhint="search" autocapitalize="off" autocomplete="off" spellcheck="false"
+                            class="flex-1 min-w-0 px-4 py-3 bg-[var(--user-dark)] border border-[var(--user-soft)] rounded-l-xl rounded-r-md text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
+                        <input type="hidden" name="type" value="{{ search_type }}">
+                        <button type="submit" aria-label="Search"
+                            class="shrink-0 px-6 py-3 bg-green-600 hover:bg-green-700 active:bg-green-800 text-white font-medium rounded-l-md rounded-r-xl transition duration-200">
+                            <img src="/static/icon/search.svg" alt="" class="w-5 h-5 invert">
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
 
         {% if games %}
         {% set vt_seen = namespace(ids=[]) %}
@@ -65,41 +93,39 @@ WiiLink Checkout | {% if search_query %}{{ search_query }}{% endif %} Search
             <div class="text-sm text-[var(--user-soft)]">
                 Page <b>{{ page }}</b> of {{ total_pages }} ({{ total_count }} total)
             </div>
-            <div class="flex gap-2">
+            <div class="flex flex-wrap justify-center gap-2">
                 {% if page > 1 %}
                 <a href="/search?search={{ search_query }}&type={{ search_type }}&page=1"
-                    class="px-3 py-2 rounded-lg bg-[var(--user-dark)] border border-[var(--user-soft)] text-[var(--user-soft)] hover:bg-[var(--user-dark)] hover:border-indigo-500 transition">
+                    class="px-3.5 py-2.5 rounded-lg bg-[var(--user-dark)] border border-[var(--user-soft)] text-[var(--user-soft)] hover:bg-[var(--user-dark)] hover:border-indigo-500 transition">
                     <img src="/static/icon/chevrons-left.svg" alt="First Page" class="invert"></a>
-                </a>
                 <a href="/search?search={{ search_query }}&type={{ search_type }}&page={{ page - 1 }}"
-                    class="px-3 py-2 rounded-lg bg-[var(--user-dark)] border border-[var(--user-soft)] text-[var(--user-soft)] hover:bg-[var(--user-dark)] hover:border-indigo-500 transition">
+                    class="px-3.5 py-2.5 rounded-lg bg-[var(--user-dark)] border border-[var(--user-soft)] text-[var(--user-soft)] hover:bg-[var(--user-dark)] hover:border-indigo-500 transition">
                     <img src="/static/icon/chevron-left.svg" alt="Previous Page" class="invert"></a>
-                </a>
                 {% endif %}
 
                 {% for p in range(1, total_pages + 1) %}
                 {% if total_pages <= 10 %} <a
                     href="/search?search={{ search_query }}&type={{ search_type }}&page={{ p }}"
-                    class="px-3 py-2 rounded-lg transition {% if p == page %}bg-[var(--user-light)] border border-indigo-500 text-white{% else %}bg-[var(--user-dark)] border border-[var(--user-soft)] text-[var(--user-soft)] hover:bg-[var(--user-dark)] hover:border-indigo-500{% endif %}">
+                    class="px-3.5 py-2.5 rounded-lg transition {% if p == page %}bg-[var(--user-light)] border border-indigo-500 text-white{% else %}bg-[var(--user-dark)] border border-[var(--user-soft)] text-[var(--user-soft)] hover:bg-[var(--user-dark)] hover:border-indigo-500{% endif %}">
                     {{ p }}
                     </a>
                     {% elif p == 1 or p == total_pages or (p >= page - 1 and p <= page + 1) %} <a
                         href="/search?search={{ search_query }}&type={{ search_type }}&page={{ p }}"
-                        class="px-3 py-2 rounded-lg transition {% if p == page %}bg-[var(--user-light)] border border-indigo-500 text-white{% else %}bg-[var(--user-dark)] border border-[var(--user-soft)] text-[var(--user-soft)] hover:bg-[var(--user-dark)] hover:border-indigo-500{% endif %}">
+                        class="px-3.5 py-2.5 rounded-lg transition {% if p == page %}bg-[var(--user-light)] border border-indigo-500 text-white{% else %}bg-[var(--user-dark)] border border-[var(--user-soft)] text-[var(--user-soft)] hover:bg-[var(--user-dark)] hover:border-indigo-500{% endif %}">
                         {{ p }}
                         </a>
                         {% elif (p == 2 and page > 3) or (p == total_pages - 1 and page < total_pages - 2) %} <span
-                            class="px-3 py-2 text-[var(--user-soft)]">…</span>
+                            class="px-3 py-2.5 text-[var(--user-soft)]">…</span>
                             {% endif %}
                             {% endfor %}
 
                             {% if page < total_pages %} <a
                                 href="/search?search={{ search_query }}&type={{ search_type }}&page={{ page + 1 }}"
-                                class="px-3 py-2 rounded-lg bg-[var(--user-dark)] border border-[var(--user-soft)] text-[var(--user-soft)] hover:bg-[var(--user-dark)] hover:border-indigo-500 transition">
+                                class="px-3.5 py-2.5 rounded-lg bg-[var(--user-dark)] border border-[var(--user-soft)] text-[var(--user-soft)] hover:bg-[var(--user-dark)] hover:border-indigo-500 transition">
                                 <img src="/static/icon/chevron-right.svg" alt="Next Page" class="invert">
                                 </a>
                                 <a href="/search?search={{ search_query }}&type={{ search_type }}&page={{ total_pages }}"
-                                    class="px-3 py-2 rounded-lg bg-[var(--user-dark)] border border-[var(--user-soft)] text-[var(--user-soft)] hover:bg-[var(--user-dark)] hover:border-indigo-500 transition">
+                                    class="px-3.5 py-2.5 rounded-lg bg-[var(--user-dark)] border border-[var(--user-soft)] text-[var(--user-soft)] hover:bg-[var(--user-dark)] hover:border-indigo-500 transition">
                                     <img src="/static/icon/chevrons-right.svg" alt="Last Page" class="invert">
                                 </a>
                                 {% endif %}
@@ -117,7 +143,7 @@ WiiLink Checkout | {% if search_query %}{{ search_query }}{% endif %} Search
                 <img src="{{ user.avatar }}" alt="{{ user.username }}"
                     style="view-transition-name: vt-pfp-{{ user.username|slugify }};"
                     class="w-16 h-16 rounded-xl object-cover border border-[var(--user-soft)]">
-                <p class="flex flex-col gap-1">
+                <p class="flex flex-col gap-1 min-w-0 flex-1">
                     <span class="text-lg font-semibold text-white overflow-ellipsis whitespace-nowrap">{{ user.username
                         }}</span>
                     <span class="font-light text-[var(--user-soft)] overflow-ellipsis whitespace-nowrap">{{
@@ -131,41 +157,39 @@ WiiLink Checkout | {% if search_query %}{{ search_query }}{% endif %} Search
             <div class="text-sm text-[var(--user-soft)]">
                 Page <b>{{ page }}</b> of {{ total_pages }} ({{ total_count }} total)
             </div>
-            <div class="flex gap-2">
+            <div class="flex flex-wrap justify-center gap-2">
                 {% if page > 1 %}
                 <a href="/search?search={{ search_query }}&type={{ search_type }}&page=1"
-                    class="px-3 py-2 rounded-lg bg-[var(--user-dark)] border border-[var(--user-soft)] text-[var(--user-soft)] hover:bg-[var(--user-dark)] hover:border-indigo-500 transition">
+                    class="px-3.5 py-2.5 rounded-lg bg-[var(--user-dark)] border border-[var(--user-soft)] text-[var(--user-soft)] hover:bg-[var(--user-dark)] hover:border-indigo-500 transition">
                     <img src="/static/icon/chevrons-left.svg" alt="First Page" class="invert"></a>
-                </a>
                 <a href="/search?search={{ search_query }}&type={{ search_type }}&page={{ page - 1 }}"
-                    class="px-3 py-2 rounded-lg bg-[var(--user-dark)] border border-[var(--user-soft)] text-[var(--user-soft)] hover:bg-[var(--user-dark)] hover:border-indigo-500 transition">
+                    class="px-3.5 py-2.5 rounded-lg bg-[var(--user-dark)] border border-[var(--user-soft)] text-[var(--user-soft)] hover:bg-[var(--user-dark)] hover:border-indigo-500 transition">
                     <img src="/static/icon/chevron-left.svg" alt="Previous Page" class="invert"></a>
-                </a>
                 {% endif %}
 
                 {% for p in range(1, total_pages + 1) %}
                 {% if total_pages <= 10 %} <a
                     href="/search?search={{ search_query }}&type={{ search_type }}&page={{ p }}"
-                    class="px-3 py-2 rounded-lg transition {% if p == page %}bg-[var(--user-light)] border border-indigo-500 text-white{% else %}bg-[var(--user-dark)] border border-[var(--user-soft)] text-[var(--user-soft)] hover:bg-[var(--user-dark)] hover:border-indigo-500{% endif %}">
+                    class="px-3.5 py-2.5 rounded-lg transition {% if p == page %}bg-[var(--user-light)] border border-indigo-500 text-white{% else %}bg-[var(--user-dark)] border border-[var(--user-soft)] text-[var(--user-soft)] hover:bg-[var(--user-dark)] hover:border-indigo-500{% endif %}">
                     {{ p }}
                     </a>
                     {% elif p == 1 or p == total_pages or (p >= page - 1 and p <= page + 1) %} <a
                         href="/search?search={{ search_query }}&type={{ search_type }}&page={{ p }}"
-                        class="px-3 py-2 rounded-lg transition {% if p == page %}bg-[var(--user-light)] border border-indigo-500 text-white{% else %}bg-[var(--user-dark)] border border-[var(--user-soft)] text-[var(--user-soft)] hover:bg-[var(--user-dark)] hover:border-indigo-500{% endif %}">
+                        class="px-3.5 py-2.5 rounded-lg transition {% if p == page %}bg-[var(--user-light)] border border-indigo-500 text-white{% else %}bg-[var(--user-dark)] border border-[var(--user-soft)] text-[var(--user-soft)] hover:bg-[var(--user-dark)] hover:border-indigo-500{% endif %}">
                         {{ p }}
                         </a>
                         {% elif (p == 2 and page > 3) or (p == total_pages - 1 and page < total_pages - 2) %} <span
-                            class="px-3 py-2 text-[var(--user-soft)]">…</span>
+                            class="px-3 py-2.5 text-[var(--user-soft)]">…</span>
                             {% endif %}
                             {% endfor %}
 
                             {% if page < total_pages %} <a
                                 href="/search?search={{ search_query }}&type={{ search_type }}&page={{ page + 1 }}"
-                                class="px-3 py-2 rounded-lg bg-[var(--user-dark)] border border-[var(--user-soft)] text-[var(--user-soft)] hover:bg-[var(--user-dark)] hover:border-indigo-500 transition">
+                                class="px-3.5 py-2.5 rounded-lg bg-[var(--user-dark)] border border-[var(--user-soft)] text-[var(--user-soft)] hover:bg-[var(--user-dark)] hover:border-indigo-500 transition">
                                 <img src="/static/icon/chevron-right.svg" alt="Next Page" class="invert">
                                 </a>
                                 <a href="/search?search={{ search_query }}&type={{ search_type }}&page={{ total_pages }}"
-                                    class="px-3 py-2 rounded-lg bg-[var(--user-dark)] border border-[var(--user-soft)] text-[var(--user-soft)] hover:bg-[var(--user-dark)] hover:border-indigo-500 transition">
+                                    class="px-3.5 py-2.5 rounded-lg bg-[var(--user-dark)] border border-[var(--user-soft)] text-[var(--user-soft)] hover:bg-[var(--user-dark)] hover:border-indigo-500 transition">
                                     <img src="/static/icon/chevrons-right.svg" alt="Last Page" class="invert">
                                 </a>
                                 {% endif %}
@@ -175,7 +199,7 @@ WiiLink Checkout | {% if search_query %}{{ search_query }}{% endif %} Search
 
         {% else %}
                     {% if search_query %}
-        <div class="border-2 border-dashed border-[var(--user-soft)] rounded-xl p-12 text-center">
+        <div class="border-2 border-dashed border-[var(--user-soft)] rounded-xl p-8 sm:p-12 text-center">
             <img src="/static/icon/circle-alert.svg" alt="No Results" class="w-12 h-12 mx-auto mb-4 opacity-80 invert">
             <p class="text-white/80 text-lg mb-4">No results match "<strong>{{ search_query }}</strong>",<br>perhaps you
                 didn't mean to filter by <b>{{ search_type }}</b></p>
