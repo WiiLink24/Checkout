@@ -193,7 +193,7 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
         class="w-16 h-16 rounded-xl object-cover border theme-pfp-border flex-shrink-0">
     <span class="flex flex-col min-w-0">
         <span class="text-2xl mb-1 text-white font-bold truncate leading-tight">{{ viewed_user.username }}</span>
-        <span class="flex flex-no-wrap rounded-lg overflow-scroll items-center gap-1.5">
+        <span class="flex flex-no-wrap rounded-lg overflow-auto items-center gap-1.5">
             {% for linked_wii in viewed_user.linked_wii_no %}
             <span
                 class="relative flex flex-no-wrap items-center gap-1.5 px-2 py-0.5 theme-chip rounded-lg text-[var(--user-soft)] text-md"
@@ -458,7 +458,7 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                     class="home-reveal w-full xl:w-[500px] theme-card-faint border rounded-2xl p-5 sm:p-6 mb-10 cursor-pointer z-0">
                     <div class="ach-grid ach-strip xl:max-h-[460px] xl:pr-1">
                         {% for ach in all_achievements if ach.achieved %}
-                        <div class="ach-tile-cell relative group rounded-xl aspect-square flex items-center justify-center overflow-visible"
+                        <div class="ach-tile-cell relative group rounded-xl aspect-square flex items-center justify-center overflow-auto"
                             title="{{ ach.name }} — {{ ach.description }}">
                             <div class="ach-icon-box w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center">
                                 <img src="/static/icon/{{ ach.icon }}.svg" alt="{{ ach.name }}"

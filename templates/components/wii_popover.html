@@ -1,6 +1,6 @@
 {% set position_class = position_class or "left-1/2 -translate-x-1/2 top-full mt-2" %}
 {% if wii_breakdown and wii_breakdown|selectattr(metric)|list %}
-<div class="absolute {{ position_class }} w-full max-w-[400px] rounded-xl border border-[var(--user-transparent)] bg-[var(--user-dark)] shadow-xl p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 overflow-scroll z-30 pointer-events-none">
+<div class="absolute {{ position_class }} w-full max-w-[400px] rounded-xl border border-[var(--user-transparent)] bg-[var(--user-dark)] shadow-xl p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 overflow-auto z-30 pointer-events-none">
     <div class="flex flex-col gap-1.5">
         {% for w in wii_breakdown %}
         {% if w[metric] %}
