@@ -53,7 +53,7 @@
                     <p class="text-lg font-semibold text-white">{{ rec.times_played }}</p>
                     {% set metric = 'times_played' %}
                     {% set fmt = 'int' %}
-                    {% set position_class = 'h-full bottom-0 right-0 overflow-y-scroll' %}
+                    {% set position_class = 'h-full bottom-0 right-0 overflow-y-auto' %}
                     {% include "components/wii_popover.html" %}
                 </div>
                 <div class="relative group rounded-xl theme-card-inner p-3 flex flex-col gap-3">
@@ -61,7 +61,7 @@
                     <p class="text-lg font-semibold text-white">{{ rec.time_played|format_playtime }}</p>
                     {% set metric = 'time_played' %}
                     {% set fmt = 'playtime' %}
-                    {% set position_class = 'h-full bottom-0 right-0 overflow-y-scroll' %}
+                    {% set position_class = 'h-full bottom-0 right-0 overflow-y-auto' %}
                     {% include "components/wii_popover.html" %}
                 </div>
             </span>
