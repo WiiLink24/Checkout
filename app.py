@@ -30,6 +30,7 @@ from routes.trending import trending_bp
 from routes.digicard import digicard_bp, set_oidc as set_oidc_digicard
 from routes.misc import misc_routes_bp
 from routes.coupons_admin import coupons_admin_bp
+from routes.notifications_admin import notifications_admin_bp
 from utils.cache import init_cache, generate_top_page_cache
 from utils.achievements import sync_achievements
 from utils.db import init_db
@@ -110,6 +111,7 @@ app.register_blueprint(trending_bp)
 app.register_blueprint(digicard_bp)
 app.register_blueprint(misc_routes_bp)
 app.register_blueprint(coupons_admin_bp)
+app.register_blueprint(notifications_admin_bp)
 
 # Background scheduler for cache generation
 scheduler = BackgroundScheduler()

@@ -462,7 +462,9 @@
                     <span class="text-xs px-2 py-1 rounded-md bg-[var(--user-dark)] text-[var(--user-soft)]">{{ user_info.achievements.points.balance if user_info.achievements and user_info.achievements.points else 0 }} pts.</span>
                 </a>
                         {% if is_coupon_admin %}
-                        {{ menu_item('Coupon Admin', 'coupons_admin.panel', 'badge-dollar-sign') }}
+                        {{ menu_section('ADMINISTRATION') }}
+                        {{ menu_item('Coupon Management', 'coupons_admin.panel', 'badge-dollar-sign') }}
+                        {{ menu_item('Notification Management', 'notifications_admin.panel', 'bell') }}
                         {% endif %}
                         {{ menu_item_external('Account Settings', 'https://accounts.wiilink.ca/manage', 'settings') }}
                     </div>
