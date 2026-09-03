@@ -13,6 +13,7 @@
 {'name': 'Recommendations', 'path': '/recommendations', 'active': page_title == 'Recommendations'},
 {'name': 'Time Played', 'path': '/time_played', 'active': page_title == 'Time Played'},
 {'name': 'Favorites', 'path': '/favorites', 'active': page_title == 'Favorites'},
+{'name': 'Calendar', 'path': '/calendar', 'active': page_title == 'Calendar'},
 {'name': 'Polls', 'path': '/polls', 'active': page_title == 'Polls'},
 {'name': 'Suggestions', 'path': '/suggestions', 'active': page_title == 'Suggestions'},
 {'name': 'Contest Submissions', 'path': '/contest_submissions', 'active': page_title == 'Contest Submissions'},
@@ -22,14 +23,15 @@
 <div class="min-h-screen px-4 sm:px-6 lg:px-8 py-12">
     <div class="max-w-6xl mx-auto">
         {% if not is_unclaimed %}
-        <div class="text-center mb-10 z-10 relative">
-            <div class="relative w-full mx-auto mb-4 flex items-center justify-center">
+        <div class="flex flex-col lg:flex-row items-center lg:items-start justify-center lg:justify-start gap-6 mb-10 z-10 relative">
+            <div class="relative flex items-center justify-center">
                 <img src="{{ viewed_user.profile_picture }}" alt="{{ viewed_user.username }}"
                     style="view-transition-name: vt-pfp-{{ viewed_user.username|slugify }};"
                     class="w-32 h-32 rounded-2xl mx-auto object-cover relative z-10">
             </div>
+            <span class="flex flex-col items-center lg:items-start">
             <h1 style="view-transition-name: vt-title-{{ page_title|slugify }};"
-                class="flex flex-col lg:flex-row items-center justify-center text-2xl sm:text-4xl font-bold text-white mt-2">
+                class="text-center lg:text-left flex flex-col lg:flex-row items-center justify-center text-2xl sm:text-4xl font-bold text-white mt-2">
                 {{ viewed_user.username }}
                 <details class="relative inline-block ml-2 text-left group align-middle">
                     <summary
@@ -60,6 +62,7 @@
                     {{ linked_wii|format_serial }}
                 </p>
                 {% endfor %}
+            </span>
             </span>
         </div>
         {% endif %}

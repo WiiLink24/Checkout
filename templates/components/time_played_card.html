@@ -26,7 +26,7 @@
                                         style="background: {{ fetch_wii_color_from_number(wii_number) }}"></span>
                                 {% endfor %}{% endif %}
                                 {{ rec.game_id }}{% if rec.release_year %} • {{
-                                rec.release_year }}{% endif %}</p>
+                                rec.release_year }}{% endif %}{% if rec.latest_date %} • Last played {{ rec.latest_date }}{% endif %}</p>
                         </div>
                         <div class="flex flex-wrap items-center gap-2 text-xs text-[var(--user-soft)]">
                             {% if rec.rating_type and rec.rating_value %}<img src="/static/ratings/{{

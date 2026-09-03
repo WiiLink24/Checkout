@@ -1,4 +1,5 @@
 import config
+from datetime import date
 from utils.utils import (
     _build_serial_filter,
     _run_query,
@@ -319,10 +320,9 @@ def fetch_time_played(
     if sort_by == "times_played":
         sort_expr = "spg.times_played DESC, spg.time_played DESC"
     elif sort_by == "last_played":
-        sort_expr = "spg.latest_date DESC"
+        sort_expr = "spg.latest_date DESC NULLS LAST, spg.time_played DESC, spg.times_played DESC"
     else:
         sort_expr = "spg.time_played DESC, spg.times_played DESC"
-
     query = f"""
         WITH filtered AS (
             SELECT tp.*
@@ -346,6 +346,7 @@ def fetch_time_played(
         ), detailed_games AS (
             SELECT
                 r.times_played, r.time_played, r.serials,
+                r.latest_date,
                 COALESCE(t.game_id, r.game_id) AS game_id,
                 COALESCE(t.display_name, t.title_en, r.game_id) AS title,
                 t.title_en, t.display_name, t.synopsis_en, t.genre, t.developer, t.publisher, t.game_type,
@@ -372,6 +373,90 @@ def fetch_time_played(
             resolve_serial(serial, serial_to_wii) for serial in serials if serial
         ]
     return rows
+
+
+def fetch_time_played_calendar(serial_prefixes, year, month, serial_to_wii=None):
+    """Per-day, per-title play data for one month (calendar view)."""
+    where_clause, params = _build_serial_filter("tp.serial_number", serial_prefixes)
+    if not where_clause:
+        return []
+
+    start = date(year, month, 1)
+    end = date(year + 1, 1, 1) if month == 12 else date(year, month + 1, 1)
+
+    query = f"""
+        WITH day_games AS (
+            SELECT
+                tp.date_played AS day,
+                LEFT(tp.game_id, 4) AS game_prefix,
+                SUM(tp.times_played) AS times_played,
+                SUM(tp.time_played) AS time_played,
+                STRING_AGG(DISTINCT LEFT(tp.serial_number, 12), ',') AS serials
+            FROM time_played tp
+            WHERE ({where_clause})
+              AND tp.date_played >= %s AND tp.date_played < %s
+            GROUP BY tp.date_played, LEFT(tp.game_id, 4)
+        )
+        SELECT
+            dg.day, dg.times_played, dg.time_played, dg.serials,
+            COALESCE(t.game_id, dg.game_prefix) AS game_id,
+            COALESCE(t.display_name, t.title_en, dg.game_prefix) AS title,
+            t.title_en, t.display_name, t.synopsis_en, t.genre, t.developer, t.publisher, t.game_type,
+            t.release_year, t.rating_type, t.rating_value, t.region, t.input_controls, t.wifi_players, t.input_players
+        FROM day_games dg
+        LEFT JOIN LATERAL (
+            SELECT * FROM titles t
+            WHERE t.game_id = dg.game_prefix OR SUBSTRING(t.game_id, 1, 4) = dg.game_prefix
+            ORDER BY LENGTH(t.game_id) DESC, t.game_id
+            LIMIT 1
+        ) t ON true
+        ORDER BY dg.day, dg.time_played DESC
+    """
+    rows = _run_query(query, [*params, start, end], config.db_url)
+
+    for row in rows:
+        serials = (row.get("serials") or "").split(",")
+        row["wii_numbers"] = [
+            resolve_serial(serial, serial_to_wii) for serial in serials if serial
+        ]
+    return rows
+
+
+def fetch_time_played_latest_date(serial_prefixes):
+    where_clause, params = _build_serial_filter("tp.serial_number", serial_prefixes)
+    if not where_clause:
+        return None
+
+    rows = _run_query(
+        f"""
+        SELECT MAX(tp.date_played) AS latest
+        FROM time_played tp
+        WHERE {where_clause}
+        """,
+        params,
+        config.db_url,
+    )
+    return rows[0]["latest"] if rows else None
+
+
+def fetch_time_played_active_months(serial_prefixes):
+    where_clause, params = _build_serial_filter("tp.serial_number", serial_prefixes)
+    if not where_clause:
+        return []
+
+    rows = _run_query(
+        f"""
+        SELECT DISTINCT
+            EXTRACT(YEAR FROM tp.date_played)::int AS year,
+            EXTRACT(MONTH FROM tp.date_played)::int AS month
+        FROM time_played tp
+        WHERE ({where_clause}) AND tp.date_played IS NOT NULL
+        ORDER BY year, month
+        """,
+        params,
+        config.db_url,
+    )
+    return [(row["year"], row["month"]) for row in rows]
 
 
 def fetch_time_played_stats(game_id):
