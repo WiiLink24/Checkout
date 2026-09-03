@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, abort, send_file, request
-from utils.helpers import parse_int, is_public_profile
+from utils.helpers import parse_int, is_public_profile, build_calendar_context
 from utils.utils import (
     find_user_by_wii_number,
     normalize_serial,
@@ -258,6 +258,62 @@ def time_played_by_serial(wii_no):
         "sort_by": sort_by,
     }
     return render_template("time_played.html", **context)
+
+
+@public_routes_bp.route("/<wii_no>/calendar", endpoint="calendar_by_serial")
+def calendar_by_serial(wii_no):
+    wii_no = normalize_serial(wii_no)
+
+    user_info = get_logged_in_user_info()
+    authentik_user = find_user_by_wii_number(wii_no)
+    if authentik_user:
+        if not is_public_profile(authentik_user, user_info):
+            return (
+                render_template("errors/private_profile.html", user_info=user_info),
+                400,
+            )
+        serial_prefixes, _ = extract_linked_wiis(authentik_user.get("attributes"))
+        serial_to_wii = build_serial_to_wii_mapping(authentik_user.get("attributes"))
+    if authentik_user and serial_prefixes:
+        viewed_user = build_viewed_user_info(authentik_user)
+        context = build_calendar_context(
+            serial_prefixes,
+            month_param=request.args.get("month"),
+            serial_to_wii=serial_to_wii,
+        )
+        return render_template(
+            "calendar.html",
+            user_info=user_info,
+            viewed_user=viewed_user,
+            is_unclaimed=False,
+            view_base=f"/{wii_no}/calendar",
+            **context,
+        )
+
+    if authentik_user:
+        return (
+            render_template("errors/not_linked_external.html", user_info=user_info),
+            400,
+        )
+
+    serial_prefixes = extract_serial_prefix(wii_no)
+    if not serial_has_time_played(serial_prefixes):
+        abort(404)
+
+    logged_in_user_picture = user_info.get("profile_picture") if user_info else None
+    viewed_user = build_unclaimed_user_info(wii_no, logged_in_user_picture)
+
+    context = build_calendar_context(
+        serial_prefixes, month_param=request.args.get("month")
+    )
+    return render_template(
+        "calendar.html",
+        user_info=user_info,
+        viewed_user=viewed_user,
+        is_unclaimed=True,
+        view_base=f"/{wii_no}/calendar",
+        **context,
+    )
 
 
 @public_routes_bp.route("/<wii_no>/favorites", endpoint="favorites_by_serial")

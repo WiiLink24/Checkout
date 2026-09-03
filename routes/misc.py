@@ -2,10 +2,16 @@ from flask import Blueprint, render_template, request, redirect, url_for
 import random
 import config
 from utils.utils import (
+    get_serial_prefixes,
+    build_serial_to_wii_mapping,
     search_authentik_users_by_name,
     fetch_authentik_users,
     _run_query,
 )
+from utils.db import db
+from utils.auth import get_user_profile
+from utils.helpers import build_calendar_context
+from channels.nc import serial_has_time_played
 
 misc_routes_bp = Blueprint("misc_routes", __name__, url_prefix="")
 
@@ -180,6 +186,42 @@ def search():
         total_pages=total_pages,
         total_count=total_count,
         user_info=user_info,
+    )
+
+
+@misc_routes_bp.route("/calendar", endpoint="calendar")
+def calendar_page():
+    user_info = get_logged_in_user_info()
+    if not user_info:
+        return redirect(url_for("oidc_auth.login"))
+
+    profile = get_user_profile()
+    serial_prefixes = get_serial_prefixes(profile)
+    if not serial_prefixes:
+        return (
+            render_template("errors/not_linked.html", user_info=user_info),
+            400,
+        )
+    if not serial_has_time_played(serial_prefixes):
+        return (
+            render_template("errors/not_linked.html", user_info=user_info),
+            400,
+        )
+
+    serial_to_wii = build_serial_to_wii_mapping(profile)
+    context = build_calendar_context(
+        serial_prefixes,
+        month_param=request.args.get("month"),
+        serial_to_wii=serial_to_wii,
+    )
+
+    return render_template(
+        "calendar.html",
+        user_info=user_info,
+        viewed_user=user_info,
+        is_unclaimed=False,
+        view_base="/calendar",
+        **context,
     )
 
 

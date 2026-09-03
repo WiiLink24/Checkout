@@ -1,0 +1,313 @@
+{% extends "generic/base.html" %}
+
+{% block title %}
+WiiLink Checkout | Calendar for {{ viewed_user.username }}
+{% endblock %}
+
+{% block content %}
+{% set page_title = "Calendar" %}
+{% include "components/page_header.html" %}
+
+<div class="px-4 sm:px-6 lg:px-8 py-8 max-w-6xl mx-auto">
+    <div class="flex items-center justify-between gap-4 mb-6">
+        {% if prev_active_param %}
+        <a href="{{ view_base }}?month={{ prev_active_param }}" aria-label="Previous month with plays"
+            data-direction="backwards" class="theme-btn border rounded-lg p-2" title="Previous month with plays">
+            <img src="/static/icon/chevrons-left.svg" alt="Previous month with plays" class="w-5 h-5 invert" />
+        </a>
+        {% else %}
+        <span class="p-2 opacity-30 cursor-default" aria-hidden="true">
+            <img src="/static/icon/chevrons-left.svg" alt="" class="w-5 h-5 invert" />
+        </span>
+        {% endif %}
+        <a href="{{ view_base }}?month={{ prev_month_param }}" aria-label="Previous month" data-direction="backwards"
+            class="theme-btn border rounded-lg p-2">
+            <img src="/static/icon/chevron-left.svg" alt="Previous month" class="w-5 h-5 invert" />
+        </a>
+        <h2 class="text-xl sm:text-2xl font-bold text-white text-center">{{ month_label }}</h2>
+        <a href="{{ view_base }}?month={{ next_month_param }}" aria-label="Next month" data-direction="forwards"
+            class="theme-btn border rounded-lg p-2">
+            <img src="/static/icon/chevron-right.svg" alt="Next month" class="w-5 h-5 invert" />
+        </a>
+        {% if next_active_param %}
+        <a href="{{ view_base }}?month={{ next_active_param }}" aria-label="Next month with plays"
+            data-direction="forwards" class="theme-btn border rounded-lg p-2" title="Next month with plays">
+            <img src="/static/icon/chevrons-right.svg" alt="Next month with plays" class="w-5 h-5 invert" />
+        </a>
+        {% else %}
+        <span class="p-2 opacity-30 cursor-default" aria-hidden="true">
+            <img src="/static/icon/chevrons-right.svg" alt="" class="w-5 h-5 invert" />
+        </span>
+        {% endif %}
+    </div>
+
+    {% set has_plays = active_days|length > 0 %}
+
+    <div class="hidden md:block rounded-2xl overflow-hidden {% if not has_plays %}hidden{% endif %} relative">
+                {% if not has_plays %}   
+        <div class="flex flex-col items-center gap-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none z-10">
+                <img src="/static/icon/clock.svg" alt="" class="w-12 h-12 invert mx-auto mb-2" />
+                <p class="text-2xl font-bold text-white">No plays found</p>
+                <p class="text-sm text-[var(--user-soft)] mt-1">No games were played in this month.</p>
+    </div> 
+    {% endif %}
+        <div class="mb-3 grid grid-cols-7 gap-px bg-[var(--user-soft)] rounded-2xl overflow-hidden {% if not has_plays %}opacity-30{% endif %}">
+            <div
+                class="py-2.5 text-center text-xs uppercase tracking-wider text-[var(--user-dark)]">
+                Sun</div>
+            <div
+                class="py-2.5 text-center text-xs uppercase tracking-wider text-[var(--user-dark)]">
+                Mon</div>
+            <div
+                class="py-2.5 text-center text-xs uppercase tracking-wider text-[var(--user-dark)]">
+                Tue</div>
+            <div
+                class="py-2.5 text-center text-xs uppercase tracking-wider text-[var(--user-dark)]">
+                Wed</div>
+            <div
+                class="py-2.5 text-center text-xs uppercase tracking-wider text-[var(--user-dark)]">
+                Thu</div>
+            <div
+                class="py-2.5 text-center text-xs uppercase tracking-wider text-[var(--user-dark)]">
+                Fri</div>
+            <div
+                class="py-2.5 text-center text-xs uppercase tracking-wider text-[var(--user-dark)]">
+                Sat</div>
+        </div>
+
+        <div class="grid grid-cols-7 gap-px {% if not has_plays %}opacity-30{% endif %}">
+            {% for week in calendar_weeks %}
+            {% for day in week %}
+            {% if day.date %}
+            <div
+                class="min-h-[7.5rem] xl:min-h-[8.5rem] xl:max-h-[8.5rem] overflow-y-auto p-1.5 m-1 rounded-lg flex flex-col gap-1 {% if day.date == today %}bg-[var(--user-light)]{% else %}bg-[var(--user-dark)]{% endif %} relative">
+                <span class="absolute w-5 h-5 aspect-square top-3 right-3 flex items-center justify-center rounded-full flex justify-end px-0.5 z-10 {% if day.date == today %}bg-[var(--user-base)]{% else %}bg-[var(--user-dark)]{% endif %}">
+                    {% if day.date == today %}
+                    <span
+                        class="text-white text-xs font-semibold">{{
+                        day.date.day }}</span>
+                    {% else %}
+                    <span class="text-xs text-[var(--user-soft)]">{{ day.date.day }}</span>
+                    {% endif %}
+                </span>
+                <div class="grid grid-cols-2 gap-1">
+                    {% for rec in day.entries %}
+                    {% set cover = namespace(url='', fallback='') %}
+                    {% set cover_game = rec %}
+                    {% include "components/game_cover_vars.html" %}
+                    <button data-modal-open data-source="time_played" data-title="{{ rec.title_en or rec.title }}"
+                        data-game-id="{{ rec.game_id }}" data-cover-url="{{ cover.url }}"
+                        data-cover-fallback="{{ cover.fallback }}" data-release-year="{{ rec.release_year or '' }}"
+                        data-release-month="{{ rec.release_month or '' }}"
+                        data-release-day="{{ rec.release_day or '' }}" data-genre="{{ rec.genre or '' }}"
+                        data-developer="{{ rec.developer or '' }}" data-publisher="{{ rec.publisher or '' }}"
+                        data-rating-type="{{ rec.rating_type or '' }}" data-rating-value="{{ rec.rating_value or '' }}"
+                        data-synopsis="{{ rec.synopsis_en or '' }}" {%- if rec.input_controls %}
+                        data-input-controls='{{ rec.input_controls | tojson }}' {% endif %}
+                        data-wifi-players="{{ rec.wifi_players or 0 }}"
+                        data-input-players="{{ rec.input_players or 0 }}"
+                        data-playtime="{{ rec.time_played|format_playtime }}"
+                        data-times="{{ rec.times_played }}"
+                        class="relative group w-full aspect-square rounded overflow-hidden focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        aria-label="{{ rec.title_en or rec.title }} details">
+                        <img src="{{ cover.url }}" alt="{{ rec.title_en or rec.title }} Cover"
+                            data-fallback="{{ cover.fallback }}" loading="lazy"
+                            onerror="if (!this.dataset.tried && this.dataset.fallback) { this.dataset.tried = '1'; this.src = this.dataset.fallback; } else { this.style.display = 'none'; }"
+                            class="w-full aspect-[3/4] object-cover rounded-sm" />
+                    </button>
+                    {% endfor %}
+                </div>
+            </div>
+            {% else %}
+            <div class="min-h-[7.5rem] xl:min-h-[8.5rem]"></div>
+            {% endif %}
+            {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="md:hidden flex flex-col gap-3">
+        {% for day in active_days %}
+        <div class="theme-card border rounded-2xl p-4">
+            <h3 class="text-sm font-bold uppercase tracking-wider text-[var(--user-soft)] mb-3">{{
+                day.date.strftime("%A, %B %d") }}</h3>
+            <div class="flex flex-col gap-3">
+                {% for rec in day.entries %}
+                {% set cover = namespace(url='', fallback='') %}
+                {% set cover_game = rec %}
+                {% include "components/game_cover_vars.html" %}
+                <button data-modal-open data-source="time_played" data-title="{{ rec.title_en or rec.title }}"
+                    data-game-id="{{ rec.game_id }}" data-cover-url="{{ cover.url }}"
+                    data-cover-fallback="{{ cover.fallback }}" data-release-year="{{ rec.release_year or '' }}"
+                    data-release-month="{{ rec.release_month or '' }}" data-release-day="{{ rec.release_day or '' }}"
+                    data-genre="{{ rec.genre or '' }}" data-developer="{{ rec.developer or '' }}"
+                    data-publisher="{{ rec.publisher or '' }}" data-rating-type="{{ rec.rating_type or '' }}"
+                    data-rating-value="{{ rec.rating_value or '' }}" data-synopsis="{{ rec.synopsis_en or '' }}" {%- if
+                    rec.input_controls %} data-input-controls='{{ rec.input_controls | tojson }}' {% endif %}
+                    data-wifi-players="{{ rec.wifi_players or 0 }}" data-input-players="{{ rec.input_players or 0 }}"
+                    class="w-full flex items-center gap-4 text-left rounded-xl theme-card-inner p-2 hover:bg-[var(--user-dark)] transition focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <img src="{{ cover.url }}" alt="{{ rec.title_en or rec.title }} Cover"
+                        data-fallback="{{ cover.fallback }}" loading="lazy"
+                        onerror="if (!this.dataset.tried && this.dataset.fallback) { this.dataset.tried = '1'; this.src = this.dataset.fallback; } else { this.style.display = 'none'; }"
+                        class="w-14 object-cover rounded-lg flex-shrink-0 aspect-[3/4]" />
+                    <span class="flex flex-col gap-1 min-w-0">
+                        <span class="text-base font-semibold text-white truncate">{{ rec.title_en or rec.title }}</span>
+                        <span class="text-xs text-[var(--user-soft)]">{{ rec.game_id }}</span>
+                        <span class="text-sm text-white">{{
+                            rec.time_played|format_playtime }}</span>
+                    </span>
+                    <img src="/static/icon/chevron-right.svg" alt="" class="w-4 h-4 invert ml-auto flex-shrink-0" />
+                </button>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% include "components/details_modal.html" %}
+
+<div id="calendarPopover"
+    class="fixed hidden z-[99998] rounded-lg bg-[var(--user-dark)] border border-[var(--user-transparent)] p-2 shadow-xl pointer-events-none">
+    <p class="text-xs font-bold text-white leading-tight" id="calendarPopoverTitle"></p>
+    <p class="text-[11px] text-white mt-1" id="calendarPopoverTime"></p>
+</div>
+
+<script>
+    (function () {
+        var popover = document.getElementById("calendarPopover");
+        var titleEl = document.getElementById("calendarPopoverTitle");
+        var gameIdEl = document.getElementById("calendarPopoverGameId");
+        var timeEl = document.getElementById("calendarPopoverTime");
+
+        function hide() {
+            if (popover) popover.classList.add("hidden");
+        }
+
+        function showFor(button) {
+            if (!popover) return;
+            titleEl.textContent = button.dataset.title || "";
+            timeEl.textContent = button.dataset.playtime || "";
+
+            popover.classList.remove("hidden");
+            var rect = button.getBoundingClientRect();
+            var popRect = popover.getBoundingClientRect();
+
+            var top = rect.top - popRect.height - 8;
+            if (top < 8) top = rect.bottom + 8;
+            var left = rect.left + rect.width / 2 - popRect.width / 2;
+            left = Math.max(8, Math.min(left, window.innerWidth - popRect.width - 8));
+
+            popover.style.top = top + "px";
+            popover.style.left = left + "px";
+        }
+
+        document.addEventListener("mouseover", function (event) {
+            var button = event.target.closest("button[data-playtime]");
+            if (button) showFor(button);
+            else hide();
+        });
+
+        document.addEventListener("click", hide);
+        window.addEventListener("scroll", hide, true);
+        window.addEventListener("blur", hide);
+    })();
+</script>
+
+<style>
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+        animation-duration: 280ms;
+        animation-timing-function: cubic-bezier(0.33, 0, 0.2, 1);
+        animation-fill-mode: both;
+    }
+
+    :root.calendar-forwards::view-transition-old(root),
+    :root:active-view-transition-type(calendar-forwards)::view-transition-old(root) {
+        animation-name: vt-out-to-left;
+    }
+
+    :root.calendar-forwards::view-transition-new(root),
+    :root:active-view-transition-type(calendar-forwards)::view-transition-new(root) {
+        animation-name: vt-in-from-right;
+    }
+
+    :root.calendar-backwards::view-transition-old(root),
+    :root:active-view-transition-type(calendar-backwards)::view-transition-old(root) {
+        animation-name: vt-out-to-right;
+    }
+
+    :root.calendar-backwards::view-transition-new(root),
+    :root:active-view-transition-type(calendar-backwards)::view-transition-new(root) {
+        animation-name: vt-in-from-left;
+    }
+
+    @keyframes vt-out-to-left {
+        to {
+            transform: translateX(-20%);
+            opacity: 0;
+        }
+    }
+
+    @keyframes vt-in-from-right {
+        from {
+            transform: translateX(20%);
+            opacity: 0;
+        }
+    }
+
+    @keyframes vt-out-to-right {
+        to {
+            transform: translateX(20%);
+            opacity: 0;
+        }
+    }
+
+    @keyframes vt-in-from-left {
+        from {
+            transform: translateX(-20%);
+            opacity: 0;
+        }
+    }
+</style>
+
+<script>
+    (function () {
+        var KEY = "calendarNavDirection";
+
+        document.addEventListener("click", function (event) {
+            var link = event.target.closest("a[data-direction]");
+            if (!link) return;
+            try {
+                sessionStorage.setItem(KEY, link.dataset.direction);
+            } catch (err) {}
+        });
+
+        window.addEventListener("pageswap", function (event) {
+            if (!event.viewTransition) return;
+            var direction = null;
+            try { direction = sessionStorage.getItem(KEY); } catch (err) { }
+            if (direction) {
+                event.viewTransition.types.add(direction);
+                document.documentElement.classList.add("calendar-" + direction);
+            }
+        });
+
+        window.addEventListener("pagereveal", function (event) {
+            if (!event.viewTransition) return;
+            var direction = null;
+            try { direction = sessionStorage.getItem(KEY); } catch (err) { }
+            if (direction) {
+                event.viewTransition.types.add(direction);
+                document.documentElement.classList.add("calendar-" + direction);
+                try { sessionStorage.removeItem(KEY); } catch (err) { }
+                setTimeout(function () {
+                    document.documentElement.classList.remove(
+                        "calendar-forwards", "calendar-backwards"
+                    );
+                }, 500);
+            }
+        });
+    })();
+</script>
+{% endblock %}
