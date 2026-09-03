@@ -1,5 +1,5 @@
 config.py
-/__pycache__
+__pycache__/
 /.venv
 .DS_Store
 /.idea
@@ -7,10 +7,6 @@ config.py
 /templates/templates
 /uploads
 /session
-/digicam/__pycache__
 /templates/fonts
-/channels/__pycache__
-/routes/__pycache__
-/utils/__pycache__
 theme_customizer.html
 */node_modules/
