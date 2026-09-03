@@ -319,7 +319,7 @@ def fetch_time_played(
     if sort_by == "times_played":
         sort_expr = "spg.times_played DESC, spg.time_played DESC"
     elif sort_by == "last_played":
-        sort_expr = "spg.latest_id DESC"
+        sort_expr = "spg.latest_date DESC"
     else:
         sort_expr = "spg.time_played DESC, spg.times_played DESC"
 
@@ -333,19 +333,19 @@ def fetch_time_played(
                 f.game_id,
                 SUM(f.times_played) AS times_played,
                 SUM(f.time_played) AS time_played,
-                MAX(f.id) AS latest_id,
+                MAX(f.date_played) AS latest_date,
                 STRING_AGG(DISTINCT LEFT(f.serial_number, 12), ',') AS serials
             FROM filtered f
             GROUP BY f.game_id
         ), ranked AS (
             SELECT
-                spg.game_id, spg.times_played, spg.time_played, spg.latest_id,
+                spg.game_id, spg.times_played, spg.time_played, spg.latest_date,
                 spg.serials,
                 ROW_NUMBER() OVER (ORDER BY {sort_expr}) AS sort_rank
             FROM summed_per_game spg
         ), detailed_games AS (
             SELECT
-                r.latest_id AS id, r.times_played, r.time_played, r.serials,
+                r.times_played, r.time_played, r.serials,
                 COALESCE(t.game_id, r.game_id) AS game_id,
                 COALESCE(t.display_name, t.title_en, r.game_id) AS title,
                 t.title_en, t.display_name, t.synopsis_en, t.genre, t.developer, t.publisher, t.game_type,
