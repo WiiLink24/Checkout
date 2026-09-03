@@ -2,11 +2,11 @@ from alembic import context
 from sqlalchemy import create_engine, pool
 
 import config as app_config
-from utils.db import CHECKOUT_BIND, db
+from utils.db import db
 
 config = context.config
 
-target_metadata = db.metadatas[CHECKOUT_BIND]
+target_metadata = db.metadata
 
 url = app_config.checkout_db_url
 
