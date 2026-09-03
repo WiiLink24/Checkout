@@ -44,8 +44,21 @@ WiiLink Checkout | Calendar for {{ viewed_user.username }}
         </span>
         {% endif %}
 
-        <input type="month" id="calendarMonthInput" value="{{ month_param }}"
-            class="absolute opacity-0 pointer-events-none w-px h-px" aria-hidden="true" tabindex="-1" />
+        <div id="monthPicker"
+            class="hidden absolute left-1/2 -translate-x-1/2 top-full mt-3 z-30 w-64 theme-card border rounded-2xl p-3">
+            <div class="flex items-center justify-between gap-2 mb-2">
+                <button type="button" id="pickerYearPrev" aria-label="Previous year"
+                    class="theme-btn border rounded-lg p-1.5">
+                    <img src="/static/icon/chevron-left.svg" alt="" class="w-4 h-4 invert" />
+                </button>
+                <span id="pickerYearLabel" class="text-sm font-bold text-white"></span>
+                <button type="button" id="pickerYearNext" aria-label="Next year"
+                    class="theme-btn border rounded-lg p-1.5">
+                    <img src="/static/icon/chevron-right.svg" alt="" class="w-4 h-4 invert" />
+                </button>
+            </div>
+            <div id="pickerMonths" class="grid grid-cols-3 gap-1"></div>
+        </div>
     </div>
 
     {% set has_plays = active_days|length > 0 %}
@@ -227,24 +240,75 @@ WiiLink Checkout | Calendar for {{ viewed_user.username }}
 <script>
     (function () {
         var viewBase = "{{ view_base }}";
+        var selectedParam = "{{ month_param }}";
         var labelButton = document.getElementById("calendarMonthLabel");
-        var input = document.getElementById("calendarMonthInput");
-        if (!labelButton || !input) return;
+        var picker = document.getElementById("monthPicker");
+        var monthsGrid = document.getElementById("pickerMonths");
+        var yearLabel = document.getElementById("pickerYearLabel");
+        if (!labelButton || !picker) return;
 
-        labelButton.addEventListener("click", function () {
-            try {
-                input.showPicker();
-            } catch (err) {
-                input.focus();
+        var pickerYear = parseInt(selectedParam.split("-")[0], 10);
+        var selectedYear = pickerYear;
+        var selectedMonth = parseInt(selectedParam.split("-")[1], 10);
+        var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+        function renderPicker() {
+            yearLabel.textContent = pickerYear;
+            monthsGrid.innerHTML = "";
+            for (var m = 1; m <= 12; m++) {
+                var button = document.createElement("button");
+                button.type = "button";
+                button.textContent = monthNames[m - 1];
+                var isSelected = m === selectedMonth && pickerYear === selectedYear;
+                button.className = "px-2 py-2 rounded-lg text-sm transition " + (isSelected
+                    ? "bg-indigo-600 text-white font-semibold"
+                    : "text-[var(--user-soft)] hover:bg-[var(--user-dark)] hover:text-white");
+                button.addEventListener("click", function (month) {
+                    return function () {
+                        window.location.href = viewBase + "?month=" +
+                            pickerYear + "-" + String(month).padStart(2, "0");
+                    };
+                }(m));
+                monthsGrid.appendChild(button);
+            }
+        }
+
+        function hidePicker() {
+            picker.classList.add("hidden");
+        }
+
+        labelButton.addEventListener("click", function (event) {
+            event.stopPropagation();
+            if (picker.classList.contains("hidden")) {
+                renderPicker();
+                picker.classList.remove("hidden");
+            } else {
+                hidePicker();
             }
         });
 
-        input.addEventListener("change", function () {
-            if (input.value) window.location.href = viewBase + "?month=" + input.value;
+        document.getElementById("pickerYearPrev").addEventListener("click", function () {
+            pickerYear--;
+            renderPicker();
+        });
+        document.getElementById("pickerYearNext").addEventListener("click", function () {
+            pickerYear++;
+            renderPicker();
+        });
+
+        document.addEventListener("click", function (event) {
+            if (picker.classList.contains("hidden")) return;
+            if (!picker.contains(event.target) && !labelButton.contains(event.target)) {
+                hidePicker();
+            }
+        });
+
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "Escape") hidePicker();
         });
     })();
 </script>
-<style>
     ::view-transition-old(root),
     ::view-transition-new(root) {
         animation-duration: 280ms;
