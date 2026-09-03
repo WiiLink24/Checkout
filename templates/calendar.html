@@ -9,7 +9,7 @@ WiiLink Checkout | Calendar for {{ viewed_user.username }}
 {% include "components/page_header.html" %}
 
 <div class="px-4 sm:px-6 lg:px-8 py-8 max-w-6xl mx-auto">
-    <div class="flex items-center justify-between gap-4 mb-6">
+    <div class="flex items-center justify-between gap-4 mb-6 relative">
         {% if prev_active_param %}
         <a href="{{ view_base }}?month={{ prev_active_param }}" aria-label="Previous month with plays"
             data-direction="backwards" class="theme-btn border rounded-lg p-2" title="Previous month with plays">
@@ -24,7 +24,11 @@ WiiLink Checkout | Calendar for {{ viewed_user.username }}
             class="theme-btn border rounded-lg p-2">
             <img src="/static/icon/chevron-left.svg" alt="Previous month" class="w-5 h-5 invert" />
         </a>
-        <h2 class="text-xl sm:text-2xl font-bold text-white text-center">{{ month_label }}</h2>
+        <button id="calendarMonthLabel" type="button" aria-label="Pick month and year"
+            class="text-xl sm:text-2xl font-bold text-white text-center flex items-center gap-2 hover:text-[var(--user-light)] transition focus:outline-none">
+            {{ month_label }}
+            <img src="/static/icon/chevron-down.svg" alt="" class="w-4 h-4 invert" />
+        </button>
         <a href="{{ view_base }}?month={{ next_month_param }}" aria-label="Next month" data-direction="forwards"
             class="theme-btn border rounded-lg p-2">
             <img src="/static/icon/chevron-right.svg" alt="Next month" class="w-5 h-5 invert" />
@@ -39,6 +43,9 @@ WiiLink Checkout | Calendar for {{ viewed_user.username }}
             <img src="/static/icon/chevrons-right.svg" alt="" class="w-5 h-5 invert" />
         </span>
         {% endif %}
+
+        <input type="month" id="calendarMonthInput" value="{{ month_param }}"
+            class="absolute opacity-0 pointer-events-none w-px h-px" aria-hidden="true" tabindex="-1" />
     </div>
 
     {% set has_plays = active_days|length > 0 %}
@@ -115,7 +122,7 @@ WiiLink Checkout | Calendar for {{ viewed_user.username }}
                             onerror="if (!this.dataset.tried && this.dataset.fallback) { this.dataset.tried = '1'; this.src = this.dataset.fallback; } else { document.getElementById('fallback-text-{{ rec.game_id }}').classList.remove('hidden'); this.style.display = 'none'; }"
                             class="w-full aspect-[3/4] object-cover rounded-sm" />
                         <span id="fallback-text-{{ rec.game_id }}" class="absolute inset-0 flex items-center justify-center text-center p-1 hidden">
-                            <span class="text-xs text-[var(--user-soft)]">{{ rec.title_en }}</span>
+                            <span class="text-xs text-[var(--user-soft)]">{{ rec.title_en or rec.game_id }}</span>
                         </span>
                         </button>
                     {% endfor %}
@@ -217,6 +224,26 @@ WiiLink Checkout | Calendar for {{ viewed_user.username }}
     })();
 </script>
 
+<script>
+    (function () {
+        var viewBase = "{{ view_base }}";
+        var labelButton = document.getElementById("calendarMonthLabel");
+        var input = document.getElementById("calendarMonthInput");
+        if (!labelButton || !input) return;
+
+        labelButton.addEventListener("click", function () {
+            try {
+                input.showPicker();
+            } catch (err) {
+                input.focus();
+            }
+        });
+
+        input.addEventListener("change", function () {
+            if (input.value) window.location.href = viewBase + "?month=" + input.value;
+        });
+    })();
+</script>
 <style>
     ::view-transition-old(root),
     ::view-transition-new(root) {
