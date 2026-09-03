@@ -108,13 +108,16 @@ WiiLink Checkout | Calendar for {{ viewed_user.username }}
                         data-input-players="{{ rec.input_players or 0 }}"
                         data-playtime="{{ rec.time_played|format_playtime }}"
                         data-times="{{ rec.times_played }}"
-                        class="relative group w-full aspect-square rounded overflow-hidden focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        class="relative group w-full aspect-square rounded overflow-hidden focus:outline-none focus:ring-2 focus:ring-[var(--user-soft)] bg-[var(--user-light)] hover:bg-[var(--user-soft)] transition"
                         aria-label="{{ rec.title_en or rec.title }} details">
                         <img src="{{ cover.url }}" alt="{{ rec.title_en or rec.title }} Cover"
                             data-fallback="{{ cover.fallback }}" loading="lazy"
-                            onerror="if (!this.dataset.tried && this.dataset.fallback) { this.dataset.tried = '1'; this.src = this.dataset.fallback; } else { this.style.display = 'none'; }"
+                            onerror="if (!this.dataset.tried && this.dataset.fallback) { this.dataset.tried = '1'; this.src = this.dataset.fallback; } else { document.getElementById('fallback-text-{{ rec.game_id }}').classList.remove('hidden'); this.style.display = 'none'; }"
                             class="w-full aspect-[3/4] object-cover rounded-sm" />
-                    </button>
+                        <span id="fallback-text-{{ rec.game_id }}" class="absolute inset-0 flex items-center justify-center text-center p-1 hidden">
+                            <span class="text-xs text-[var(--user-soft)]">{{ rec.title_en }}</span>
+                        </span>
+                        </button>
                     {% endfor %}
                 </div>
             </div>
