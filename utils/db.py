@@ -96,17 +96,3 @@ class Friend(db.Model):
     created_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True), server_default=func.now()
     )
-
-
-class ThemePurchase(db.Model):
-    __bind_key__ = CHECKOUT_BIND
-    __tablename__ = "theme_purchases"
-    __table_args__ = (Index("idx_theme_purchases_username", "username"),)
-
-    username: Mapped[str] = mapped_column(Text, primary_key=True)
-    theme_id: Mapped[str] = mapped_column(Text, primary_key=True)
-    cost: Mapped[int] = mapped_column(Integer, server_default=text("0"))
-    source: Mapped[str] = mapped_column(Text, server_default=text("'shop'"))
-    created_at: Mapped[datetime] = mapped_column(
-        TIMESTAMP(timezone=True), server_default=func.now()
-    )
