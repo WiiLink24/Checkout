@@ -283,7 +283,6 @@ def _blend_background(tag, background, blur_radius=24, cover=False):
 
     return Image.alpha_composite(tag, layer)
 
-
 def _draw_header(tag, draw, username, pfp_url, formatted_code, playtime_text, colors):
     pfp = _load_image(pfp_url)
     if pfp:
@@ -305,14 +304,14 @@ def _draw_header(tag, draw, username, pfp_url, formatted_code, playtime_text, co
 
     text_y = int(center_y - text_height / 2)
     draw.text((120, text_y), username, font=username_font, fill=colors["username"])
-
+    
     code_x, code_y = 120, text_y + sum(username_font.getmetrics()) + 10
     row_h = sum(code_font.getmetrics()) + 10
 
     for code in formatted_code:
         txt = normalize_wii_number(code)
         w = draw.textlength(txt, font=code_font)
-        if code_x + w > 680:
+        if code_x + w > 680:  
             code_x, code_y = 120, code_y + row_h
         draw.text((code_x, code_y), txt, font=code_font, fill=colors["code"])
         code_x += int(w) + 15
