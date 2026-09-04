@@ -405,6 +405,11 @@ def search_authentik_users_by_name(search_query):
 def normalize_serial(serial):
     return serial.strip("[]'\" ").replace("-", "") if serial else serial
 
+def normalize_wii_number(wii_number):
+    if not wii_number:
+        return wii_number
+    wii_number = wii_number.replace("-", "")
+    return "-".join([wii_number[i:i + 4] for i in range(0, len(wii_number), 4)])
 
 def extract_serial_prefix(serial):
     return [serial[:12]]

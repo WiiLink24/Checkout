@@ -23,7 +23,7 @@
                                 rec.wii_numbers %}{% for wii_number in rec.wii_numbers %}
                                 <span class="inline-flex items-center gap-1.5 align-middle mr-1.5"><span
                                         class="inline-block w-2 h-2 rounded-full"
-                                        style="background: {{ fetch_wii_color_from_number(wii_number) }}"></span>
+                                        style="background: {{ fetch_wii_color_from_number(wii_number) }}"></span></span>
                                 {% endfor %}{% endif %}
                                 {{ rec.game_id }}{% if rec.release_year %} • {{
                                 rec.release_year }}{% endif %}{% if rec.latest_date %} • Last played {{ rec.latest_date }}{% endif %}</p>

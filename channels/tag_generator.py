@@ -7,11 +7,15 @@ import requests
 from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageFont
 
 from utils.utils import (
+    extract_linked_wiis,
+)
+
+from utils.utils import (
     extract_serial_prefix,
     find_user_by_wii_number,
     generate_gravatar_url,
     normalize_serial,
-    format_serial,
+    normalize_wii_number,
 )
 from channels.nc import fetch_user_latest_games, fetch_user_stats
 
@@ -127,8 +131,8 @@ def generate_user_tag(friend_code):
     if not authentik_user:
         return None
 
-    user_serial = _extract_user_serial(authentik_user)
-    serial_prefixes = extract_serial_prefix(user_serial)
+    serial_prefixes = extract_linked_wiis(authentik_user.get("attributes", {}))[0]
+    wii_numbers = extract_linked_wiis(authentik_user.get("attributes", {}))[1]
 
     user_stats = (
         fetch_user_stats(serial_prefixes)
@@ -158,7 +162,7 @@ def generate_user_tag(friend_code):
         png_bytes = _render_tag_png(
             username=authentik_user.get("username", "Unknown"),
             pfp_url=generate_gravatar_url(authentik_user.get("email", "")),
-            formatted_code=format_serial(friend_code_normalized),
+            formatted_code=wii_numbers,
             playtime_text=_format_playtime(user_stats.get("total_minutes", 0)),
             games=games,
             tag_background_url=tag_background_url,
@@ -279,7 +283,6 @@ def _blend_background(tag, background, blur_radius=24, cover=False):
 
     return Image.alpha_composite(tag, layer)
 
-
 def _draw_header(tag, draw, username, pfp_url, formatted_code, playtime_text, colors):
     pfp = _load_image(pfp_url)
     if pfp:
@@ -301,9 +304,19 @@ def _draw_header(tag, draw, username, pfp_url, formatted_code, playtime_text, co
 
     text_y = int(center_y - text_height / 2)
     draw.text((120, text_y), username, font=username_font, fill=colors["username"])
-    code_y = text_y + sum(username_font.getmetrics()) + gap
-    draw.text((120, code_y), formatted_code, font=code_font, fill=colors["code"])
+    
+    code_x, code_y = 120, text_y + sum(username_font.getmetrics()) + 10
+    row_h = sum(code_font.getmetrics()) + 10
 
+    for code in formatted_code:
+        txt = normalize_wii_number(code)
+        w = draw.textlength(txt, font=code_font)
+        if code_x + w > 680:  
+            code_x, code_y = 120, code_y + row_h
+        draw.text((code_x, code_y), txt, font=code_font, fill=colors["code"])
+        code_x += int(w) + 15
+
+    # Render Playtime Column
     playtime_y = int(center_y - playtime_height / 2)
     right = 960
     draw.text(
@@ -465,19 +478,6 @@ def _get_font(size, bold=False):
             except TypeError:
                 _FONT_CACHE[key] = ImageFont.load_default()
     return _FONT_CACHE[key]
-
-
-def _extract_user_serial(authentik_user):
-    wiis = authentik_user.get("attributes", {}).get("wiis") or authentik_user.get(
-        "wiis", []
-    )
-    if isinstance(wiis, list):
-        for wii in wiis:
-            if isinstance(wii, dict):
-                serial = wii.get("serial_number")
-                if serial:
-                    return serial
-    return None
 
 
 def _format_playtime(total_minutes):
