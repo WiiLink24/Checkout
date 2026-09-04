@@ -10,7 +10,7 @@ WiiLink Checkout | Time Played for {{ viewed_user.username }}
 
 {% if not is_unclaimed %}
 <div
-    class="fixed lg:top-auto lg:bottom-5 left-1/2 -translate-x-1/2 md:-translate-x-[calc(50%-140px)] p-3 rounded-xl bg-gray-800/70 backdrop-blur-lg flex flex-row items-center justify-center gap-2 mt-6 z-10">
+    class="fixed top-0 lg:top-auto lg:bottom-5 left-1/2 -translate-x-1/2 md:-translate-x-[calc(50%-140px)] p-3 rounded-xl bg-gray-800/70 backdrop-blur-lg flex flex-row items-center justify-center gap-2 mt-6 z-10">
     {% set sort_base = base_url ~ '/time_played' if base_url else '/time_played' %}
     <a href="{{ sort_base }}?sort=time_played"
         class="px-4 py-2 rounded-lg border transition {% if sort_by == 'time_played' %}bg-indigo-600 border-indigo-500 text-white{% else %}bg-gray-800 border-gray-700 text-[var(--user-soft)] hover:border-indigo-500{% endif %}">
