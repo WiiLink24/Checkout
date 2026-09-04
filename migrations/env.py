@@ -6,7 +6,7 @@ from utils.db import db
 
 config = context.config
 
-target_metadata = db.metadatas
+target_metadata = db.metadata
 
 url = app_config.checkout_db_url
 
