@@ -458,7 +458,7 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                     class="home-reveal w-full xl:w-[500px] theme-card-faint border rounded-2xl p-5 sm:p-6 mb-10 cursor-pointer z-0">
                     <div class="ach-grid ach-strip xl:max-h-[460px] xl:pr-1">
                         {% for ach in all_achievements if ach.achieved %}
-                        <div class="ach-tile-cell relative group rounded-xl aspect-square flex items-center justify-center overflow-auto"
+                        <div class="ach-tile-cell relative group rounded-xl aspect-square flex items-center justify-center"
                             title="{{ ach.name }} — {{ ach.description }}">
                             <div class="ach-icon-box w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center">
                                 <img src="/static/icon/{{ ach.icon }}.svg" alt="{{ ach.name }}"
