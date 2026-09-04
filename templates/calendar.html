@@ -182,7 +182,10 @@ WiiLink Checkout | Calendar for {{ viewed_user.username }}
                         class="w-14 object-cover rounded-lg flex-shrink-0 aspect-[3/4]" />
                     <span class="flex flex-col gap-1 min-w-0">
                         <span class="text-base font-semibold text-white truncate">{{ rec.title_en or rec.title }}</span>
-                        <span class="text-xs text-[var(--user-soft)]">{{ rec.game_id }}</span>
+                        <span class="text-xs text-[var(--user-soft)] flex items-center gap-1">{% for wii_number in
+                            rec.wii_numbers %}<span class="inline-block w-2 h-2 rounded-full"
+                                style="background: {{ fetch_wii_color_from_number(wii_number) }}"></span>{% endfor %}{{
+                            rec.game_id }}</span>
                         <span class="text-sm text-white">{{
                             rec.time_played|format_playtime }}</span>
                     </span>

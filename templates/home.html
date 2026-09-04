@@ -549,11 +549,18 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                                 <img src="/static/icon/clock.svg" alt="" class="w-6 h-6 invert opacity-70">
                                 Recently Played
                             </h2>
-                            <a href="{% if base_url %}{{ base_url }}/time_played{% else %}/time_played{% endif %}"
-                                class="flex items-center gap-1 text-sm text-[var(--user-soft)] hover:text-white transition duration-200">
-                                View All <img src="/static/icon/chevron-right.svg" alt="Chevron Right"
-                                    class="w-4 h-4 invert">
-                            </a>
+                            <span class="flex items-center gap-3">
+                                <a href="{% if base_url %}{{ base_url }}/calendar{% else %}/calendar{% endif %}"
+                                    aria-label="Calendar"
+                                    class="text-[var(--user-soft)] hover:text-white transition duration-200">
+                                    <img src="/static/icon/calendar.svg" alt="Calendar" class="w-4 h-4 invert">
+                                </a>
+                                <a href="{% if base_url %}{{ base_url }}/time_played{% else %}/time_played{% endif %}"
+                                    class="flex items-center gap-1 text-sm text-[var(--user-soft)] hover:text-white transition duration-200">
+                                    View All <img src="/static/icon/chevron-right.svg" alt="Chevron Right"
+                                        class="w-4 h-4 invert">
+                                </a>
+                            </span>
                         </div>
                         {% if latest_games %}
                         <div class="grid gap-4"
