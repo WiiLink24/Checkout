@@ -130,6 +130,13 @@ WiiLink Checkout | Calendar for {{ viewed_user.username }}
                         data-times="{{ rec.times_played }}"
                         class="relative group w-full aspect-square rounded overflow-hidden focus:outline-none focus:ring-2 focus:ring-[var(--user-soft)] bg-[var(--user-light)] hover:bg-[var(--user-soft)] transition"
                         aria-label="{{ rec.title_en or rec.title }} details">
+                        <span class="top-1 right-1 flex flex-end flex-row items-center gap-1 absolute">
+                        {% if rec.wii_numbers %}
+                        {% for wii_number in rec.wii_numbers %}
+                        <span class="w-2 h-2 rounded-full"
+                            style="background: {{ fetch_wii_color_from_number(wii_number) }}"></span>
+                        {% endfor %}{% endif %}
+                        </span>
                         <img src="{{ cover.url }}" alt="{{ rec.title_en or rec.title }} Cover"
                             data-fallback="{{ cover.fallback }}" loading="lazy"
                             onerror="if (!this.dataset.tried && this.dataset.fallback) { this.dataset.tried = '1'; this.src = this.dataset.fallback; } else { document.getElementById('fallback-text-{{ rec.game_id }}').classList.remove('hidden'); this.style.display = 'none'; }"
