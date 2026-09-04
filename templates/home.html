@@ -6,7 +6,11 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
 
 {% block og_image %}
 <meta property="og:image"
-    content="{% if viewed_user.linked_wii_no %}/{{ viewed_user.linked_wii_no[0] }}.png{% else %}{{ url_for('static', filename='img/og-image.png') }}{% endif %}" />
+    content="{% if viewed_user.linked_wii_no %}/{{ viewed_user.linked_wii_no[0] }}.png{% else %}/static/img/og-image.png{% endif %}" />
+{% endblock %}
+
+{% block twitter_image %}
+<meta name="twitter:image" content="{% if viewed_user.linked_wii_no %}/{{ viewed_user.linked_wii_no[0] }}.png{% else %}/static/img/og-image.png{% endif %}" />
 {% endblock %}
 
 
