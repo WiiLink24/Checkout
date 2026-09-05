@@ -25,6 +25,12 @@ from utils.utils import (
 )
 from utils.achievements import refresh_achievements_for_user
 from utils.theme import get_theme_catalog
+from utils.whats_new import (
+    fetch_open_contests,
+    fetch_open_polls,
+    fetch_latest_news,
+    fetch_latest_banners,
+)
 from utils.wiis import build_wii_breakdown, attach_time_breakdown
 from channels.nc import (
     fetch_recommendations,
@@ -1034,6 +1040,7 @@ def index():
                         "card_info": card_info,
                     }
 
+        latest_open_poll, poll_open_count = fetch_open_polls()
         return render_template(
             "home.html",
             user_info=user_info,
@@ -1049,6 +1056,11 @@ def index():
             latest_digicard=latest_digicard,
             follower_count=follower_count,
             following_count=following_count,
+            open_contests=fetch_open_contests(),
+            latest_poll=latest_open_poll,
+            poll_open_count=poll_open_count,
+            latest_news=fetch_latest_news(),
+            nintendo_banners=fetch_latest_banners(),
         )
     else:
         return render_template("login.html", user_info=None)
