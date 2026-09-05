@@ -10,7 +10,8 @@ WiiLink Checkout | {{ viewed_user.username }}'s Home
 {% endblock %}
 
 {% block twitter_image %}
-<meta name="twitter:image" content="{% if viewed_user.linked_wii_no %}/{{ viewed_user.linked_wii_no[0] }}.png{% else %}/static/img/og-image.png{% endif %}" />
+<meta name="twitter:image"
+    content="{% if viewed_user.linked_wii_no %}/{{ viewed_user.linked_wii_no[0] }}.png{% else %}/static/img/og-image.png{% endif %}" />
 {% endblock %}
 
 
@@ -226,10 +227,11 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
 <div id="pageContent" class="px-4 sm:px-6 lg:px-8 py-8 z-10 relative"
     style="background-image: url('{{ user_theme.background }}'); background-repeat: repeat-y; background-size: 100% auto; background-position: center top;">
     {% else %}
-    <div id="pageContent" class="px-4 sm:px-6 lg:px-8 py-8 z-10 relative">
+    <div id="pageContent" class="px-0 sm:px-6 lg:px-8 py-0 z-10 relative">
         {% endif %}
-        <div class="mt-8 max-w-6xl mx-auto">
-            <div class="flex flex-col lg:flex-row sm:items-center gap-3 lg:gap-6 mb-10">
+        <div class="max-w-6xl mx-auto">
+            <div
+                class="pt-8 lg:mt-6 flex flex-col lg:flex-row sm:items-center gap-3 lg:gap-6 mb-10 px-4 lg:px-0 pt-6 rounded-b-2xl bg-[var(--user-dark)] lg:bg-transparent">
                 <div class="relative w-16 h-16 lg:w-32 lg:h-32 flex items-center justify-center group flex-shrink-0">
                     {% if viewed_user.profile_picture %}
                     <img src="{{ viewed_user.profile_picture }}" alt="{{ viewed_user.username }}"
@@ -281,10 +283,10 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                             Share
                         </button>
                     </span>
-                    <div class="w-full flex flex-nowrap items-center gap-2 overflow-x-auto">
+                    <div class="w-full flex flex-nowrap items-center gap-2 overflow-x-auto rounded-lg scrollbar-none">
                         {% for linked_wii in viewed_user.linked_wii_no %}
                         <button
-                            class="relative inline-flex items-center gap-1.5 px-3 py-1 theme-chip rounded-md text-[var(--user-soft)] transition-colors duration-200 cursor-pointer border-0 text-left overflow-visible"
+                            class="relative inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-[var(--user-base)] lg:bg-[var(--user-dark)] text-[var(--user-soft)] transition-colors duration-200 cursor-pointer border-0 text-left overflow-visible"
                             data-wii-number="{{ linked_wii }}" onclick="copyToClipboard(this, '{{ linked_wii }}')"
                             title="Wii {{ loop.index }}">
                             <span class="inline-block w-2 h-2 rounded-full flex-shrink-0"
@@ -302,520 +304,538 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                         </a>
                         {% endif %}
                     </div>
-                    {% if follower_count and following_count %}
-                    <span class="w-full lg:w-auto flex flex-wrap items-center gap-6">
+                    <span
+                        class="translate-y-4 lg:translate-y-0 lg:mt-3 w-full lg:w-auto grid grid-cols-2 lg:flex flex-wrap items-center gap-1 lg:gap-6">
                         <a href="{% if base_url %}{{ base_url }}/followers{% else %}/followers{% endif %}"
-                            class="inline-flex items-center gap-1.5 text-white opacity-60 hover:opacity-100 transition-opacity duration-200">
+                            class="flex justify-center lg:justify-start rounded-l-xl rounded-r-md bg-[var(--user-light)] px-3 py-2 lg:px-0 lg:py-0 lg:bg-transparent lg:hover:bg-[var(--user-soft)] inline-flex items-center gap-1.5 text-white lg:opacity-60 hover:opacity-100 transition-opacity duration-200">
                             <img src="/static/icon/users.svg" alt="" class="w-4 h-4 invert">
+                            {% if follower_count is not none %}
                             {{ follower_count }} Follower{% if follower_count != 1 %}s{% endif %}
+                            {% else %}
+                            0 Followers
+                            {% endif %}
                         </a>
                         <a href="{% if base_url %}{{ base_url }}/following{% else %}/following{% endif %}"
-                            class="inline-flex items-center gap-1.5 text-white opacity-60 hover:opacity-100 transition-opacity duration-200">
+                            class="flex justify-center lg:justify-start rounded-l-md rounded-r-xl bg-[var(--user-light)] px-3 py-2 lg:px-0 lg:py-0 lg:bg-transparent lg:hover:bg-[var(--user-soft)] inline-flex items-center gap-1.5 text-white lg:opacity-60 hover:opacity-100 transition-opacity duration-200">
                             <img src="/static/icon/heart.svg" alt="" class="w-4 h-4 invert">
+                            {% if following_count is not none %}
                             {{ following_count }} Following
+                            {% else %}
+                            0 Following
+                            {% endif %}
                         </a>
                     </span>
-                    {% endif %}
                 </div>
             </div>
-
-            {% if serial_not_linked %}
-            <div class="home-reveal bg-amber-500/10 border border-amber-500/30 rounded-2xl p-6 mb-10">
-                <div class="flex items-start gap-4">
-                    <img src="/static/icon/triangle-alert.svg" alt="Warning Icon"
-                        class="w-10 h-10 invert flex-shrink-0 mt-1">
-                    <div>
-                        <h2 class="text-xl font-bold text-white mb-2">Serial Not Linked</h2>
-                        <p class="text-[var(--user-soft)]">
-                            This user's Wii console is linked to their account, but their console serial number hasn't
-                            been
-                            properly registered. To view their recommendations, time played, and other stats, they'll
-                            need
-                            to re-link their console using the latest version of the Account Linker tool.
-                        </p>
-                        <p class="text-[var(--user-soft)] mt-3">Still, you can view their CMOC and EVC data here:</p>
-                        <div class="flex flex-wrap gap-3 mt-4">
-                            <a href="/{{ friend_code|format_serial }}/polls"
-                                class="flex items-center gap-2 px-5 py-2.5 bg-amber-700/50 text-white rounded-xl font-medium hover:bg-amber-700/60 transition">
-                                <img src="/static/icon/chart-line.svg" alt="Polls Icon" class="w-5 h-5 invert">
-                                View Polls
-                            </a>
-                            <a href="/{{ friend_code|format_serial }}/suggestions"
-                                class="flex items-center gap-2 px-5 py-2.5 bg-amber-700/50 text-white rounded-xl font-medium hover:bg-amber-700/60 transition">
-                                <img src="/static/icon/circle-question-mark.svg" alt="Suggestions Icon"
-                                    class="w-5 h-5 invert">
-                                View Suggestions
-                            </a>
-                            <a href="/{{ friend_code|format_serial }}/contest_submissions"
-                                class="flex items-center gap-2 px-5 py-2.5 bg-amber-700/50 text-white rounded-xl font-medium hover:bg-amber-700/60 transition">
-                                <img src="/static/icon/send-horizontal.svg" alt="Contests Icon" class="w-5 h-5 invert">
-                                View Contest Submissions
-                            </a>
+            <span class="mx-4 lg:mx-0 block">
+                {% if serial_not_linked %}
+                <div class="home-reveal bg-amber-500/10 border border-amber-500/30 rounded-2xl p-6 mb-10">
+                    <div class="flex items-start gap-4">
+                        <img src="/static/icon/triangle-alert.svg" alt="Warning Icon"
+                            class="w-10 h-10 invert flex-shrink-0 mt-1">
+                        <div>
+                            <h2 class="text-xl font-bold text-white mb-2">Serial Not Linked</h2>
+                            <p class="text-[var(--user-soft)]">
+                                This user's Wii console is linked to their account, but their console serial number
+                                hasn't
+                                been
+                                properly registered. To view their recommendations, time played, and other stats,
+                                they'll
+                                need
+                                to re-link their console using the latest version of the Account Linker tool.
+                            </p>
+                            <p class="text-[var(--user-soft)] mt-3">Still, you can view their CMOC and EVC data here:
+                            </p>
+                            <div class="flex flex-wrap gap-3 mt-4">
+                                <a href="/{{ friend_code|format_serial }}/polls"
+                                    class="flex items-center gap-2 px-5 py-2.5 bg-amber-700/50 text-white rounded-xl font-medium hover:bg-amber-700/60 transition">
+                                    <img src="/static/icon/chart-line.svg" alt="Polls Icon" class="w-5 h-5 invert">
+                                    View Polls
+                                </a>
+                                <a href="/{{ friend_code|format_serial }}/suggestions"
+                                    class="flex items-center gap-2 px-5 py-2.5 bg-amber-700/50 text-white rounded-xl font-medium hover:bg-amber-700/60 transition">
+                                    <img src="/static/icon/circle-question-mark.svg" alt="Suggestions Icon"
+                                        class="w-5 h-5 invert">
+                                    View Suggestions
+                                </a>
+                                <a href="/{{ friend_code|format_serial }}/contest_submissions"
+                                    class="flex items-center gap-2 px-5 py-2.5 bg-amber-700/50 text-white rounded-xl font-medium hover:bg-amber-700/60 transition">
+                                    <img src="/static/icon/send-horizontal.svg" alt="Contests Icon"
+                                        class="w-5 h-5 invert">
+                                    View Contest Submissions
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            {% endif %}
+                {% endif %}
 
-            {% if not serial_not_linked %}
-            <span class="flex flex-col xl:flex-row items-center justify-between gap-3">
-                <div class="home-reveal w-full grid grid-cols-2 md:grid-cols-3 gap-4 mb-10 z-10 relative">
-                    <a href="{% if base_url %}{{ base_url }}/time_played{% else %}/time_played{% endif %}"
-                        class="group relative theme-card-hover rounded-2xl p-3 flex items-center gap-3 cursor-help"
-                        title="Total time played across all games on all consoles.&#10;&#10;This metric updates once per day once you open the Nintendo Channel (you must opt into data sharing).">
-                        <div
-                            class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
-                            <img src="/static/icon/clock.svg" alt="" class="w-6 h-6 invert">
-                        </div>
-                        <div class="min-w-0">
-                            <p
-                                class="text-[var(--user-soft)] text-xs font-semibold uppercase tracking-wider mb-1 truncate">
-                                Total Time
-                                Played</p>
-                            <p class="text-xl font-bold text-white">{{
-                                user_stats.total_minutes|format_playtime }}</p>
-                        </div>
-                        {% set metric = 'minutes' %}
-                        {% set fmt = 'playtime' %}
-                        {% include "components/wii_popover.html" %}
-                    </a>
-                    <a href="{% if base_url %}{{ base_url }}/recommendations{% else %}/recommendations{% endif %}"
-                        class="group relative theme-card-hover rounded-2xl p-3 flex items-center gap-3 cursor-help"
-                        title="Total reviews given across all consoles.&#10;&#10;This metric updates when you submit a review for a game on the Nintendo Channel.">
-                        <div
-                            class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
-                            <img src="/static/icon/star.svg" alt="" class="w-6 h-6 invert">
-                        </div>
-                        <div class="min-w-0">
-                            <p
-                                class="text-[var(--user-soft)] text-xs font-semibold uppercase tracking-wider mb-1 truncate">
-                                Reviews
-                                Given
-                            </p>
-                            <p class="text-xl font-bold text-white">{{
-                                user_stats.total_reviews|int }}</p>
-                        </div>
-                        {% set metric = 'reviews' %}
-                        {% set fmt = 'int' %}
-                        {% include "components/wii_popover.html" %}
-                    </a>
-                    <a href="{% if base_url %}{{ base_url }}/favorites{% else %}/favorites{% endif %}"
-                        class="group relative theme-card-hover rounded-2xl p-3 flex items-center gap-3 cursor-help"
-                        title="Total games favorited across all consoles.&#10;&#10;This metric updates when you bookmark a game on the Nintendo Channel.">
-                        <div
-                            class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
-                            <img src="/static/icon/heart.svg" alt="" class="w-6 h-6 invert">
-                        </div>
-                        <div class="min-w-0">
-                            <p
-                                class="text-[var(--user-soft)] text-xs font-semibold uppercase tracking-wider mb-1 truncate">
-                                Favorites
-                            </p>
-                            <p class="text-xl font-bold text-white">{{
-                                user_counts.favorites }}</p>
-                        </div>
-                        {% set metric = 'favorites' %}
-                        {% set fmt = 'int' %}
-                        {% include "components/wii_popover.html" %}
-                    </a>
-                    <a href="{% if base_url %}{{ base_url }}/time_played{% else %}/time_played{% endif %}"
-                        class="group relative theme-card-hover rounded-2xl p-3 flex items-center gap-3 cursor-help"
-                        title="Total games played across all consoles.&#10;&#10;This metric updates once per day once you open the Nintendo Channel (you must opt into data sharing).">
-                        <div
-                            class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
-                            <img src="/static/icon/gamepad.svg" alt="" class="w-6 h-6 invert">
-                        </div>
-                        <div class="min-w-0">
-                            <p
-                                class="text-[var(--user-soft)] text-xs font-semibold uppercase tracking-wider mb-1 truncate">
-                                Games
-                                Played
-                            </p>
-                            <p class="text-xl font-bold text-white">{{
-                                user_counts.games_played }}</p>
-                        </div>
-                        {% set metric = 'games' %}
-                        {% set fmt = 'int' %}
-                        {% include "components/wii_popover.html" %}
-                    </a>
-                    <a href="{% if base_url %}{{ base_url }}/polls{% else %}/polls{% endif %}"
-                        class="group relative theme-card-hover rounded-2xl p-3 flex items-center gap-3 cursor-help"
-                        title="Total polls voted on across all consoles.&#10;&#10;This metric updates every time you vote on a poll on the Everybody Votes Channel.">
-                        <div
-                            class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
-                            <img src="/static/icon/chart-line.svg" alt="" class="w-6 h-6 invert">
-                        </div>
-                        <div class="min-w-0">
-                            <p
-                                class="text-[var(--user-soft)] text-xs font-semibold uppercase tracking-wider mb-1 truncate">
-                                Polls
-                                Voted
-                            </p>
-                            <p class="text-xl font-bold text-white">{{
-                                user_counts.polls }}</p>
-                        </div>
-                        {% set metric = 'polls' %}
-                        {% set fmt = 'int' %}
-                        {% include "components/wii_popover.html" %}
-                    </a>
-                    <a href="{% if base_url %}{{ base_url }}/contest_submissions{% else %}/contest_submissions{% endif %}"
-                        class="group relative theme-card-hover rounded-2xl p-3 flex items-center gap-3 cursor-help"
-                        title="Total contest submissions across all consoles.&#10;&#10;This metric updates when you submit a contest entry on the Check Mii Out Channel.">
-                        <div
-                            class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
-                            <img src="/static/icon/send-horizontal.svg" alt="" class="w-6 h-6 invert">
-                        </div>
-                        <div class="min-w-0">
-                            <p
-                                class="text-[var(--user-soft)] text-xs font-semibold uppercase tracking-wider mb-1 truncate">
-                                Contest
-                                Submissions</p>
-                            <p class="text-xl font-bold text-white">{{
-                                user_counts.contest_submissions }}</p>
-                        </div>
-                        {% set metric = 'contests' %}
-                        {% set fmt = 'int' %}
-                        {% include "components/wii_popover.html" %}
-                    </a>
-                </div>
+                {% if not serial_not_linked %}
+                <span class="flex flex-col xl:flex-row items-center justify-between gap-3">
+                    <div class="home-reveal w-full grid grid-cols-2 md:grid-cols-3 gap-4 mb-10 z-10 relative">
+                        <a href="{% if base_url %}{{ base_url }}/time_played{% else %}/time_played{% endif %}"
+                            class="group relative theme-card-hover rounded-2xl p-3 flex items-center gap-3 cursor-help"
+                            title="Total time played across all games on all consoles.&#10;&#10;This metric updates once per day once you open the Nintendo Channel (you must opt into data sharing).">
+                            <div
+                                class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
+                                <img src="/static/icon/clock.svg" alt="" class="w-6 h-6 invert">
+                            </div>
+                            <div class="min-w-0">
+                                <p
+                                    class="text-[var(--user-soft)] text-xs font-semibold uppercase tracking-wider mb-1 truncate">
+                                    Total Time
+                                    Played</p>
+                                <p class="text-xl font-bold text-white">{{
+                                    user_stats.total_minutes|format_playtime }}</p>
+                            </div>
+                            {% set metric = 'minutes' %}
+                            {% set fmt = 'playtime' %}
+                            {% include "components/wii_popover.html" %}
+                        </a>
+                        <a href="{% if base_url %}{{ base_url }}/recommendations{% else %}/recommendations{% endif %}"
+                            class="group relative theme-card-hover rounded-2xl p-3 flex items-center gap-3 cursor-help"
+                            title="Total reviews given across all consoles.&#10;&#10;This metric updates when you submit a review for a game on the Nintendo Channel.">
+                            <div
+                                class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
+                                <img src="/static/icon/star.svg" alt="" class="w-6 h-6 invert">
+                            </div>
+                            <div class="min-w-0">
+                                <p
+                                    class="text-[var(--user-soft)] text-xs font-semibold uppercase tracking-wider mb-1 truncate">
+                                    Reviews
+                                    Given
+                                </p>
+                                <p class="text-xl font-bold text-white">{{
+                                    user_stats.total_reviews|int }}</p>
+                            </div>
+                            {% set metric = 'reviews' %}
+                            {% set fmt = 'int' %}
+                            {% include "components/wii_popover.html" %}
+                        </a>
+                        <a href="{% if base_url %}{{ base_url }}/favorites{% else %}/favorites{% endif %}"
+                            class="group relative theme-card-hover rounded-2xl p-3 flex items-center gap-3 cursor-help"
+                            title="Total games favorited across all consoles.&#10;&#10;This metric updates when you bookmark a game on the Nintendo Channel.">
+                            <div
+                                class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
+                                <img src="/static/icon/heart.svg" alt="" class="w-6 h-6 invert">
+                            </div>
+                            <div class="min-w-0">
+                                <p
+                                    class="text-[var(--user-soft)] text-xs font-semibold uppercase tracking-wider mb-1 truncate">
+                                    Favorites
+                                </p>
+                                <p class="text-xl font-bold text-white">{{
+                                    user_counts.favorites }}</p>
+                            </div>
+                            {% set metric = 'favorites' %}
+                            {% set fmt = 'int' %}
+                            {% include "components/wii_popover.html" %}
+                        </a>
+                        <a href="{% if base_url %}{{ base_url }}/time_played{% else %}/time_played{% endif %}"
+                            class="group relative theme-card-hover rounded-2xl p-3 flex items-center gap-3 cursor-help"
+                            title="Total games played across all consoles.&#10;&#10;This metric updates once per day once you open the Nintendo Channel (you must opt into data sharing).">
+                            <div
+                                class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
+                                <img src="/static/icon/gamepad.svg" alt="" class="w-6 h-6 invert">
+                            </div>
+                            <div class="min-w-0">
+                                <p
+                                    class="text-[var(--user-soft)] text-xs font-semibold uppercase tracking-wider mb-1 truncate">
+                                    Games
+                                    Played
+                                </p>
+                                <p class="text-xl font-bold text-white">{{
+                                    user_counts.games_played }}</p>
+                            </div>
+                            {% set metric = 'games' %}
+                            {% set fmt = 'int' %}
+                            {% include "components/wii_popover.html" %}
+                        </a>
+                        <a href="{% if base_url %}{{ base_url }}/polls{% else %}/polls{% endif %}"
+                            class="group relative theme-card-hover rounded-2xl p-3 flex items-center gap-3 cursor-help"
+                            title="Total polls voted on across all consoles.&#10;&#10;This metric updates every time you vote on a poll on the Everybody Votes Channel.">
+                            <div
+                                class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
+                                <img src="/static/icon/chart-line.svg" alt="" class="w-6 h-6 invert">
+                            </div>
+                            <div class="min-w-0">
+                                <p
+                                    class="text-[var(--user-soft)] text-xs font-semibold uppercase tracking-wider mb-1 truncate">
+                                    Polls
+                                    Voted
+                                </p>
+                                <p class="text-xl font-bold text-white">{{
+                                    user_counts.polls }}</p>
+                            </div>
+                            {% set metric = 'polls' %}
+                            {% set fmt = 'int' %}
+                            {% include "components/wii_popover.html" %}
+                        </a>
+                        <a href="{% if base_url %}{{ base_url }}/contest_submissions{% else %}/contest_submissions{% endif %}"
+                            class="group relative theme-card-hover rounded-2xl p-3 flex items-center gap-3 cursor-help"
+                            title="Total contest submissions across all consoles.&#10;&#10;This metric updates when you submit a contest entry on the Check Mii Out Channel.">
+                            <div
+                                class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
+                                <img src="/static/icon/send-horizontal.svg" alt="" class="w-6 h-6 invert">
+                            </div>
+                            <div class="min-w-0">
+                                <p
+                                    class="text-[var(--user-soft)] text-xs font-semibold uppercase tracking-wider mb-1 truncate">
+                                    Contest
+                                    Submissions</p>
+                                <p class="text-xl font-bold text-white">{{
+                                    user_counts.contest_submissions }}</p>
+                            </div>
+                            {% set metric = 'contests' %}
+                            {% set fmt = 'int' %}
+                            {% include "components/wii_popover.html" %}
+                        </a>
+                    </div>
 
-                {% set all_achievements = viewed_user.achievements.achievements if viewed_user.achievements else [] %}
-                {% if all_achievements %}
-                <section id="achievementsSection" onclick="openAchievementsModal()"
-                    class="home-reveal w-full xl:w-[500px] theme-card-faint border rounded-2xl p-5 sm:p-6 mb-10 cursor-pointer z-0">
-                    <div class="ach-grid ach-strip xl:max-h-[460px] xl:pr-1">
-                        {% for ach in all_achievements if ach.achieved %}
-                        <div class="ach-tile-cell relative group rounded-xl aspect-square flex items-center justify-center"
-                            title="{{ ach.name }} — {{ ach.description }}">
-                            <div class="ach-icon-box w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center">
-                                <img src="/static/icon/{{ ach.icon }}.svg" alt="{{ ach.name }}"
-                                    class="ach-icon w-10 h-10 sm:w-12 sm:h-12 text-white">
+                    {% set all_achievements = viewed_user.achievements.achievements if viewed_user.achievements else []
+                    %}
+                    {% if all_achievements %}
+                    <section id="achievementsSection" onclick="openAchievementsModal()"
+                        class="home-reveal w-full xl:w-[500px] theme-card-faint border rounded-2xl p-5 sm:p-6 mb-10 cursor-pointer z-0">
+                        <div class="ach-grid ach-strip xl:max-h-[460px] xl:pr-1">
+                            {% for ach in all_achievements if ach.achieved %}
+                            <div class="ach-tile-cell relative group rounded-xl aspect-square flex items-center justify-center"
+                                title="{{ ach.name }} — {{ ach.description }}">
+                                <div class="ach-icon-box w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center">
+                                    <img src="/static/icon/{{ ach.icon }}.svg" alt="{{ ach.name }}"
+                                        class="ach-icon w-10 h-10 sm:w-12 sm:h-12 text-white">
+                                </div>
+                                <div
+                                    class="w-[200px] bg-[var(--user-base)] border-[var(--user-transparent)] py-3 px-5 rounded-xl absolute inset-x-2 -translate-y-[120%] top-2 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10">
+                                    <p class="text-xs font-semibold text-white leading-tight">{{ ach.name }}</p>
+                                    <p class="text-[10px] text-[var(--user-soft)] leading-tight line-clamp-2">{{
+                                        ach.description }}</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </section>
+                    {% endif %}
+                </span>
+                {% endif %}
+                {% if not serial_not_linked %}
+                <section class="home-reveal theme-card border rounded-2xl p-5 mb-5 sm:p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 style="view-transition-name: vt-title-favorites;"
+                            class="text-xl sm:text-2xl font-bold text-white flex items-center gap-3">
+                            <img src="/static/icon/heart.svg" alt="" class="w-6 h-6 invert opacity-70">
+                            Favorites
+                        </h2>
+                        <a href="{% if base_url %}{{ base_url }}/favorites{% else %}/favorites{% endif %}"
+                            class="flex items-center gap-1 text-sm text-[var(--user-soft)] hover:text-white transition duration-200">
+                            View All <img src="/static/icon/chevron-right.svg" alt="Chevron Right"
+                                class="w-4 h-4 invert">
+                        </a>
+                    </div>
+                    {% if latest_favorites %}
+                    <div class="grid gap-4 favorites-grid">
+                        {% for game in latest_favorites %}
+                        {% set cover = namespace(url='', fallback='') %}
+                        {% set vt_name = namespace(name='') %}
+                        {% set cover_game = game %}
+                        {% include "components/game_cover_vars.html" %}
+                        {% include "components/vt_cover_name.html" %}
+                        <button
+                            class="home-game-card flex flex-col items-end justify-end rounded-xl hover:shadow-2xl relative w-full text-left bg-transparent border-0 cursor-pointer aspect-[2/2.8]"
+                            data-modal-open data-source="favorites" data-title="{{ game.title_en or game.title }}"
+                            data-game-id="{{ game.game_id }}" data-cover-url="{{ cover.url }}"
+                            data-cover-fallback="{{ cover.fallback }}" data-release-year="{{ game.release_year or '' }}"
+                            data-release-month="{{ game.release_month or '' }}"
+                            data-release-day="{{ game.release_day or '' }}" data-genre="{{ game.genre or '' }}"
+                            data-developer="{{ game.developer or '' }}" data-publisher="{{ game.publisher or '' }}"
+                            data-rating-type="{{ game.rating_type or '' }}"
+                            data-rating-value="{{ game.rating_value or '' }}"
+                            data-synopsis="{{ game.synopsis_en or '' }}"
+                            data-favorite-count="{{ game.favorite_count or 0 }}"
+                            data-favorite-user-count="{{ game.user_count or 0 }}" {%- if game.input_controls %}
+                            data-input-controls='{{ game.input_controls | tojson }}' {% endif %}
+                            data-wifi-players="{{ game.wifi_players or 0 }}">
+                            <img src="{{ cover.url }}" alt="" aria-hidden="true"
+                                class="home-game-card-back pointer-events-none" onerror="this.style.display = 'none';">
+                            <img src="{{ cover.url }}" alt="{{ game.title }} Cover" data-fallback="{{ cover.fallback }}"
+                                {% if vt_name.name %}style="view-transition-name: {{ vt_name.name }};" {% endif %}
+                                onerror="if (!this.dataset.tried && this.dataset.fallback) { this.dataset.tried = '1'; this.src = this.dataset.fallback; } else { this.style.display = 'none'; }"
+                                class="relative z-10 w-full h-full object-contain object-bottom rounded">
+                            <div class="bottom-0 p-3 z-30 absolute w-full">
+                                <p class="text-white font-semibold break-words">{% if game.wii_number %}<span
+                                        class="inline-block w-2 h-2 rounded-full align-middle mr-1.5"
+                                        style="background: {{ fetch_wii_color_from_number(game.wii_number) }}"></span>{%
+                                    endif %}{{ game.title_en or
+                                    game.title }}</p>
                             </div>
                             <div
-                                class="w-[200px] bg-[var(--user-base)] border-[var(--user-transparent)] py-3 px-5 rounded-xl absolute inset-x-2 -translate-y-[120%] top-2 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10">
-                                <p class="text-xs font-semibold text-white leading-tight">{{ ach.name }}</p>
-                                <p class="text-[10px] text-[var(--user-soft)] leading-tight line-clamp-2">{{
-                                    ach.description }}</p>
+                                class="bottom-0 absolute z-20 bg-gradient-to-t from-black/70 to-transparent w-full h-40 rounded">
                             </div>
-                        </div>
+                        </button>
                         {% endfor %}
                     </div>
+                    {% else %}
+                    <div class="home-empty-state">
+                        <p class="!mb-0">No favorites yet</p>
+                    </div>
+                    {% endif %}
                 </section>
                 {% endif %}
-            </span>
-            {% endif %}
-            {% if not serial_not_linked %}
-            <section class="home-reveal theme-card border rounded-2xl p-5 mb-5 sm:p-6">
-                <div class="flex items-center justify-between mb-6">
-                    <h2 style="view-transition-name: vt-title-favorites;"
-                        class="text-xl sm:text-2xl font-bold text-white flex items-center gap-3">
-                        <img src="/static/icon/heart.svg" alt="" class="w-6 h-6 invert opacity-70">
-                        Favorites
-                    </h2>
-                    <a href="{% if base_url %}{{ base_url }}/favorites{% else %}/favorites{% endif %}"
-                        class="flex items-center gap-1 text-sm text-[var(--user-soft)] hover:text-white transition duration-200">
-                        View All <img src="/static/icon/chevron-right.svg" alt="Chevron Right" class="w-4 h-4 invert">
-                    </a>
-                </div>
-                {% if latest_favorites %}
-                <div class="grid gap-4 favorites-grid">
-                    {% for game in latest_favorites %}
-                    {% set cover = namespace(url='', fallback='') %}
-                    {% set vt_name = namespace(name='') %}
-                    {% set cover_game = game %}
-                    {% include "components/game_cover_vars.html" %}
-                    {% include "components/vt_cover_name.html" %}
-                    <button
-                        class="home-game-card flex flex-col items-end justify-end rounded-xl hover:shadow-2xl relative w-full text-left bg-transparent border-0 cursor-pointer aspect-[2/2.8]"
-                        data-modal-open data-source="favorites" data-title="{{ game.title_en or game.title }}"
-                        data-game-id="{{ game.game_id }}" data-cover-url="{{ cover.url }}"
-                        data-cover-fallback="{{ cover.fallback }}" data-release-year="{{ game.release_year or '' }}"
-                        data-release-month="{{ game.release_month or '' }}"
-                        data-release-day="{{ game.release_day or '' }}" data-genre="{{ game.genre or '' }}"
-                        data-developer="{{ game.developer or '' }}" data-publisher="{{ game.publisher or '' }}"
-                        data-rating-type="{{ game.rating_type or '' }}"
-                        data-rating-value="{{ game.rating_value or '' }}" data-synopsis="{{ game.synopsis_en or '' }}"
-                        data-favorite-count="{{ game.favorite_count or 0 }}"
-                        data-favorite-user-count="{{ game.user_count or 0 }}" {%- if game.input_controls %}
-                        data-input-controls='{{ game.input_controls | tojson }}' {% endif %}
-                        data-wifi-players="{{ game.wifi_players or 0 }}">
-                        <img src="{{ cover.url }}" alt="" aria-hidden="true"
-                            class="home-game-card-back pointer-events-none" onerror="this.style.display = 'none';">
-                        <img src="{{ cover.url }}" alt="{{ game.title }} Cover" data-fallback="{{ cover.fallback }}" {%
-                            if vt_name.name %}style="view-transition-name: {{ vt_name.name }};" {% endif %}
-                            onerror="if (!this.dataset.tried && this.dataset.fallback) { this.dataset.tried = '1'; this.src = this.dataset.fallback; } else { this.style.display = 'none'; }"
-                            class="relative z-10 w-full h-full object-contain object-bottom rounded">
-                        <div class="bottom-0 p-3 z-30 absolute w-full">
-                            <p class="text-white font-semibold break-words">{% if game.wii_number %}<span
-                                    class="inline-block w-2 h-2 rounded-full align-middle mr-1.5"
-                                    style="background: {{ fetch_wii_color_from_number(game.wii_number) }}"></span>{%
-                                endif %}{{ game.title_en or
-                                game.title }}</p>
-                        </div>
-                        <div
-                            class="bottom-0 absolute z-20 bg-gradient-to-t from-black/70 to-transparent w-full h-40 rounded">
-                        </div>
-                    </button>
-                    {% endfor %}
-                </div>
-                {% else %}
-                <div class="home-empty-state">
-                    <p class="!mb-0">No favorites yet</p>
-                </div>
-                {% endif %}
-            </section>
-            {% endif %}
 
-            <div class="flex flex-col md:flex-row items-start gap-6">
-                {% if not serial_not_linked %}
-                <div
-                    class="w-full {% if recent_contests or recent_polls or (not base_url and latest_digicard) %}md:w-1/2{% endif %} space-y-6">
-                    <section class="home-reveal theme-card border rounded-2xl p-5 sm:p-6">
-                        <div class="flex items-center justify-between mb-6">
-                            <h2 style="view-transition-name: vt-title-time-played;"
-                                class="text-xl sm:text-2xl font-bold text-white flex items-center gap-3">
-                                <img src="/static/icon/clock.svg" alt="" class="w-6 h-6 invert opacity-70">
-                                Recently Played
-                            </h2>
-                            <span class="flex items-center gap-3">
-                                <a href="{% if base_url %}{{ base_url }}/calendar{% else %}/calendar{% endif %}"
-                                    aria-label="Calendar"
-                                    class="text-[var(--user-soft)] hover:text-white transition duration-200">
-                                    <img src="/static/icon/calendar.svg" alt="Calendar" class="w-4 h-4 invert">
-                                </a>
-                                <a href="{% if base_url %}{{ base_url }}/time_played{% else %}/time_played{% endif %}"
+                <div class="flex flex-col md:flex-row items-start gap-6">
+                    {% if not serial_not_linked %}
+                    <div
+                        class="w-full {% if recent_contests or recent_polls or (not base_url and latest_digicard) %}md:w-1/2{% endif %} space-y-6">
+                        <section class="home-reveal theme-card border rounded-2xl p-5 sm:p-6">
+                            <div class="flex items-center justify-between mb-6">
+                                <h2 style="view-transition-name: vt-title-time-played;"
+                                    class="text-xl sm:text-2xl font-bold text-white flex items-center gap-3">
+                                    <img src="/static/icon/clock.svg" alt="" class="w-6 h-6 invert opacity-70">
+                                    Recently Played
+                                </h2>
+                                <span class="flex items-center gap-3">
+                                    <a href="{% if base_url %}{{ base_url }}/calendar{% else %}/calendar{% endif %}"
+                                        aria-label="Calendar"
+                                        class="text-[var(--user-soft)] hover:text-white transition duration-200">
+                                        <img src="/static/icon/calendar.svg" alt="Calendar" class="w-4 h-4 invert">
+                                    </a>
+                                    <a href="{% if base_url %}{{ base_url }}/time_played{% else %}/time_played{% endif %}"
+                                        class="flex items-center gap-1 text-sm text-[var(--user-soft)] hover:text-white transition duration-200">
+                                        View All <img src="/static/icon/chevron-right.svg" alt="Chevron Right"
+                                            class="w-4 h-4 invert">
+                                    </a>
+                                </span>
+                            </div>
+                            {% if latest_games %}
+                            <div class="grid gap-4"
+                                style="grid-template-columns: repeat(auto-fill, minmax({% if recent_contests or recent_polls or (not base_url and latest_digicard) %}130px{% else %}180px{% endif %}, 1fr));">
+                                {% if recent_contests or recent_polls or (not base_url and latest_digicard) %}
+                                {% set game_list = latest_games %}
+                                {% else %}
+                                {% set game_list = latest_games[:5] %}
+                                {% endif %}
+                                {% for game in game_list %}
+                                {% set cover = namespace(url='', fallback='') %}
+                                {% set vt_name = namespace(name='') %}
+                                {% set cover_game = game %}
+                                {% include "components/game_cover_vars.html" %}
+                                {% include "components/vt_cover_name.html" %}
+                                <button
+                                    class="home-game-card flex flex-col items-end justify-end rounded-xl hover:shadow-2xl relative w-full text-left bg-transparent border-0 cursor-pointer aspect-[2/2.8]"
+                                    data-modal-open data-title="{{ game.title_en or game.title }}"
+                                    data-game-id="{{ game.game_id }}" data-cover-url="{{ cover.url }}"
+                                    data-cover-fallback="{{ cover.fallback }}"
+                                    data-release-year="{{ game.release_year or '' }}"
+                                    data-release-month="{{ game.release_month or '' }}"
+                                    data-release-day="{{ game.release_day or '' }}" data-genre="{{ game.genre or '' }}"
+                                    data-developer="{{ game.developer or '' }}"
+                                    data-publisher="{{ game.publisher or '' }}"
+                                    data-rating-type="{{ game.rating_type or '' }}"
+                                    data-rating-value="{{ game.rating_value or '' }}"
+                                    data-synopsis="{{ game.synopsis_en or '' }}" {%- if game.input_controls %}
+                                    data-input-controls='{{ game.input_controls | tojson }}' {% endif %}
+                                    data-wifi-players="{{ game.wifi_players or 0 }}">
+                                    <img src="{{ cover.url }}" alt="" aria-hidden="true"
+                                        class="home-game-card-back pointer-events-none"
+                                        onerror="this.style.display = 'none';">
+                                    <img src="{{ cover.url }}" alt="{{ game.title }} Cover"
+                                        data-fallback="{{ cover.fallback }}" {% if vt_name.name
+                                        %}style="view-transition-name: {{ vt_name.name }};" {% endif %}
+                                        onerror="if (!this.dataset.tried && this.dataset.fallback) { this.dataset.tried = '1'; this.src = this.dataset.fallback; } else { var placeholder = document.createElement('div'); placeholder.className = 'w-full h-auto theme-card-inner rounded flex-shrink-0'; this.parentNode.replaceChild(placeholder, this); }"
+                                        class="relative z-10 w-full h-full object-contain object-bottom rounded">
+                                    <div class="bottom-0 p-3 z-30 absolute w-full">
+                                        <p class="text-white font-semibold break-words">{% if game.wii_numbers %}{% for
+                                            wii_number in game.wii_numbers %}<span
+                                                class="inline-block w-2 h-2 rounded-full align-middle mr-1.5"
+                                                style="background: {{ fetch_wii_color_from_number(wii_number) }}"></span>{%
+                                            endfor %}{% endif %}{{ game.title_en or game.title }}
+                                        </p>
+                                        <p class="text-sm text-[var(--user-soft)]">{{
+                                            game.time_played|format_playtime }} played</p>
+                                    </div>
+                                    <div
+                                        class="bottom-0 absolute z-20 bg-gradient-to-t from-black/70 to-transparent w-full h-40 rounded">
+                                    </div>
+                                </button>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <div class="home-empty-state">
+                                <p class="!mb-0">No games played yet</p>
+                            </div>
+                            {% endif %}
+                        </section>
+
+                        <section class="home-reveal theme-card border rounded-2xl p-5 sm:p-6">
+                            <div class="flex items-center justify-between mb-6">
+                                <h2 style="view-transition-name: vt-title-recommendations;"
+                                    class="text-xl sm:text-2xl font-bold text-white flex items-center gap-3">
+                                    <img src="/static/icon/star.svg" alt="" class="w-6 h-6 invert opacity-70">
+                                    Latest Reviews
+                                </h2>
+                                <a href="{% if base_url %}{{ base_url }}/recommendations{% else %}/recommendations{% endif %}"
                                     class="flex items-center gap-1 text-sm text-[var(--user-soft)] hover:text-white transition duration-200">
                                     View All <img src="/static/icon/chevron-right.svg" alt="Chevron Right"
                                         class="w-4 h-4 invert">
                                 </a>
-                            </span>
-                        </div>
-                        {% if latest_games %}
-                        <div class="grid gap-4"
-                            style="grid-template-columns: repeat(auto-fill, minmax({% if recent_contests or recent_polls or (not base_url and latest_digicard) %}130px{% else %}180px{% endif %}, 1fr));">
-                            {% if recent_contests or recent_polls or (not base_url and latest_digicard) %}
-                            {% set game_list = latest_games %}
-                            {% else %}
-                            {% set game_list = latest_games[:5] %}
-                            {% endif %}
-                            {% for game in game_list %}
-                            {% set cover = namespace(url='', fallback='') %}
-                            {% set vt_name = namespace(name='') %}
-                            {% set cover_game = game %}
-                            {% include "components/game_cover_vars.html" %}
-                            {% include "components/vt_cover_name.html" %}
-                            <button
-                                class="home-game-card flex flex-col items-end justify-end rounded-xl hover:shadow-2xl relative w-full text-left bg-transparent border-0 cursor-pointer aspect-[2/2.8]"
-                                data-modal-open data-title="{{ game.title_en or game.title }}"
-                                data-game-id="{{ game.game_id }}" data-cover-url="{{ cover.url }}"
-                                data-cover-fallback="{{ cover.fallback }}"
-                                data-release-year="{{ game.release_year or '' }}"
-                                data-release-month="{{ game.release_month or '' }}"
-                                data-release-day="{{ game.release_day or '' }}" data-genre="{{ game.genre or '' }}"
-                                data-developer="{{ game.developer or '' }}" data-publisher="{{ game.publisher or '' }}"
-                                data-rating-type="{{ game.rating_type or '' }}"
-                                data-rating-value="{{ game.rating_value or '' }}"
-                                data-synopsis="{{ game.synopsis_en or '' }}" {%- if game.input_controls %}
-                                data-input-controls='{{ game.input_controls | tojson }}' {% endif %}
-                                data-wifi-players="{{ game.wifi_players or 0 }}">
-                                <img src="{{ cover.url }}" alt="" aria-hidden="true"
-                                    class="home-game-card-back pointer-events-none"
-                                    onerror="this.style.display = 'none';">
-                                <img src="{{ cover.url }}" alt="{{ game.title }} Cover"
-                                    data-fallback="{{ cover.fallback }}" {% if vt_name.name
-                                    %}style="view-transition-name: {{ vt_name.name }};" {% endif %}
-                                    onerror="if (!this.dataset.tried && this.dataset.fallback) { this.dataset.tried = '1'; this.src = this.dataset.fallback; } else { var placeholder = document.createElement('div'); placeholder.className = 'w-full h-auto theme-card-inner rounded flex-shrink-0'; this.parentNode.replaceChild(placeholder, this); }"
-                                    class="relative z-10 w-full h-full object-contain object-bottom rounded">
-                                <div class="bottom-0 p-3 z-30 absolute w-full">
-                                    <p class="text-white font-semibold break-words">{% if game.wii_numbers %}{% for
-                                        wii_number in game.wii_numbers %}<span
-                                            class="inline-block w-2 h-2 rounded-full align-middle mr-1.5"
-                                            style="background: {{ fetch_wii_color_from_number(wii_number) }}"></span>{%
-                                        endfor %}{% endif %}{{ game.title_en or game.title }}
-                                    </p>
-                                    <p class="text-sm text-[var(--user-soft)]">{{
-                                        game.time_played|format_playtime }} played</p>
-                                </div>
-                                <div
-                                    class="bottom-0 absolute z-20 bg-gradient-to-t from-black/70 to-transparent w-full h-40 rounded">
-                                </div>
-                            </button>
-                            {% endfor %}
-                        </div>
-                        {% else %}
-                        <div class="home-empty-state">
-                            <p class="!mb-0">No games played yet</p>
-                        </div>
-                        {% endif %}
-                    </section>
-
-                    <section class="home-reveal theme-card border rounded-2xl p-5 sm:p-6">
-                        <div class="flex items-center justify-between mb-6">
-                            <h2 style="view-transition-name: vt-title-recommendations;"
-                                class="text-xl sm:text-2xl font-bold text-white flex items-center gap-3">
-                                <img src="/static/icon/star.svg" alt="" class="w-6 h-6 invert opacity-70">
-                                Latest Reviews
-                            </h2>
-                            <a href="{% if base_url %}{{ base_url }}/recommendations{% else %}/recommendations{% endif %}"
-                                class="flex items-center gap-1 text-sm text-[var(--user-soft)] hover:text-white transition duration-200">
-                                View All <img src="/static/icon/chevron-right.svg" alt="Chevron Right"
-                                    class="w-4 h-4 invert">
-                            </a>
-                        </div>
-                        {% if latest_reviews %}
-                        <div class="grid gap-4"
-                            style="grid-template-columns: repeat(auto-fill, minmax({% if recent_contests or recent_polls or (not base_url and latest_digicard) %}130px{% else %}180px{% endif %}, 1fr));">
-                            {% if recent_contests or recent_polls or (not base_url and latest_digicard) %}
-                            {% set review_list = latest_reviews %}
-                            {% else %}
-                            {% set review_list = latest_reviews[:5] %}
-                            {% endif %}
-                            {% for game in review_list %}
-                            {% set cover = namespace(url='', fallback='') %}
-                            {% set vt_name = namespace(name='') %}
-                            {% set cover_game = game %}
-                            {% include "components/game_cover_vars.html" %}
-                            {% include "components/vt_cover_name.html" %}
-                            <button
-                                class="home-game-card flex flex-col items-end justify-end rounded-xl hover:shadow-2xl relative w-full text-left bg-transparent border-0 cursor-pointer aspect-[2/2.8]"
-                                data-modal-open data-title="{{ game.title_en or game.title }}"
-                                data-game-id="{{ game.game_id }}" data-cover-url="{{ cover.url }}"
-                                data-cover-fallback="{{ cover.fallback }}"
-                                data-release-year="{{ game.release_year or '' }}"
-                                data-release-month="{{ game.release_month or '' }}"
-                                data-release-day="{{ game.release_day or '' }}" data-genre="{{ game.genre or '' }}"
-                                data-developer="{{ game.developer or '' }}" data-publisher="{{ game.publisher or '' }}"
-                                data-rating-type="{{ game.rating_type or '' }}"
-                                data-rating-value="{{ game.rating_value or '' }}"
-                                data-synopsis="{{ game.synopsis_en or '' }}" {%- if game.input_controls %}
-                                data-input-controls='{{ game.input_controls | tojson }}' {% endif %}
-                                data-wifi-players="{{ game.wifi_players or 0 }}">
-                                <img src="{{ cover.url }}" alt="" aria-hidden="true"
-                                    class="home-game-card-back pointer-events-none"
-                                    onerror="this.style.display = 'none';">
-                                <img src="{{ cover.url }}" alt="{{ game.title }} Cover"
-                                    data-fallback="{{ cover.fallback }}" {% if vt_name.name
-                                    %}style="view-transition-name: {{ vt_name.name }};" {% endif %}
-                                    onerror="if (!this.dataset.tried && this.dataset.fallback) { this.dataset.tried = '1'; this.src = this.dataset.fallback; } else { this.style.display = 'none'; }"
-                                    class="relative z-10 w-full h-full object-contain object-bottom rounded">
-                                <div class="bottom-0 p-3 z-30 absolute w-full">
-                                    <p class="text-white font-semibold break-words">{% if game.wii_number %}<span
-                                            class="inline-block w-2 h-2 rounded-full align-middle mr-1.5"
-                                            style="background: {{ fetch_wii_color_from_number(game.wii_number) }}"></span>{%
-                                        endif %}{{ game.title_en or
-                                        game.title }}
-                                    </p>
-                                    {% set score_percent = game.recommendation_percent or 0 %}
-                                    {% if score_percent >= 80 %}
-                                    {% set score_color = "bg-emerald-400" %}
-                                    {% set score_text_color = "text-emerald-300" %}
-                                    {% elif score_percent >= 50 %}
-                                    {% set score_color = "bg-yellow-400" %}
-                                    {% set score_text_color = "text-yellow-300" %}
-                                    {% else %}
-                                    {% set score_color = "bg-red-400" %}
-                                    {% set score_text_color = "text-red-300" %}
-                                    {% endif %}
-                                    <div class="flex items-center gap-2 mt-1">
-                                        <span class="text-sm {{ score_text_color }} font-semibold">{{ score_percent
-                                            }}%</span>
-                                        <div class="flex-1 theme-card-inner rounded-full h-3">
-                                            <div class="{{ score_color }} h-3 rounded-full"
-                                                style="width: {{ score_percent }}%;">
+                            </div>
+                            {% if latest_reviews %}
+                            <div class="grid gap-4"
+                                style="grid-template-columns: repeat(auto-fill, minmax({% if recent_contests or recent_polls or (not base_url and latest_digicard) %}130px{% else %}180px{% endif %}, 1fr));">
+                                {% if recent_contests or recent_polls or (not base_url and latest_digicard) %}
+                                {% set review_list = latest_reviews %}
+                                {% else %}
+                                {% set review_list = latest_reviews[:5] %}
+                                {% endif %}
+                                {% for game in review_list %}
+                                {% set cover = namespace(url='', fallback='') %}
+                                {% set vt_name = namespace(name='') %}
+                                {% set cover_game = game %}
+                                {% include "components/game_cover_vars.html" %}
+                                {% include "components/vt_cover_name.html" %}
+                                <button
+                                    class="home-game-card flex flex-col items-end justify-end rounded-xl hover:shadow-2xl relative w-full text-left bg-transparent border-0 cursor-pointer aspect-[2/2.8]"
+                                    data-modal-open data-title="{{ game.title_en or game.title }}"
+                                    data-game-id="{{ game.game_id }}" data-cover-url="{{ cover.url }}"
+                                    data-cover-fallback="{{ cover.fallback }}"
+                                    data-release-year="{{ game.release_year or '' }}"
+                                    data-release-month="{{ game.release_month or '' }}"
+                                    data-release-day="{{ game.release_day or '' }}" data-genre="{{ game.genre or '' }}"
+                                    data-developer="{{ game.developer or '' }}"
+                                    data-publisher="{{ game.publisher or '' }}"
+                                    data-rating-type="{{ game.rating_type or '' }}"
+                                    data-rating-value="{{ game.rating_value or '' }}"
+                                    data-synopsis="{{ game.synopsis_en or '' }}" {%- if game.input_controls %}
+                                    data-input-controls='{{ game.input_controls | tojson }}' {% endif %}
+                                    data-wifi-players="{{ game.wifi_players or 0 }}">
+                                    <img src="{{ cover.url }}" alt="" aria-hidden="true"
+                                        class="home-game-card-back pointer-events-none"
+                                        onerror="this.style.display = 'none';">
+                                    <img src="{{ cover.url }}" alt="{{ game.title }} Cover"
+                                        data-fallback="{{ cover.fallback }}" {% if vt_name.name
+                                        %}style="view-transition-name: {{ vt_name.name }};" {% endif %}
+                                        onerror="if (!this.dataset.tried && this.dataset.fallback) { this.dataset.tried = '1'; this.src = this.dataset.fallback; } else { this.style.display = 'none'; }"
+                                        class="relative z-10 w-full h-full object-contain object-bottom rounded">
+                                    <div class="bottom-0 p-3 z-30 absolute w-full">
+                                        <p class="text-white font-semibold break-words">{% if game.wii_number %}<span
+                                                class="inline-block w-2 h-2 rounded-full align-middle mr-1.5"
+                                                style="background: {{ fetch_wii_color_from_number(game.wii_number) }}"></span>{%
+                                            endif %}{{ game.title_en or
+                                            game.title }}
+                                        </p>
+                                        {% set score_percent = game.recommendation_percent or 0 %}
+                                        {% if score_percent >= 80 %}
+                                        {% set score_color = "bg-emerald-400" %}
+                                        {% set score_text_color = "text-emerald-300" %}
+                                        {% elif score_percent >= 50 %}
+                                        {% set score_color = "bg-yellow-400" %}
+                                        {% set score_text_color = "text-yellow-300" %}
+                                        {% else %}
+                                        {% set score_color = "bg-red-400" %}
+                                        {% set score_text_color = "text-red-300" %}
+                                        {% endif %}
+                                        <div class="flex items-center gap-2 mt-1">
+                                            <span class="text-sm {{ score_text_color }} font-semibold">{{ score_percent
+                                                }}%</span>
+                                            <div class="flex-1 theme-card-inner rounded-full h-3">
+                                                <div class="{{ score_color }} h-3 rounded-full"
+                                                    style="width: {{ score_percent }}%;">
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div
-                                    class="bottom-0 absolute z-20 bg-gradient-to-t from-black/70 to-transparent w-full h-40 rounded">
-                                </div>
-                            </button>
-                            {% endfor %}
-                        </div>
-                        {% else %}
-                        <div class="home-empty-state">
-                            <p class="!mb-0">No reviews yet</p>
-                        </div>
+                                    <div
+                                        class="bottom-0 absolute z-20 bg-gradient-to-t from-black/70 to-transparent w-full h-40 rounded">
+                                    </div>
+                                </button>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <div class="home-empty-state">
+                                <p class="!mb-0">No reviews yet</p>
+                            </div>
+                            {% endif %}
+                        </section>
+                    </div>
+                    {% endif %}
+
+                    {% if recent_contests or recent_polls or (not base_url and latest_digicard) %}
+                    <div class="w-full {% if serial_not_linked %}md:w-full{% else %}md:w-1/2{% endif %} space-y-6">
+                        {% if not base_url and latest_digicard %}
+                        <section class="home-reveal theme-card border rounded-2xl p-5 sm:p-6">
+                            <h2 style="view-transition-name: vt-title-digicard;"
+                                class="text-xl sm:text-2xl font-bold text-white flex items-center gap-3 mb-6">
+                                <img src="/static/icon/id-card.svg" alt="" class="w-6 h-6 invert opacity-70">
+                                My Digicard
+                            </h2>
+                            {% include "components/digicard_card.html" with context %}
+                        </section>
                         {% endif %}
-                    </section>
-                </div>
-                {% endif %}
 
-                {% if recent_contests or recent_polls or (not base_url and latest_digicard) %}
-                <div class="w-full {% if serial_not_linked %}md:w-full{% else %}md:w-1/2{% endif %} space-y-6">
-                    {% if not base_url and latest_digicard %}
-                    <section class="home-reveal theme-card border rounded-2xl p-5 sm:p-6">
-                        <h2 style="view-transition-name: vt-title-digicard;"
-                            class="text-xl sm:text-2xl font-bold text-white flex items-center gap-3 mb-6">
-                            <img src="/static/icon/id-card.svg" alt="" class="w-6 h-6 invert opacity-70">
-                            My Digicard
-                        </h2>
-                        {% include "components/digicard_card.html" with context %}
-                    </section>
-                    {% endif %}
+                        {% if recent_contests %}
+                        <section class="home-reveal theme-card border rounded-2xl p-5 sm:p-6">
+                            <div class="flex items-center justify-between mb-6">
+                                <h2 style="view-transition-name: vt-title-contest-submissions;"
+                                    class="text-xl sm:text-2xl font-bold text-white flex items-center gap-3">
+                                    <img src="/static/icon/send-horizontal.svg" alt=""
+                                        class="w-6 h-6 invert opacity-70">
+                                    Recent Contests
+                                </h2>
+                                {% if base_url %}
+                                <a href="{{ base_url }}/contest_submissions"
+                                    class="flex items-center gap-1 text-sm text-[var(--user-soft)] hover:text-white transition duration-200">
+                                    View All <img src="/static/icon/chevron-right.svg" alt="Chevron Right"
+                                        class="w-4 h-4 invert">
+                                </a>
+                                {% endif %}
+                            </div>
+                            <div class="flex flex-col gap-6">
+                                {% if base_url %}
+                                {% for submission in recent_contests[:2] %}
+                                {% include "components/contest_card.html" %}
+                                {% endfor %}
+                                {% else %}
+                                {% for submission in recent_contests[:1] %}
+                                {% include "components/contest_card.html" %}
+                                {% endfor %}
+                                {% endif %}
+                            </div>
+                        </section>
+                        {% endif %}
 
-                    {% if recent_contests %}
-                    <section class="home-reveal theme-card border rounded-2xl p-5 sm:p-6">
-                        <div class="flex items-center justify-between mb-6">
-                            <h2 style="view-transition-name: vt-title-contest-submissions;"
-                                class="text-xl sm:text-2xl font-bold text-white flex items-center gap-3">
-                                <img src="/static/icon/send-horizontal.svg" alt="" class="w-6 h-6 invert opacity-70">
-                                Recent Contests
-                            </h2>
-                            {% if base_url %}
-                            <a href="{{ base_url }}/contest_submissions"
-                                class="flex items-center gap-1 text-sm text-[var(--user-soft)] hover:text-white transition duration-200">
-                                View All <img src="/static/icon/chevron-right.svg" alt="Chevron Right"
-                                    class="w-4 h-4 invert">
-                            </a>
-                            {% endif %}
-                        </div>
-                        <div class="flex flex-col gap-6">
-                            {% if base_url %}
-                            {% for submission in recent_contests[:2] %}
-                            {% include "components/contest_card.html" %}
-                            {% endfor %}
-                            {% else %}
-                            {% for submission in recent_contests[:1] %}
-                            {% include "components/contest_card.html" %}
-                            {% endfor %}
-                            {% endif %}
-                        </div>
-                    </section>
-                    {% endif %}
-
-                    {% if recent_polls %}
-                    <section class="home-reveal theme-card border rounded-2xl p-5 sm:p-6">
-                        <div class="flex items-center justify-between mb-6">
-                            <h2 style="view-transition-name: vt-title-polls;"
-                                class="text-xl sm:text-2xl font-bold text-white flex items-center gap-3">
-                                <img src="/static/icon/chart-line.svg" alt="" class="w-6 h-6 invert opacity-70">
-                                Recent Polls
-                            </h2>
-                            {% if base_url %}
-                            <a href="{{ base_url }}/polls"
-                                class="flex items-center gap-1 text-sm text-[var(--user-soft)] hover:text-white transition duration-200">
-                                View All <img src="/static/icon/chevron-right.svg" alt="Chevron Right"
-                                    class="w-4 h-4 invert">
-                            </a>
-                            {% endif %}
-                        </div>
-                        <div class="flex flex-col gap-6">
-                            {% if base_url %}
-                            {% for poll in recent_polls[:2] %}
-                            {% include "components/poll_card.html" %}
-                            {% endfor %}
-                            {% else %}
-                            {% for poll in recent_polls[:1] %}
-                            {% include "components/poll_card.html" %}
-                            {% endfor %}
-                            {% endif %}
-                        </div>
-                    </section>
+                        {% if recent_polls %}
+                        <section class="home-reveal theme-card border rounded-2xl p-5 sm:p-6">
+                            <div class="flex items-center justify-between mb-6">
+                                <h2 style="view-transition-name: vt-title-polls;"
+                                    class="text-xl sm:text-2xl font-bold text-white flex items-center gap-3">
+                                    <img src="/static/icon/chart-line.svg" alt="" class="w-6 h-6 invert opacity-70">
+                                    Recent Polls
+                                </h2>
+                                {% if base_url %}
+                                <a href="{{ base_url }}/polls"
+                                    class="flex items-center gap-1 text-sm text-[var(--user-soft)] hover:text-white transition duration-200">
+                                    View All <img src="/static/icon/chevron-right.svg" alt="Chevron Right"
+                                        class="w-4 h-4 invert">
+                                </a>
+                                {% endif %}
+                            </div>
+                            <div class="flex flex-col gap-6">
+                                {% if base_url %}
+                                {% for poll in recent_polls[:2] %}
+                                {% include "components/poll_card.html" %}
+                                {% endfor %}
+                                {% else %}
+                                {% for poll in recent_polls[:1] %}
+                                {% include "components/poll_card.html" %}
+                                {% endfor %}
+                                {% endif %}
+                            </div>
+                        </section>
+                        {% endif %}
+                    </div>
                     {% endif %}
                 </div>
-                {% endif %}
-            </div>
+            </span>
         </div>
     </div>
 
