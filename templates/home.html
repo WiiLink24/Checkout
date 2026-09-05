@@ -328,6 +328,13 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                 </div>
             </div>
             <span class="mx-4 md:mx-0 block">
+
+                <span class="block lg:hidden">
+                    {% if not base_url %}
+                    {% include "components/new_in_wiilink.html" %}
+                    {% endif %}
+                </span>
+
                 {% if serial_not_linked %}
                 <div class="home-reveal bg-amber-500/10 border border-amber-500/30 rounded-2xl p-6 mb-10">
                     <div class="flex items-start gap-4">
@@ -518,6 +525,7 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                     {% endif %}
                 </span>
                 {% endif %}
+
                 {% if not serial_not_linked %}
                 <section class="home-reveal theme-card border rounded-2xl p-5 mb-5 sm:p-6">
                     <div class="flex items-center justify-between mb-6">
@@ -582,7 +590,14 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                 </section>
                 {% endif %}
 
+                <span class="hidden lg:block">
+                    {% if not base_url %}
+                    {% include "components/new_in_wiilink.html" %}
+                    {% endif %}
+                </span>
+
                 <div class="flex flex-col md:flex-row items-start gap-6">
+
                     {% if not serial_not_linked %}
                     <div
                         class="w-full {% if recent_contests or recent_polls or (not base_url and latest_digicard) %}md:w-1/2{% endif %} space-y-6">

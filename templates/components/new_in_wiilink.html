@@ -1,0 +1,70 @@
+{% if open_contests or latest_poll or latest_news or nintendo_banners %}
+<section class="home-reveal mb-10">
+    <div class="flex flex-col md:flex-row gap-3">
+        <div class="grid grid-cols-2 gap-3 md:contents">
+            {% if open_contests %}
+            <a class="flex-1 justify-between p-3 min-w-0 rounded-xl theme-card-inner !bg-[var(--user-dark)] hover:scale-105 p-3 flex flex-col justify-center items-center gap-2 text-sm text-white font-semibold transition hover:bg-[var(--user-dark)]/70"
+                href="https://miicontest.wiilink.ca" target="_blank" rel="noopener">
+                <span class="w-full flex items-center justify-between mb-2 gap-3">
+                    <img src="/static/icon/cmoc.svg" alt="" class="h-6">
+                    <span>{{ open_contests|length }} Open Contests</span>
+                </span>
+                <span class="flex items-center justify-between w-full">
+                    <span class="flex items-center justify-between">
+                        {% for contest in open_contests %}
+                        <img src="{{ contest.thumbnail }}" alt="{{ contest.name }}" loading="lazy"
+                            class="w-12 aspect-square object-cover rounded-lg mr-1" />
+                        {% endfor %}
+                    </span>
+                    <img src="/static/icon/arrow-left.svg" alt="" class="w-4 h-4 rotate-180 invert">
+                </span>
+            </a>
+            {% endif %}
+            {% if latest_poll %}
+            <a href="https://evc.wiilink.ca" target="_blank" rel="noopener"
+                class="flex-1 justify-between p-3 min-w-0 rounded-xl theme-card-inner overflow-hidden !bg-[var(--user-dark)] hover:scale-105 transition flex flex-col text-sm text-white font-semibold">
+                <span class="flex flex-col gap-0.5 mb-2">
+                    <span class="flex items-center justify-between gap-3">
+                        <img src="/static/icon/evc.svg" alt="" class="h-6">
+                        <span>{{ poll_open_count }} open for voting</span>
+                    </span>
+                </span>
+                <span class="flex flex-col gap-0.5">
+                    <span class="text-sm font-semibold text-white">{{ latest_poll.content }}</span>
+                    <span class="text-xs text-[var(--user-soft)]">{{ latest_poll.choice1 }} vs {{
+                        latest_poll.choice2 }}</span>
+                </span>
+            </a>
+            {% endif %}
+            {% if latest_news %}
+            <a href="{{ latest_news.link }}" target="_blank" rel="noopener"
+                class="flex-1 justify-between p-3 min-w-0 col-span-2 md:col-span-1 rounded-xl theme-card-inner overflow-hidden !bg-[var(--user-dark)] hover:scale-105 transition flex flex-col">
+                <span class="flex flex-col justify-between gap-0.5">
+                    <span class="mb-2 flex items-center justify-between gap-2 text-sm text-white font-semibold">
+                        <img src="/static/icon/wiilink_isotype.svg" alt="" class="h-6 invert" />
+                        WiiLink News
+                    </span>
+                </span>
+                <span class="flex flex-col gap-0.5">
+                    <span class="text-sm font-semibold text-white">{{ latest_news.title }}</span>
+                    <span class="text-xs text-[var(--user-soft)]">{{ latest_news.description }}</span>
+                </span>
+            </a>
+            {% endif %}
+        </div>
+        {% if nintendo_banners %}
+        <div
+            class="flex-1 min-w-0 flex flex-col gap-3 theme-card-inner !bg-[var(--user-dark)] hover:scale-105 text-[var(--user-soft)] p-3 rounded-xl transition">
+            <span class="flex items-center justify-between gap-2 mb-2 text-sm font-semibold text-white">
+                <img src="/static/icon/nc.svg" alt="" class="w-6 h-6" />
+                Nintendo Channel
+            </span>
+            {% for banner in nintendo_banners %}
+            <span class="truncate" title="{{ banner.name }}">{{ banner.name
+                }}</span>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endif %}
