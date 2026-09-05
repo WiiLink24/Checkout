@@ -13,7 +13,7 @@
     <meta name="keywords" content="WiiLink, WiiLink Checkout, Wii homebrew, WiiConnect24, Nintendo Wii, Wii polls, Wii gameplay stats, WiiLink account" />
 
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="{% block og_title %}WiiLink Checkout{% endblock %}" />
+    <meta property="og:title" content="{{ self.title() }}" />
     <meta property="og:description" content="WiiLink Checkout is the home for all your WiiLink Data. Use your WiiLink Account to access your polls, submissions, gameplay statistics, and more!" />
     <meta property="og:site_name" content="WiiLink Checkout" />
     <meta property="og:url" content="{{ request.url }}" />
@@ -22,7 +22,7 @@
     {% endblock %}
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="{% block twitter_title %}WiiLink Checkout{% endblock %}" />
+    <meta name="twitter:title" content="{{ self.title() }}" />
     <meta name="twitter:description" content="WiiLink Checkout is the home for all your WiiLink Data. Use your WiiLink Account to access your polls, submissions, gameplay statistics, and more!" />
     {% block twitter_image %}
     <meta name="twitter:image" content="/static/img/og-image.png" />
@@ -183,7 +183,7 @@
 
     {% if user_info %}
     <div id="mobileFriendsMenu"
-        class="fixed bottom-0 inset-x-0 h-3/4 flex flex-col bg-[var(--user-dark)] backdrop-blur-md rounded-t-2xl shadow-2xl p-1 z-50 pointer-events-none opacity-0 translate-y-full transition-all duration-300 border"
+        class="fixed bottom-0 inset-x-0 max-h-3/4 flex flex-col bg-[var(--user-dark)] backdrop-blur-md rounded-t-2xl shadow-2xl p-1 z-50 pointer-events-none opacity-0 translate-y-full transition-all duration-300 border"
         style="visibility: hidden; border-color: var(--user-transparent, rgba(17, 24, 39, 0.14));">
         <div class="mx-auto mt-1 mb-2 h-1 w-10 rounded-full bg-[var(--user-soft)]"></div>
         <h2 class="text-white text-lg font-medium px-3 mb-2">Friends</h2>
@@ -472,7 +472,9 @@
                         }
                         ] %}
                         {{ you_menu(channels) }}
+                        <span class="hidden lg:block">
                         {{ friends_menu(user_info.friends) }}
+                        </span>
                         <div class="mt-6 sm:hidden"></div>
                         <a href="{{ url_for('auth_routes.themes') }}"
                     class="block w-full px-4 py-2 theme-menu-btn text-white rounded-xl transition duration-200 flex items-center justify-between">
