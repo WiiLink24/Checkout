@@ -24,15 +24,17 @@
     <div class="max-w-6xl mx-auto">
         {% if not is_unclaimed %}
         <div class="flex flex-wrap flex-items-start justify-start lg:gap-6 lg:mb-10 z-10 relative">
-            <div class="relative flex items-center justify-center">
+            <a href="/{{ viewed_user.linked_wii_no[0] }}" class="relative flex items-center justify-center">
                 <img src="{{ viewed_user.profile_picture }}" alt="{{ viewed_user.username }}"
                     style="view-transition-name: vt-pfp-{{ viewed_user.username|slugify }};"
-                    class="w-16 h-16 lg:w-32 lg:h-32 rounded-2xl mx-auto object-cover relative z-10">
-            </div>
+                    class="w-16 h-16 lg:w-32 lg:h-32 rounded-2xl border border-[var(--user-light)] mx-auto object-cover relative z-10">
+            </a>
             <span class="flex flex-col items-center lg:items-start">
                 <h1 style="view-transition-name: vt-title-{{ page_title|slugify }};"
                     class="text-left flex flex-row flex-wrap items-center text-2xl sm:text-4xl font-bold text-white mt-2">
-                    {{ viewed_user.username }}
+                    <a href="/{{ viewed_user.linked_wii_no[0] }}" class="text-white hover:text-white/80 transition">
+                        {{ viewed_user.username }}
+                    </a>
                     <details class="relative inline-block lg:ml-2 text-left group">
                         <summary
                             class="!text-2xl sm:!text-4xl inline-flex items-center gap-2 lg:px-3 lg:py-1 lg:border lg:border-dashed lg:border-[var(--user-transparent)] text-white/80 hover:text-white transition rounded-lg text-base font-light cursor-pointer select-none min-h-[44px]">
@@ -44,7 +46,7 @@
                             {% if item.active %}
                             <span class="block px-4 py-3 text-sm text-white-300 bg-gray-500/10">{{ item.name }}</span>
                             {% else %}
-                            <a href="{% if base_url %}{{ base_url }}{{ item.path }}{% else %}{{ item.path }}{% endif %}"
+                            <a href="/{{ viewed_user.linked_wii_no[0] }}{{ item.path }}"
                                 class="block px-4 py-3 text-sm text-[var(--user-soft)] hover:bg-[var(--user-base)] transition">{{
                                 item.name
                                 }}</a>
@@ -53,7 +55,7 @@
                         </div>
                     </details>
                 </h1>
-                <span class="hidden lg:flex flex-wrap items-center justify-center gap-2 mt-3">
+                <span class="hidden lg:flex flex-wrap items-center justify-center gap-2 mt-3" style="view-transition-name: vt-wiino;">
                     {% for linked_wii in viewed_user.linked_wii_no %}
                     <p class="inline-flex items-center gap-1.5 px-3 py-1 theme-chip rounded-md text-[var(--user-soft)]"
                         title="Wii {{ loop.index }}">

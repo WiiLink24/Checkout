@@ -124,7 +124,7 @@
 <body class="bg-[var(--user-base)] min-h-screen"
     style="background-color: var(--user-base, #111827); {% block body_theme_vars %}{% include "components/body_theme_vars.html" %}{% endblock %}">
     <nav class="md:hidden fixed bottom-0 inset-x-0 z-30 pb-[env(safe-area-inset-bottom)]"
-        style="background-color: var(--user-dark); background-image: linear-gradient(0deg, rgba(var(--user-rgb, 17, 24, 39), 0.4), rgba(var(--user-rgb, 17, 24, 39), 0.1)); border-color: var(--user-transparent, rgba(17, 24, 39, 0.14));">
+        style="background-color: var(--user-dark); background-image: linear-gradient(0deg, rgba(var(--user-rgb, 17, 24, 39), 0.4), rgba(var(--user-rgb, 17, 24, 39), 0.1)); border-color: var(--user-transparent, rgba(17, 24, 39, 0.14)); view-transition-name: vt-mobile-nav;">
         <button id="mobileThemeEffectsToggle" type="button" title="Toggle theme font and music"
             aria-pressed="false"
             class="hidden theme-btn border rounded-lg p-2 text-white shadow-lg absolute right-3 bottom-full mb-3">
@@ -216,7 +216,7 @@
     <div class="flex">
         <div id="sidebar"
             class="w-full h-3/4 rounded-t-2xl border-t backdrop-blur-xl p-6 fixed bottom-0 inset-x-0 flex flex-col justify-between transform translate-y-full transition-transform duration-300 z-40 overflow-auto sm:overflow-visible md:h-screen md:max-w-[300px] md:rounded-none md:border-t-0 md:border-r md:bottom-auto md:top-0 md:right-auto md:translate-y-0"
-            style="background-color: var(--user-dark); background-image: linear-gradient(180deg, rgba(var(--user-rgb, 17, 24, 39), 0.4), rgba(var(--user-rgb, 17, 24, 39), 0.1)); border-color: var(--user-transparent, rgba(17, 24, 39, 0.14));">
+            style="background-color: var(--user-dark); background-image: linear-gradient(180deg, rgba(var(--user-rgb, 17, 24, 39), 0.4), rgba(var(--user-rgb, 17, 24, 39), 0.1)); border-color: var(--user-transparent, rgba(17, 24, 39, 0.14)); view-transition-name: vt-sidebar;">
             <div class="overflow-y-scroll sm:overflow-visible h-full">
                                     <button id="closeSidebarBtn" class="absolute top-1 left-1/2 -translate-x-1/2 md:hidden text-[var(--user-soft)] hover:text-white">
                         <div class="mx-auto mt-1 mb-2 h-1 w-10 rounded-full bg-[var(--user-soft)]"></div>
