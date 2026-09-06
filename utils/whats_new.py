@@ -15,6 +15,8 @@ CMOC_CONTEST_THUMB = "https://mcc-panel.wiilink.ca//assets/contest/{}/thumbnail.
 CMOC_CONTEST_URL = "https://miicontest.wiilink.ca/"
 EVC_POLLS_URL = "https://evc.wiilink.ca/api/polls"
 NEWS_RSS_URL = "https://wiilink.ca/rss.xml"
+KIRBY_CONFIG_URL = "http://kirby.wiilink24.com/kctv2/xml/gb_config_en.xml"
+KIRBY_EP_THUMB = "/static/img/kirby/Ep{:02d}.jpg"
 
 REQUEST_TIMEOUT = 10
 CACHE_TIMEOUT = 60 * 60
@@ -130,6 +132,65 @@ def fetch_latest_news():
         return None
     cache.set("whats_new:news", news, timeout=CACHE_TIMEOUT)
     return news
+
+
+def _parse_kirby_dt(value):
+    if not value:
+        return None
+    try:
+        return datetime.strptime(value, "%Y %m %d %H %M %S").replace(
+            tzinfo=timezone.utc
+        )
+    except ValueError:
+        return None
+
+
+def fetch_current_kirby_episodes():
+    cached = cache.get("whats_new:kirby")
+    if cached is not None:
+        return cached
+
+    episodes = []
+    try:
+        response = requests.get(KIRBY_CONFIG_URL, timeout=REQUEST_TIMEOUT)
+        response.raise_for_status()
+        episode_data = ET.fromstring(response.content).find("episode_data")
+        now = datetime.now(timezone.utc)
+        for item in episode_data.findall("item") if episode_data is not None else []:
+            try:
+                episode_id = int(item.get("id"))
+            except (TypeError, ValueError):
+                continue
+            start = _parse_kirby_dt(item.get("start_date"))
+            end = _parse_kirby_dt(item.get("end_date"))
+            if start is None or end is None or not start <= now < end:
+                continue
+            trans_unit = item.find("trans_unit")
+            title_el = (
+                trans_unit.find("title").find("target")
+                if trans_unit is not None and trans_unit.find("title") is not None
+                else None
+            )
+            episodes.append(
+                {
+                    "id": episode_id,
+                    "title": (
+                        title_el.text.strip()
+                        if title_el is not None and title_el.text
+                        else ""
+                    ),
+                    "thumbnail": KIRBY_EP_THUMB.format(episode_id),
+                    "_starts": start,
+                }
+            )
+        episodes.sort(key=lambda e: e["_starts"], reverse=True)
+        for episode in episodes:
+            del episode["_starts"]
+    except (requests.RequestException, ET.ParseError) as e:
+        logger.warning("Failed to fetch Kirby TV Channel episodes: %s", e)
+        return []
+    cache.set("whats_new:kirby", episodes, timeout=CACHE_TIMEOUT)
+    return episodes
 
 
 def fetch_latest_banners(limit=3):

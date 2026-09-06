@@ -110,7 +110,7 @@ WiiLink Checkout | Calendar for {{ viewed_user.username }}
                     <span class="text-xs text-[var(--user-soft)]">{{ day.date.day }}</span>
                     {% endif %}
                 </span>
-                <div class="grid grid-cols-2 gap-1">
+                <div class="{% if day.entries|length < 5 %}h-full{% endif %} grid {% if day.entries|length > 3 %}grid-cols-2 gap-1{% elif day.entries|length == 3 %}grid-cols-3 gap-1{% else %}grid-cols-1 gap-1{% endif %}">
                     {% for rec in day.entries %}
                     {% set cover = namespace(url='', fallback='') %}
                     {% set cover_game = rec %}
@@ -128,7 +128,7 @@ WiiLink Checkout | Calendar for {{ viewed_user.username }}
                         data-input-players="{{ rec.input_players or 0 }}"
                         data-playtime="{{ rec.time_played|format_playtime }}"
                         data-times="{{ rec.times_played }}"
-                        class="relative group w-full aspect-square rounded overflow-hidden focus:outline-none focus:ring-2 focus:ring-[var(--user-soft)] bg-[var(--user-light)] hover:bg-[var(--user-soft)] transition"
+                        class="relative group w-full h-full aspect-square rounded overflow-hidden focus:outline-none focus:ring-2 focus:ring-[var(--user-soft)] bg-[var(--user-light)] hover:bg-[var(--user-soft)] transition"
                         aria-label="{{ rec.title_en or rec.title }} details">
                         <span class="top-1 right-1 flex flex-end flex-row items-center gap-1 absolute">
                         {% if rec.wii_numbers %}
@@ -140,7 +140,7 @@ WiiLink Checkout | Calendar for {{ viewed_user.username }}
                         <img src="{{ cover.url }}" alt="{{ rec.title_en or rec.title }} Cover"
                             data-fallback="{{ cover.fallback }}" loading="lazy"
                             onerror="if (!this.dataset.tried && this.dataset.fallback) { this.dataset.tried = '1'; this.src = this.dataset.fallback; } else { document.getElementById('fallback-text-{{ rec.game_id }}').classList.remove('hidden'); this.style.display = 'none'; }"
-                            class="w-full aspect-[3/4] object-cover rounded-sm" />
+                            class="w-full {% if day.entries|length > 3 %}aspect-square{% else %}h-full{% endif %} object-cover rounded-sm" />
                         <span id="fallback-text-{{ rec.game_id }}" class="absolute inset-0 flex items-center justify-center text-center p-1 hidden">
                             <span class="text-xs text-[var(--user-soft)]">{{ rec.title_en or rec.game_id }}</span>
                         </span>

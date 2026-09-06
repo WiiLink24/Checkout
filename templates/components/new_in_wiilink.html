@@ -1,4 +1,4 @@
-{% if open_contests or latest_poll or latest_news or nintendo_banners %}
+{% if open_contests or latest_poll or latest_news or kirby_episodes or nintendo_banners %}
 <section class="home-reveal mb-10">
     <div class="flex flex-col md:flex-row gap-3">
         <div class="grid grid-cols-2 gap-3 md:contents">
@@ -50,6 +50,22 @@
                     <span class="text-xs text-[var(--user-soft)]">{{ latest_news.description }}</span>
                 </span>
             </a>
+            {% endif %}
+            {% if kirby_episodes %}
+            <div
+                class="flex-1 justify-between p-3 min-w-0 col-span-2 md:col-span-1 rounded-xl theme-card-inner !bg-[var(--user-dark)] flex flex-col justify-center items-center gap-2 hover:scale-105 transition text-sm text-white font-semibold">
+                <span class="w-full flex items-center justify-between mb-2 gap-3">
+                    <img src="/static/icon/kirbytv.webp" alt="" class="h-5 brightness-0 invert" />
+                    <span>{{ kirby_episodes|length }} now showing</span>
+                </span>
+                <span class="flex items-center justify-start w-full flex-wrap gap-1">
+                    {% for episode in kirby_episodes %}
+                    <img src="{{ episode.thumbnail }}" alt="{{ episode.title }}" loading="lazy"
+                        onerror="this.style.display='none'"
+                        class="flex-1 min-w-[20%] max-w-full object-cover rounded-md" />
+                    {% endfor %}
+                </span>
+            </div>
             {% endif %}
         </div>
         {% if nintendo_banners %}
