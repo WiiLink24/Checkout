@@ -29,6 +29,7 @@ from utils.whats_new import (
     fetch_open_contests,
     fetch_open_polls,
     fetch_latest_news,
+    fetch_current_kirby_episodes,
     fetch_latest_banners,
 )
 from utils.wiis import build_wii_breakdown, attach_time_breakdown
@@ -1060,6 +1061,7 @@ def index():
             latest_poll=latest_open_poll,
             poll_open_count=poll_open_count,
             latest_news=fetch_latest_news(),
+            kirby_episodes=fetch_current_kirby_episodes(),
             nintendo_banners=fetch_latest_banners(),
         )
     else:
