@@ -68,7 +68,7 @@ WiiLink Checkout | Calendar for {{ viewed_user.username }}
         <div class="flex flex-col items-center gap-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none z-10">
                 <img src="/static/icon/clock.svg" alt="" class="w-12 h-12 invert mx-auto mb-2" />
                 <p class="text-2xl font-bold text-white">No plays found</p>
-                <p class="text-sm text-[var(--user-soft)] mt-1">No games were played in this month.</p>
+                <p class="text-sm text-[var(--user-soft)] mt-1">No games were played in this month.<br><br>Did you play games on these dates but they aren't showing up?<br>Try deleting your Nintendo Channel save data and reopening the channel.</p>
     </div> 
     {% endif %}
         <div class="mb-3 grid grid-cols-7 gap-px bg-[var(--user-soft)] rounded-2xl overflow-hidden {% if not has_plays %}opacity-30{% endif %}">
