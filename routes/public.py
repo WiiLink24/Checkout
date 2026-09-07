@@ -190,21 +190,19 @@ def time_played_by_serial(wii_no):
         if sort_by not in ("time_played", "times_played", "last_played"):
             sort_by = "time_played"
 
-        total_count = count_time_played(serial_prefixes)
-        total_pages = (total_count + per_page - 1) // per_page
         time_played = fetch_time_played(
             serial_prefixes,
             sort_by=sort_by,
-            limit=per_page,
-            offset=offset,
             serial_to_wii=serial_to_wii,
         )
         attach_time_breakdown(time_played, serial_prefixes, serial_to_wii=serial_to_wii)
 
+        total_count = len(time_played)
+        total_pages = (total_count + per_page - 1) // per_page
         viewed_user = build_viewed_user_info(authentik_user)
 
         context = {
-            "time_played": time_played,
+            "time_played": time_played[offset : offset + per_page],
             "user_info": user_info,
             "viewed_user": viewed_user,
             "is_unclaimed": False,
