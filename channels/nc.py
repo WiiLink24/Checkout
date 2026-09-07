@@ -61,17 +61,7 @@ def count_recommendations(serial_prefixes, use_cache=True):
 
 def count_time_played(serial_prefixes, use_cache=True):
     """Count total time played entries for given serial prefixes."""
-    where_clause, params = _build_serial_filter("serial_number", serial_prefixes)
-    if not where_clause:
-        return 0
-
-    query = f"""
-        SELECT COUNT(DISTINCT game_id) AS count
-        FROM time_played
-        WHERE {where_clause}
-    """
-    result = _run_query(query, params, config.db_url, use_cache=use_cache)
-    return result[0].get("count", 0) if result else 0
+    return len(fetch_time_played(serial_prefixes=serial_prefixes, use_cache=use_cache))
 
 
 # Bookmarks
@@ -310,7 +300,7 @@ def fetch_top_best_games(limit=30):
 
 
 def fetch_time_played(
-    serial_prefixes, sort_by="time_played", limit=30, offset=0, serial_to_wii=None
+    serial_prefixes, sort_by="time_played", serial_to_wii=None, use_cache=True
 ):
     """Fetch time played data for a given serial number"""
     where_clause, params = _build_serial_filter("tp.serial_number", serial_prefixes)
@@ -328,44 +318,61 @@ def fetch_time_played(
             SELECT tp.*
             FROM time_played tp
             WHERE {where_clause}
-        ), summed_per_game AS (
+        ),
+        joined_details AS (
             SELECT
-                f.game_id,
-                SUM(f.times_played) AS times_played,
-                SUM(f.time_played) AS time_played,
-                MAX(f.date_played) AS latest_date,
-                STRING_AGG(DISTINCT LEFT(f.serial_number, 12), ',') AS serials
+                f.times_played,
+                f.time_played,
+                f.date_played,
+                f.serial_number,
+                COALESCE(t.game_id, f.game_id) AS resolved_game_id,
+                t.title_en, t.display_name, t.synopsis_en, t.genre,
+                t.developer, t.publisher, t.game_type, t.release_year,
+                t.rating_type, t.rating_value, t.region, t.input_controls,
+                t.wifi_players, t.input_players
             FROM filtered f
-            GROUP BY f.game_id
-        ), ranked AS (
-            SELECT
-                spg.game_id, spg.times_played, spg.time_played, spg.latest_date,
-                spg.serials,
-                ROW_NUMBER() OVER (ORDER BY {sort_expr}) AS sort_rank
-            FROM summed_per_game spg
-        ), detailed_games AS (
-            SELECT
-                r.times_played, r.time_played, r.serials,
-                r.latest_date,
-                COALESCE(t.game_id, r.game_id) AS game_id,
-                COALESCE(t.display_name, t.title_en, r.game_id) AS title,
-                t.title_en, t.display_name, t.synopsis_en, t.genre, t.developer, t.publisher, t.game_type,
-                t.release_year, t.rating_type, t.rating_value, t.region, t.input_controls, t.wifi_players, t.input_players,
-                (SELECT COUNT(*) FROM bookmarks bf WHERE bf.game_id = r.game_id) AS favorite_count,
-                r.sort_rank
-            FROM ranked r
             LEFT JOIN LATERAL (
                 SELECT * FROM titles t
-                WHERE t.game_id = r.game_id OR SUBSTRING(t.game_id, 1, 4) = SUBSTRING(r.game_id, 1, 4)
-                ORDER BY LENGTH(t.game_id) DESC, t.game_id
+                WHERE t.game_id = f.game_id
+                    OR SUBSTRING(t.game_id, 1, 4) = SUBSTRING(f.game_id, 1, 4)
+                    OR LEFT(f.game_id, 1) = 'U'
+                        AND SUBSTRING(t.game_id, 2, 3) = SUBSTRING(f.game_id, 2, 3)
+                        AND t.game_type = 'Wii'
+                ORDER BY
+                    CASE WHEN SUBSTRING(t.game_id, 1, 4) = SUBSTRING(f.game_id, 1, 4) THEN 1 ELSE 2 END,
+                    LENGTH(t.game_id) DESC, t.game_id
                 LIMIT 1
             ) t ON true
+        ),
+        summed_per_game AS (
+            SELECT
+                jd.resolved_game_id AS game_id,
+                COALESCE(jd.display_name, jd.title_en, jd.resolved_game_id) AS title,
+                jd.title_en, jd.display_name, jd.synopsis_en, jd.genre,
+                jd.developer, jd.publisher, jd.game_type, jd.release_year,
+                jd.rating_type, jd.rating_value, jd.region, jd.input_controls,
+                jd.wifi_players, jd.input_players,
+                SUM(jd.times_played) AS times_played,
+                SUM(jd.time_played) AS time_played,
+                MAX(jd.date_played) AS latest_date,
+                STRING_AGG(DISTINCT LEFT(jd.serial_number, 12), ',') AS serials
+            FROM joined_details jd
+            GROUP BY
+                jd.resolved_game_id, jd.title_en, jd.display_name, jd.synopsis_en,
+                jd.genre, jd.developer, jd.publisher, jd.game_type, jd.release_year,
+                jd.rating_type, jd.rating_value, jd.region, jd.input_controls,
+                jd.wifi_players, jd.input_players
+        ), ranked AS (
+            SELECT
+                spg.*,
+                (SELECT COUNT(*) FROM bookmarks bf WHERE bf.game_id = spg.game_id) AS favorite_count,
+                ROW_NUMBER() OVER (ORDER BY {sort_expr}) AS sort_rank
+            FROM summed_per_game spg
         )
-        SELECT * FROM detailed_games
+        SELECT * FROM ranked
         ORDER BY sort_rank
-        LIMIT {limit} OFFSET {offset}
     """
-    rows = _run_query(query, params, config.db_url)
+    rows = _run_query(query, params, config.db_url, use_cache)
 
     for row in rows:
         serials = (row.get("serials") or "").split(",")
@@ -406,8 +413,14 @@ def fetch_time_played_calendar(serial_prefixes, year, month, serial_to_wii=None)
         FROM day_games dg
         LEFT JOIN LATERAL (
             SELECT * FROM titles t
-            WHERE t.game_id = dg.game_prefix OR SUBSTRING(t.game_id, 1, 4) = dg.game_prefix
-            ORDER BY LENGTH(t.game_id) DESC, t.game_id
+            WHERE t.game_id = dg.game_prefix
+                OR SUBSTRING(t.game_id, 1, 4) = SUBSTRING(dg.game_prefix, 1, 4)
+                OR LEFT(dg.game_prefix, 1) = 'U'
+                    AND SUBSTRING(t.game_id, 2, 3) = SUBSTRING(dg.game_prefix, 2, 3)
+                    AND t.game_type = 'Wii'
+            ORDER BY
+                CASE WHEN SUBSTRING(t.game_id, 1, 4) = SUBSTRING(dg.game_prefix, 1, 4) THEN 1 ELSE 2 END,
+                LENGTH(t.game_id) DESC, t.game_id
             LIMIT 1
         ) t ON true
         ORDER BY dg.day, dg.time_played DESC

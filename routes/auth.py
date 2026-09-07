@@ -569,21 +569,19 @@ def time_played():
     per_page = 30
     offset = (page - 1) * per_page
 
-    total_count = count_time_played(serial_prefixes)
-    total_pages = (total_count + per_page - 1) // per_page
-
     results = fetch_time_played(
         serial_prefixes,
         sort_by=sort_by,
-        limit=per_page,
-        offset=offset,
         serial_to_wii=serial_to_wii,
     )
     attach_time_breakdown(results, serial_prefixes, serial_to_wii=serial_to_wii)
 
+    total_count = len(results)
+    total_pages = (total_count + per_page - 1) // per_page
+
     return render_template(
         "time_played.html",
-        time_played=results,
+        time_played=results[offset:offset+per_page],
         serial_prefix=", ".join(serial_prefixes),
         user_info=user_info,
         viewed_user=user_info,
@@ -871,7 +869,7 @@ def takeout_export():
 
         # Time Played
         if "time_played" in requested_exports:
-            time_played = fetch_time_played(serial_prefixes, limit=10000)
+            time_played = fetch_time_played(serial_prefixes)
             if time_played:
                 csv_buffer = io.StringIO()
                 writer = csv.DictWriter(csv_buffer, fieldnames=time_played[0].keys())
