@@ -157,9 +157,10 @@ def fetch_top_favorites(limit=30):
             ORDER BY CASE
                 WHEN SUBSTRING(t.game_id, 4, 1) = 'E' THEN 1
                 WHEN SUBSTRING(t.game_id, 4, 1) = 'P' THEN 2
-                WHEN SUBSTRING(t.game_id, 4, 1) = 'J' THEN 3
-                WHEN SUBSTRING(t.game_id, 4, 1) = 'K' THEN 4
-                WHEN SUBSTRING(t.game_id, 4, 1) = 'C' THEN 5
+                WHEN SUBSTRING(t.game_id, 4, 1) = 'A' THEN 3
+                WHEN SUBSTRING(t.game_id, 4, 1) = 'J' THEN 4
+                WHEN SUBSTRING(t.game_id, 4, 1) = 'K' THEN 5
+                WHEN SUBSTRING(t.game_id, 4, 1) = 'C' THEN 6
             END, LENGTH(t.game_id) DESC, t.game_id
             LIMIT 1
         ) t ON true
@@ -280,9 +281,10 @@ def fetch_top_best_games(limit=30):
             ORDER BY CASE
                 WHEN SUBSTRING(t.game_id, 4, 1) = 'E' THEN 1
                 WHEN SUBSTRING(t.game_id, 4, 1) = 'P' THEN 2
-                WHEN SUBSTRING(t.game_id, 4, 1) = 'J' THEN 3
-                WHEN SUBSTRING(t.game_id, 4, 1) = 'K' THEN 4
-                WHEN SUBSTRING(t.game_id, 4, 1) = 'C' THEN 5
+                WHEN SUBSTRING(t.game_id, 4, 1) = 'A' THEN 3
+                WHEN SUBSTRING(t.game_id, 4, 1) = 'J' THEN 4
+                WHEN SUBSTRING(t.game_id, 4, 1) = 'K' THEN 5
+                WHEN SUBSTRING(t.game_id, 4, 1) = 'C' THEN 6
             END, LENGTH(t.game_id) DESC, t.game_id
             LIMIT 1
         ) t ON true
@@ -514,9 +516,10 @@ def fetch_top_most_played(limit=30):
             ORDER BY CASE
                 WHEN SUBSTRING(t.game_id, 4, 1) = 'E' THEN 1
                 WHEN SUBSTRING(t.game_id, 4, 1) = 'P' THEN 2
-                WHEN SUBSTRING(t.game_id, 4, 1) = 'J' THEN 3
-                WHEN SUBSTRING(t.game_id, 4, 1) = 'K' THEN 4
-                WHEN SUBSTRING(t.game_id, 4, 1) = 'C' THEN 5
+                WHEN SUBSTRING(t.game_id, 4, 1) = 'A' THEN 3
+                WHEN SUBSTRING(t.game_id, 4, 1) = 'J' THEN 4
+                WHEN SUBSTRING(t.game_id, 4, 1) = 'K' THEN 5
+                WHEN SUBSTRING(t.game_id, 4, 1) = 'C' THEN 6
             END, LENGTH(t.game_id) DESC, t.game_id
             LIMIT 1
         ) t ON true
