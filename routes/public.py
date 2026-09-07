@@ -202,7 +202,7 @@ def time_played_by_serial(wii_no):
         viewed_user = build_viewed_user_info(authentik_user)
 
         context = {
-            "time_played": time_played[offset:offset+per_page],
+            "time_played": time_played[offset : offset + per_page],
             "user_info": user_info,
             "viewed_user": viewed_user,
             "is_unclaimed": False,

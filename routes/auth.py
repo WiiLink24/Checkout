@@ -581,7 +581,7 @@ def time_played():
 
     return render_template(
         "time_played.html",
-        time_played=results[offset:offset+per_page],
+        time_played=results[offset : offset + per_page],
         serial_prefix=", ".join(serial_prefixes),
         user_info=user_info,
         viewed_user=user_info,
