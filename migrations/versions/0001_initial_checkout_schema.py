@@ -50,25 +50,12 @@ def upgrade():
 
             CREATE INDEX IF NOT EXISTS idx_friends_followed
                 ON friends (followed_wii_number);
-
-            CREATE TABLE IF NOT EXISTS theme_purchases (
-                username TEXT NOT NULL,
-                theme_id TEXT NOT NULL,
-                cost INTEGER NOT NULL DEFAULT 0,
-                source TEXT NOT NULL DEFAULT 'shop',
-                created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-                PRIMARY KEY (username, theme_id)
-            );
-
-            CREATE INDEX IF NOT EXISTS idx_theme_purchases_username
-                ON theme_purchases (username);
             """))
 
 
 def downgrade():
     bind = op.get_bind()
     bind.execute(sa.text("""
-            DROP TABLE IF EXISTS theme_purchases;
             DROP TABLE IF EXISTS friends;
             DROP TABLE IF EXISTS coupon_redemptions;
             DROP TABLE IF EXISTS coupons;

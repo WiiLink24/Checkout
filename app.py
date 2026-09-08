@@ -31,7 +31,6 @@ from routes.digicard import digicard_bp, set_oidc as set_oidc_digicard
 from routes.misc import misc_routes_bp
 from routes.coupons_admin import coupons_admin_bp
 from utils.cache import init_cache, generate_top_page_cache
-from utils.achievements import sync_achievements
 from utils.db import init_db
 
 app = Flask(__name__)

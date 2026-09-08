@@ -1,5 +1,3 @@
-"""Coupon system backed by Flask-SQLAlchemy (checkout database bind)."""
-
 from datetime import datetime, timezone
 
 from sqlalchemy import exists, func, or_, select, update
