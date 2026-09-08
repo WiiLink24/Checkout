@@ -963,6 +963,8 @@ Exported Data:
 
 @auth_routes_bp.route("/", endpoint="index")
 def index():
+    latest_open_poll, poll_open_count = fetch_open_polls()
+    
     if oidc and oidc.user_loggedin:
         profile = get_user_profile()
         user_info = get_logged_in_user_info()
@@ -1039,7 +1041,6 @@ def index():
                         "card_info": card_info,
                     }
 
-        latest_open_poll, poll_open_count = fetch_open_polls()
         return render_template(
             "home.html",
             user_info=user_info,
@@ -1063,4 +1064,12 @@ def index():
             nintendo_banners=fetch_latest_banners(),
         )
     else:
-        return render_template("login.html", user_info=None)
+        return render_template(
+            "login.html", 
+            user_info=None,
+            open_contests=fetch_open_contests(),
+            latest_poll=latest_open_poll,
+            poll_open_count=poll_open_count,
+            latest_news=fetch_latest_news(),
+            kirby_episodes=fetch_current_kirby_episodes(),
+            nintendo_banners=fetch_latest_banners(),)

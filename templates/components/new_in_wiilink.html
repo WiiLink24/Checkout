@@ -3,7 +3,7 @@
     <div class="flex flex-col md:flex-row gap-3">
         <div class="grid grid-cols-2 gap-3 md:contents">
             {% if open_contests %}
-            <a class="flex-1 justify-between p-3 min-w-0 rounded-xl theme-card-inner !bg-[var(--user-dark)] hover:scale-105 p-3 flex flex-col justify-center items-center gap-2 text-sm text-white font-semibold transition hover:bg-[var(--user-dark)]/70"
+            <a class="flex-1 justify-between p-3 min-w-0 rounded-xl theme-card-inner !bg-[var(--user-dark)] hover:scale-105 p-3 flex flex-col items-center gap-2 text-sm text-white font-semibold transition hover:bg-[var(--user-dark)]/70"
                 href="https://miicontest.wiilink.ca" target="_blank" rel="noopener">
                 <span class="w-full flex items-center justify-between mb-2 gap-3">
                     <img src="/static/icon/cmoc.svg" alt="" class="h-6">
@@ -53,7 +53,7 @@
             {% endif %}
             {% if kirby_episodes %}
             <div
-                class="flex-1 justify-between p-3 min-w-0 col-span-2 md:col-span-1 rounded-xl theme-card-inner !bg-[var(--user-dark)] flex flex-col justify-center items-center gap-2 hover:scale-105 transition text-sm text-white font-semibold">
+                class="flex-1 justify-between p-3 min-w-0 col-span-2 md:col-span-1 rounded-xl theme-card-inner !bg-[var(--user-dark)] flex flex-col items-center gap-2 hover:scale-105 transition text-sm text-white font-semibold">
                 <span class="w-full flex items-center justify-between mb-2 gap-3">
                     <img src="/static/icon/kirbytv.webp" alt="" class="h-5 brightness-0 invert" />
                     <span>{{ kirby_episodes|length }} now showing</span>
