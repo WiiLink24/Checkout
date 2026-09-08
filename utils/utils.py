@@ -150,11 +150,6 @@ def _run_query(query, params, db_url=None, use_cache=True):
     return copy.deepcopy(result)
 
 
-def _run_query_one(query, params, db_url=None, use_cache=True):
-    rows = _run_query(query, params, db_url, use_cache=use_cache)
-    return rows[0] if rows else None
-
-
 def _execute(query, params, db_url=None):
     if db_url is None:
         db_url = config.db_url
@@ -232,73 +227,6 @@ def resolve_serial(serial, serial_to_wii=None):
     return None
 
 
-def fetch_authentik_users():
-    """
-    Fetch all Authentik users that have their profile set to public.
-    """
-    base_url = config.authentik_api_url.rstrip("/")
-    url = f"{base_url}/core/users/?page_size=30&attributes=%7B%22public_profile%22%3A+true%7D"
-    headers = {
-        "Accept": "application/json",
-        "Authorization": f"Bearer {config.authentik_service_account_token}",
-    }
-
-    users = []
-
-    try:
-        while url:
-            response = requests.get(url, headers=headers, timeout=15)
-            response.raise_for_status()
-            data = response.json()
-            users.extend(data.get("results", []))
-            next_url = data.get("pagination", {}).get("next")
-
-            if isinstance(next_url, str) and (
-                next_url.startswith("http://") or next_url.startswith("https://")
-            ):
-                url = next_url
-            else:
-                url = None
-
-    except requests.RequestException as e:
-        print(f"Authentik API error: {e}")
-        return []
-
-    return users
-
-
-def fetch_all_authentik_users():
-    base_url = config.authentik_api_url.rstrip("/")
-    url = f"{base_url}/core/users/?page_size=50"
-    headers = {
-        "Accept": "application/json",
-        "Authorization": f"Bearer {config.authentik_service_account_token}",
-    }
-
-    users = []
-
-    try:
-        while url:
-            response = requests.get(url, headers=headers, timeout=15)
-            response.raise_for_status()
-            data = response.json()
-            users.extend(data.get("results", []))
-            next_url = data.get("pagination", {}).get("next")
-
-            if isinstance(next_url, str) and (
-                next_url.startswith("http://") or next_url.startswith("https://")
-            ):
-                url = next_url
-            else:
-                url = None
-
-    except requests.RequestException as e:
-        print(f"Authentik API error: {e}")
-        return []
-
-    return users
-
-
 def get_authentik_user(user):
     """Fetch a single Authentik user's fresh data (detail endpoint is keyed by pk)."""
     user_id = user.get("pk") or user.get("uuid")
@@ -313,23 +241,6 @@ def get_authentik_user(user):
     response = requests.get(url, headers=headers, timeout=15)
     response.raise_for_status()
     return response.json()
-
-
-def fetch_authentik_user_by_username(username):
-    """Fetch a single Authentik user by username."""
-    base_url = config.authentik_api_url.rstrip("/")
-    url = f"{base_url}/core/users/"
-    headers = {
-        "Accept": "application/json",
-        "Authorization": f"Bearer {config.authentik_service_account_token}",
-    }
-    response = requests.get(
-        url, headers=headers, params={"username": username, "page_size": 1}, timeout=15
-    )
-    response.raise_for_status()
-    results = response.json().get("results", [])
-    return results[0] if results else None
-
 
 def update_user_attributes(user, attributes):
     user_id = user.get("pk") or user.get("uuid")
@@ -404,13 +315,6 @@ def search_authentik_users_by_name(search_query):
 
 def normalize_serial(serial):
     return serial.strip("[]'\" ").replace("-", "") if serial else serial
-
-
-def normalize_wii_number(wii_number):
-    if not wii_number:
-        return wii_number
-    wii_number = wii_number.replace("-", "")
-    return "-".join([wii_number[i : i + 4] for i in range(0, len(wii_number), 4)])
 
 
 def normalize_wii_number(wii_number):

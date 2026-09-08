@@ -5,7 +5,6 @@ from utils.utils import (
     get_serial_prefixes,
     build_serial_to_wii_mapping,
     search_authentik_users_by_name,
-    fetch_authentik_users,
     _run_query,
 )
 from utils.db import db

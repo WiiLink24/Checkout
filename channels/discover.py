@@ -68,7 +68,6 @@ def find_game_recommendation(serial_prefixes):
         row.get("game_id")[:3] for row in played_rows if row.get("game_id")
     }
 
-    # EXPANDED CANDIDATES: Changed LIMIT from 100 to 300 to increase pool diversity
     candidates_query = f"""
         {_PREFERRED_TITLES_CTE}
         SELECT t.game_id, t.display_name, t.title_en, t.synopsis_en, t.genre, t.developer,
@@ -79,7 +78,7 @@ def find_game_recommendation(serial_prefixes):
         WHERE t.display_name IS NOT NULL AND t.genre IS NOT NULL
         GROUP BY t.game_id, t.display_name, t.title_en, t.synopsis_en, t.genre, t.developer,
                  t.game_type, t.release_year, t.rating_type, t.rating_value, t.region
-        ORDER BY rating_count DESC LIMIT 300
+        ORDER BY rating_count DESC LIMIT 100
     """
     candidates = _run_query(candidates_query, [], config.db_url)
 
@@ -99,7 +98,6 @@ def find_game_recommendation(serial_prefixes):
         rating = float(candidate.get("avg_rating") or 50)
         rating_score = (rating - 50) / 50
 
-        # INCREASED RANDOMNESS: Lifted random influence from 0.1 max to 0.5 max
         score = (
             (genre_match * 0.5)
             + (dev_match * 0.15)
@@ -107,14 +105,12 @@ def find_game_recommendation(serial_prefixes):
             + random.uniform(0, 0.5)
         )
 
-        # Save valid choices (ensure weights are strictly positive for sampling)
         if score > 0:
             scored_candidates.append((score, candidate, genres))
 
     if not scored_candidates:
         return None
 
-    # WEIGHTED SELECTION: Instead of max(), we sample using scores as weights
     weights = [item[0] for item in scored_candidates]
     selected_match = random.choices(scored_candidates, weights=weights, k=1)[0]
 
