@@ -9,4 +9,4 @@ __pycache__/
 /session
 /templates/fonts
 theme_customizer.html
-*/node_modules/
+/node_modules
