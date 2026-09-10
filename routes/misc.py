@@ -157,7 +157,7 @@ def search():
             total_count = count_games_by_developer(search_query)
             games = search_games_by_developer(search_query, offset, limit)
         else:  # Default to users
-            users = search_authentik_users_by_name(search_query)
+            users = search_authentik_users_by_name(search_query, logged_in_user=user_info)
             users = [
                 user
                 for user in users
