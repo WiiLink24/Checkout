@@ -1,3 +1,5 @@
+import config
+
 from datetime import date
 
 from flask import current_app
@@ -21,12 +23,16 @@ def parse_int(value):
 
 
 def is_public_profile(user_profile, logged_in_user):
-    if logged_in_user and user_profile.get("username") == logged_in_user.get(
+    if (logged_in_user and user_profile.get("username") == logged_in_user.get(
         "username"
-    ):
+    )):
         return True
+    # Admin users can view any profile
+    if logged_in_user:
+        viewer_groups = logged_in_user.get("groups") or []
+        if getattr(config, "coupon_admin_group_uuid", "") in viewer_groups:
+            return True
     public_profile = user_profile.get("attributes", {}).get("public_profile")
-    print(public_profile)
     return public_profile if public_profile is not None else False
 
 

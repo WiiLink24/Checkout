@@ -6,6 +6,7 @@ import hashlib
 import threading
 import copy
 import time
+import config
 from flask_caching import Cache
 
 
@@ -269,7 +270,7 @@ def update_user_achievements(user, payload):
     return update_user_attributes(fresh_user, attributes)
 
 
-def search_authentik_users_by_name(search_query):
+def search_authentik_users_by_name(search_query, logged_in_user=None):
     """
     Search Authentik users by username.
     Returns all matching users that contain the search query in their username and have wiis linked.
@@ -279,7 +280,8 @@ def search_authentik_users_by_name(search_query):
 
     base_url = config.authentik_api_url.rstrip("/")
     # Use search parameter for username search
-    url = f"{base_url}/core/users/?page_size=50&search={search_query}&attributes=%7B%22public_profile%22%3A+true%7D"
+    privacy_filter = "&attributes=%7B%22public_profile%22%3A+true%7D" if not getattr(config, "coupon_admin_group_uuid", "") in logged_in_user.get("groups") or [] else ""
+    url = f"{base_url}/core/users/?page_size=50&search={search_query}{privacy_filter}"
     headers = {
         "Accept": "application/json",
         "Authorization": f"Bearer {config.authentik_service_account_token}",
