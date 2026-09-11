@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-09-11 15:37+0200\n"
+"POT-Creation-Date: 2026-09-11 17:06+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -294,17 +294,13 @@ msgstr ""
 msgid "How do I add a Wii Number?"
 msgstr ""
 
+#: templates/components/page_header.html:20 templates/generic/base.html:413
+#: templates/home.html:313 templates/home.html:315 templates/social.html:16
+msgid "Followers"
+msgstr ""
+
 #: templates/home.html:313 templates/social.html:16
 msgid "Follower"
-msgstr ""
-
-#: templates/home.html:313 templates/social.html:16
-msgid "s"
-msgstr ""
-
-#: templates/components/page_header.html:20 templates/generic/base.html:413
-#: templates/home.html:315
-msgid "Followers"
 msgstr ""
 
 #: templates/components/page_header.html:21 templates/generic/base.html:411

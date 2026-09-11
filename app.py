@@ -10,6 +10,7 @@ from flask_oidc import OpenIDConnect
 from flask_session import Session
 from redis import Redis
 from utils.wiis import fetch_wii_color_from_number
+from utils.auth import get_user_profile
 
 from utils.utils import (
     format_serial,
@@ -54,23 +55,24 @@ Session(app)
 
 app.config["BABEL_DEFAULT_LOCALE"] = "en"
 app.config["BABEL_DEFAULT_TIMEZONE"] = "UTC"
-app.config["BABEL_SUPPORTED_LOCALES"] = ["en", "es"]
+app.config["BABEL_SUPPORTED_LOCALES"] = ["en", "es", "pt_PT"]
 app.config["BABEL_TRANSLATION_DIRECTORIES"] = os.path.join(
     os.path.dirname(__file__), "translations"
 )
 
 
 def get_locale():
-    # 1) URL parameter ?lang=
     lang = request.args.get("lang")
     if lang in app.config["BABEL_SUPPORTED_LOCALES"]:
         return lang
-    # 2) Cookie
-    lang = request.cookies.get("locale")
-    if lang in app.config["BABEL_SUPPORTED_LOCALES"]:
-        return lang
-    # 3) Browser Accept-Language
-    return request.accept_languages.best_match(app.config["BABEL_SUPPORTED_LOCALES"])
+
+    user = get_user_profile()
+    user_locale = user.get("attributes", {}).get("settings", {}).get("locale")
+    print(f"User locale: {user_locale}")
+    if user_locale in app.config["BABEL_SUPPORTED_LOCALES"]:
+        return user_locale
+
+    return app.config["BABEL_DEFAULT_LOCALE"]
 
 
 babel = Babel(app, locale_selector=get_locale)

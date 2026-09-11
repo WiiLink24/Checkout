@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-09-11 15:37+0200\n"
+"POT-Creation-Date: 2026-09-11 17:06+0200\n"
 "PO-Revision-Date: 2026-09-11 11:45+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -295,17 +295,13 @@ msgstr ""
 msgid "How do I add a Wii Number?"
 msgstr ""
 
-#: templates/home.html:313 templates/social.html:16
-msgid "Follower"
+#: templates/components/page_header.html:20 templates/generic/base.html:413
+#: templates/home.html:313 templates/home.html:315 templates/social.html:16
+msgid "Followers"
 msgstr ""
 
 #: templates/home.html:313 templates/social.html:16
-msgid "s"
-msgstr "'s"
-
-#: templates/components/page_header.html:20 templates/generic/base.html:413
-#: templates/home.html:315
-msgid "Followers"
+msgid "Follower"
 msgstr ""
 
 #: templates/components/page_header.html:21 templates/generic/base.html:411
@@ -1219,5 +1215,8 @@ msgid "December"
 msgstr ""
 
 #~ msgid " - 50 / 40 / 30 points for percentile 100% / 90% / 80%"
+#~ msgstr ""
+
+#~ msgid "s"
 #~ msgstr ""
 

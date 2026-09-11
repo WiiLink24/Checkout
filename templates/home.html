@@ -310,7 +310,7 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                             class="flex justify-center md:justify-start rounded-l-xl rounded-r-md bg-[var(--user-light)] px-3 py-2 md:px-0 md:py-0 md:bg-transparent md:hover:bg-[var(--user-soft)] inline-flex items-center gap-1.5 text-white md:opacity-60 hover:opacity-100 transition-opacity duration-200">
                             <img src="/static/icon/users.svg" alt="" class="w-4 h-4 invert">
                             {% if follower_count is not none %}
-                            {{ follower_count }} {{ _('Follower') }}{% if follower_count != 1 %}{{ _('s') }}{% endif %}
+                            {{ follower_count }} {% if follower_count != 1 %}{{ _('Followers') }} {% else %}{{ _('Follower') }}{% endif %}
                             {% else %}
                             0 {{ _('Followers') }}
                             {% endif %}

@@ -30,6 +30,35 @@ Run these commands from the repository root with the virtual environment activat
 `msgid`. Review new or fuzzy entries in the relevant `.po` file, then run the
 compile command before testing the application.
 
+### Adding a locale
+
+Use Babel's normalized locale code, such as `pt_PT` for European Portuguese
+(`pt-pt` is not the catalog directory name used here).
+
+1. Add the locale to `BABEL_SUPPORTED_LOCALES` in `app.py`:
+
+```python
+app.config["BABEL_SUPPORTED_LOCALES"] = ["en", "es", "pt_PT"]
+```
+
+2. Create its catalog:
+
+```bash
+.venv/bin/pybabel init -i messages.pot -d translations -l pt_PT
+```
+
+3. Translate the `msgstr` values in `translations/pt_PT/LC_MESSAGES/messages.po`.
+
+4. Compile the catalog:
+
+```bash
+.venv/bin/pybabel compile -d translations -l pt_PT
+```
+
+5. Test it with `?lang=pt_PT`, or set the Authentik user's
+	`attributes.settings.locale` value to `pt_PT`. Future catalog updates use
+	the normal `pybabel update` command and preserve completed translations.
+
 The full update cycle is:
 
 ```bash

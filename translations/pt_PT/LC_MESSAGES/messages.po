@@ -1,4 +1,4 @@
-# Spanish translations for PROJECT.
+# Portuguese (Portugal) translations for PROJECT.
 # Copyright (C) 2026 ORGANIZATION
 # This file is distributed under the same license as the PROJECT project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2026-09-11 17:06+0200\n"
-"PO-Revision-Date: 2026-09-11 11:45+0200\n"
+"PO-Revision-Date: 2026-09-11 16:44+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language: es\n"
-"Language-Team: es <LL@li.org>\n"
+"Language: pt_PT\n"
+"Language-Team: pt_PT <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -20,28 +20,30 @@ msgstr ""
 
 #: templates/calendar.html:4
 msgid "Calendar for"
-msgstr "Calendario de"
+msgstr "Calendário de"
 
 #: templates/calendar.html:8 templates/components/page_header.html:16
 #: templates/generic/base.html:437
 msgid "Calendar"
-msgstr "Calendario"
+msgstr "Calendário"
 
 #: templates/calendar.html:70
 msgid "No plays found"
-msgstr "No se encontraron partidas"
+msgstr "Nenhum jogo encontrado"
 
 #: templates/calendar.html:71
 msgid "No games were played in this month."
-msgstr "No se jugaron juegos este mes."
+msgstr "Não foram jogados jogos neste mês."
 
 #: templates/calendar.html:71
 msgid "Did you play games on these dates but they aren't showing up?"
-msgstr "¿Jugaste a juegos en estas fechas pero no aparecen?"
+msgstr "Jogou jogos nestas datas, mas eles não aparecem?"
 
 #: templates/calendar.html:71
 msgid "Try deleting your Nintendo Channel save data and reopening the channel."
-msgstr "Intenta borrar los datos guardados del Canal Nintendo y volver a abrirlo."
+msgstr ""
+"Tenta eliminar os dados guardados do teu Canal Nintendo e voltar a abrir "
+"o canal."
 
 #: templates/calendar.html:77
 msgid "Sun"
@@ -49,23 +51,23 @@ msgstr "Dom"
 
 #: templates/calendar.html:80
 msgid "Mon"
-msgstr "Lun"
+msgstr "Seg"
 
 #: templates/calendar.html:83
 msgid "Tue"
-msgstr "Mar"
+msgstr "Ter"
 
 #: templates/calendar.html:86
 msgid "Wed"
-msgstr "Mié"
+msgstr "Qua"
 
 #: templates/calendar.html:89
 msgid "Thu"
-msgstr "Jue"
+msgstr "Qui"
 
 #: templates/calendar.html:92
 msgid "Fri"
-msgstr "Vie"
+msgstr "Sex"
 
 #: templates/calendar.html:95
 msgid "Sat"
@@ -73,11 +75,11 @@ msgstr "Sáb"
 
 #: templates/calendar.html:263
 msgid "Jan"
-msgstr "Ene"
+msgstr "Jan"
 
 #: templates/calendar.html:263
 msgid "Feb"
-msgstr "Feb"
+msgstr "Fev"
 
 #: templates/calendar.html:263
 msgid "Mar"
@@ -89,7 +91,7 @@ msgstr "Abr"
 
 #: templates/calendar.html:263 utils/helpers.py:105
 msgid "May"
-msgstr "May"
+msgstr "Mai"
 
 #: templates/calendar.html:263
 msgid "Jun"
@@ -105,11 +107,11 @@ msgstr "Ago"
 
 #: templates/calendar.html:264
 msgid "Sep"
-msgstr "Sep"
+msgstr "Set"
 
 #: templates/calendar.html:264
 msgid "Oct"
-msgstr "Oct"
+msgstr "Out"
 
 #: templates/calendar.html:264
 msgid "Nov"
@@ -117,14 +119,14 @@ msgstr "Nov"
 
 #: templates/calendar.html:264
 msgid "Dec"
-msgstr "Dic"
+msgstr "Dez"
 
 #: templates/components/page_header.html:19
 #: templates/contest_submissions.html:4 templates/contest_submissions.html:8
 #: templates/generic/base.html:460 templates/home.html:481
 #: templates/takeout.html:82
 msgid "Contest Submissions"
-msgstr "Envíos a Concursos"
+msgstr "Participações em concursos"
 
 #: templates/contest_submissions.html:23
 msgid "View"
@@ -132,56 +134,56 @@ msgstr "Ver"
 
 #: templates/contest_submissions.html:23
 msgid "`s Mii on the CMOC Viewer"
-msgstr "el Mii en el Visor de CMOC"
+msgstr "Mii de ` no Visualizador do CMOC"
 
 #: templates/contest_submissions.html:30
 msgid "No contest submissions found."
-msgstr "No se encontraron envíos a concursos."
+msgstr "Não foram encontradas participações em concursos."
 
 #: templates/coupons_admin.html:3 templates/coupons_admin.html:10
 #: templates/generic/base.html:487
 msgid "Coupon Admin"
-msgstr "Administración de Cupones"
+msgstr "Administração de cupões"
 
 #: templates/coupons_admin.html:16
 msgid "Create Coupon"
-msgstr "Crear Cupón"
+msgstr "Criar cupão"
 
 #: templates/coupons_admin.html:21
 msgid "Coupon code"
-msgstr "Código del cupón"
+msgstr "Código do cupão"
 
 #: templates/coupons_admin.html:26 templates/coupons_admin.html:72
 msgid "Issuer"
-msgstr "Emisor"
+msgstr "Emissor"
 
 #: templates/coupons_admin.html:31
 msgid "Max uses (-1 = unlimited)"
-msgstr "Usos máximos (-1 = ilimitado)"
+msgstr "Máximo de utilizações (-1 = ilimitado)"
 
 #: templates/coupons_admin.html:36
 msgid "Theme reward (optional)"
-msgstr "Tema de recompensa (opcional)"
+msgstr "Recompensa de tema (opcional)"
 
 #: templates/coupons_admin.html:39
 msgid "None"
-msgstr "Ninguno"
+msgstr "Nenhum"
 
 #: templates/coupons_admin.html:46
 msgid "Points reward (optional)"
-msgstr "Puntos de recompensa (opcional)"
+msgstr "Recompensa de pontos (opcional)"
 
 #: templates/coupons_admin.html:51
 msgid "Expires at (optional)"
-msgstr "Caduca el (opcional)"
+msgstr "Expira em (opcional)"
 
 #: templates/coupons_admin.html:57
 msgid "Create coupon"
-msgstr "Crear cupón"
+msgstr "Criar cupão"
 
 #: templates/coupons_admin.html:64
 msgid "Existing coupons"
-msgstr "Cupones existentes"
+msgstr "Cupões existentes"
 
 #: templates/coupons_admin.html:71
 msgid "Code"
@@ -193,15 +195,15 @@ msgstr "Recompensas"
 
 #: templates/coupons_admin.html:74
 msgid "Uses"
-msgstr "Usos"
+msgstr "Utilizações"
 
 #: templates/coupons_admin.html:75 templates/redeem.html:40
 msgid "Expires"
-msgstr "Caduca"
+msgstr "Expira"
 
 #: templates/coupons_admin.html:76
 msgid "Redeemed by"
-msgstr "Canjeado por"
+msgstr "Resgatado por"
 
 #: templates/coupons_admin.html:115
 msgid "Delete"
@@ -209,63 +211,63 @@ msgstr "Eliminar"
 
 #: templates/coupons_admin.html:125
 msgid "No coupons yet."
-msgstr "Todavía no hay cupones."
+msgstr "Ainda não há cupões."
 
 #: templates/digicard.html:3 templates/digicard.html:10
 msgid "My Digicards"
-msgstr "Mis Digicards"
+msgstr "Os meus Digicards"
 
 #: templates/digicard.html:11
 msgid "View all generated Digicards from the Photo Prints Channel"
-msgstr "Consulta todas las Digicards generadas desde el Photo Prints Channel"
+msgstr "Ver todos os Digicards gerados pelo Canal de Impressões de Fotos"
 
 #: templates/digicard.html:19
 msgid "Total Cards"
-msgstr "Tarjetas totales"
+msgstr "Total de Cartões"
 
 #: templates/digicard.html:65
 msgid ""
 "You don't have any digicards yet. Create your first card on the Photo "
 "Prints Channel to get started!"
 msgstr ""
-"Todavía no tienes ninguna digicard. ¡Crea tu primera tarjeta en el Photo "
-"Prints Channel para empezar!"
+"Ainda não tens nenhum Digicard. Cria o teu primeiro cartão no Canal de "
+"Impressões de Fotos para começar!"
 
 #: templates/discover.html:24
 msgid "Based on your appreciation for"
-msgstr "Basándonos en tu interés por"
+msgstr "Com base no teu gosto por"
 
 #: templates/discover.html:24
 msgid "games, we found a"
-msgstr "juegos, hemos encontrado un"
+msgstr "jogos, encontrámos um"
 
 #: templates/discover.html:24
 msgid "game that might interest you:"
-msgstr "juego que podría interesarte:"
+msgstr "jogo que te poderá interessar:"
 
 #: templates/discover.html:40
 msgid "by"
-msgstr "de"
+msgstr "por"
 
 #: templates/discover.html:53
 msgid ""
 "Not quite your style? Keep playing so we can better understand your "
 "tastes!"
 msgstr ""
-"¿No es tu estilo? ¡Sigue jugando para que podamos entender mejor tus "
-"gustos!"
+"Não é bem o teu estilo? Continua a jogar para podermos compreender melhor"
+" os teus gostos!"
 
 #: templates/discover.html:59 templates/recommendations.html:35
 msgid "No recommendations yet"
-msgstr "Aún no hay recomendaciones"
+msgstr "Ainda não há recomendações"
 
 #: templates/discover.html:60
 msgid ""
 "Start by rating some games in your library to get personalized "
 "suggestions!"
 msgstr ""
-"¡Empieza valorando algunos juegos de tu biblioteca para recibir "
-"sugerencias personalizadas!"
+"Começa por avaliar alguns jogos da tua biblioteca para obter sugestões "
+"personalizadas!"
 
 #: templates/components/details_modal.html:135
 #: templates/components/global_game_card.html:98
@@ -277,31 +279,31 @@ msgstr "Favoritos"
 
 #: templates/favorites.html:22
 msgid "You haven't added any favorites yet."
-msgstr "Todavía no has añadido ningún favorito."
+msgstr "Ainda não adicionaste nenhum favorito."
 
 #: templates/favorites.html:23
 msgid ""
 "Find a title you like on the Nintendo Channel, then select Add to "
 "Favorites."
 msgstr ""
-"Busca un título que te guste en el Canal Nintendo y selecciona Añadir a "
-"Favoritos."
+"Encontra um título que gostes no Canal Nintendo e, em seguida, seleciona "
+"Adicionar aos Favoritos."
 
 #: templates/home.html:4
 msgid "'s Home"
-msgstr "- Inicio"
+msgstr "Página inicial de"
 
 #: templates/home.html:253
 msgid "How's it going,"
-msgstr "¿Qué tal va todo,"
+msgstr "Como estás,"
 
 #: templates/home.html:283
 msgid "Share"
-msgstr "Compartir"
+msgstr "Partilhar"
 
 #: templates/home.html:303
 msgid "How do I add a Wii Number?"
-msgstr "¿Cómo añado un Número de Wii?"
+msgstr "Como adiciono um número Wii?"
 
 #: templates/components/page_header.html:20 templates/generic/base.html:413
 #: templates/home.html:313 templates/home.html:315 templates/social.html:16
@@ -315,11 +317,11 @@ msgstr "Seguidor"
 #: templates/components/page_header.html:21 templates/generic/base.html:411
 #: templates/home.html:322 templates/home.html:324 templates/social.html:21
 msgid "Following"
-msgstr "Siguiendo"
+msgstr "A seguir"
 
 #: templates/errors/not_linked_external.html:4 templates/home.html:344
 msgid "Serial Not Linked"
-msgstr "Número de Serie No Vinculado"
+msgstr "Número de série não associado"
 
 #: templates/errors/not_linked_external.html:17 templates/home.html:346
 msgid ""
@@ -328,167 +330,167 @@ msgid ""
 "recommendations, time played, and other stats, they'll need to re-link "
 "their console using the latest version of the Account Linker tool."
 msgstr ""
-"La consola Wii de este usuario está vinculada a su cuenta, pero el número"
-" de serie de la consola no se ha registrado correctamente. Para ver sus "
-"recomendaciones, tiempo jugado y demás estadísticas, tendrá que volver a "
-"vincular su consola usando la última versión de la herramienta Account "
-"Linker."
+"A consola Wii deste utilizador está associada à conta, mas o número de "
+"série da consola não foi devidamente registado. Para ver as "
+"recomendações, o tempo de jogo e outras estatísticas, terás de voltar a "
+"associar a consola utilizando a versão mais recente da ferramenta Account"
+" Linker."
 
 #: templates/errors/not_linked_external.html:19 templates/home.html:348
 msgid "Still, you can view their CMOC and EVC data here:"
-msgstr "Aun así, puedes ver sus datos de CMOC y EVC aquí:"
+msgstr "Ainda assim, podes consultar aqui os dados CMOC e EVC:"
 
 #: templates/errors/not_linked_external.html:24 templates/home.html:353
 msgid "View Polls"
-msgstr "Ver Encuestas"
+msgstr "Ver sondagens"
 
 #: templates/errors/not_linked_external.html:29 templates/home.html:359
 msgid "View Suggestions"
-msgstr "Ver Sugerencias"
+msgstr "Ver sugestões"
 
 #: templates/errors/not_linked_external.html:34 templates/home.html:365
 msgid "View Contest Submissions"
-msgstr "Ver Envíos a Concursos"
+msgstr "Ver participações em concursos"
 
 #: templates/home.html:378 templates/home.html:435
 msgid "Total time played across all games on all consoles."
-msgstr "Tiempo total jugado en todos los juegos y todas las consolas."
+msgstr "Tempo total jogado em todos os jogos e em todas as consolas."
 
 #: templates/home.html:378 templates/home.html:435
 msgid ""
 "This metric updates once per day once you open the Nintendo Channel (you "
 "must opt into data sharing)."
 msgstr ""
-"Esta métrica se actualiza una vez al día al abrir el Canal Nintendo "
-"(debes haber activado el uso compartido de datos)."
+"Esta métrica é atualizada uma vez por dia depois de abrir o Canal "
+"Nintendo (tens de aceitar a partilha de dados)."
 
 #: templates/home.html:386
 msgid "Total Time Played"
-msgstr "Tiempo Total Jugado"
+msgstr "Tempo total de jogo"
 
 #: templates/home.html:397
 msgid "Total reviews given across all consoles."
-msgstr "Total de reseñas hechas en todas las consolas."
+msgstr "Total de avaliações dadas em todas as consolas."
 
 #: templates/home.html:397
 msgid ""
 "This metric updates when you submit a review for a game on the Nintendo "
 "Channel."
 msgstr ""
-"Esta métrica se actualiza cuando envías una reseña de un juego en el "
-"Canal Nintendo."
+"Esta métrica é atualizada quando envias uma avaliação de um jogo no Canal"
+" Nintendo."
 
 #: templates/home.html:405
 msgid "Reviews Given"
-msgstr "Reseñas Hechas"
+msgstr "Avaliações dadas"
 
 #: templates/home.html:416
 msgid "Total games favorited across all consoles."
-msgstr "Total de juegos marcados como favoritos en todas las consolas."
+msgstr "Total de jogos adicionados aos favoritos em todas as consolas."
 
 #: templates/home.html:416
 msgid "This metric updates when you bookmark a game on the Nintendo Channel."
 msgstr ""
-"Esta métrica se actualiza cuando marcas un juego como favorito en el "
-"Canal Nintendo."
+"Esta métrica é atualizada quando adicionas um jogo aos favoritos no Canal"
+" Nintendo."
 
 #: templates/home.html:443
 msgid "Games Played"
-msgstr "Juegos Jugados"
+msgstr "Jogos jogados"
 
 #: templates/home.html:462
 msgid "Polls Voted"
-msgstr "Encuestas Votadas"
+msgstr "Sondagens votadas"
 
 #: templates/home.html:473
 msgid "Total contest submissions across all consoles."
-msgstr "Total de envíos a concursos en todas las consolas."
+msgstr "Total de participações em concursos em todas as consolas."
 
 #: templates/home.html:473
 msgid ""
 "This metric updates when you submit a contest entry on the Check Mii Out "
 "Channel."
 msgstr ""
-"Esta métrica se actualiza cuando envías una participación a un concurso "
-"en el Canal Miirame."
+"Esta métrica é atualizada quando envias uma participação num concurso no "
+"Canal Check Mii Out."
 
 #: templates/home.html:528 templates/home.html:608 templates/home.html:682
 #: templates/home.html:793 templates/home.html:823
 msgid "View All"
-msgstr "Ver Todo"
+msgstr "Ver tudo"
 
 #: templates/home.html:576
 msgid "No favorites yet"
-msgstr "Todavía no hay favoritos"
+msgstr "Ainda não há favoritos"
 
 #: templates/home.html:598
 msgid "Recently Played"
-msgstr "Jugado Recientemente"
+msgstr "Jogados recentemente"
 
 #: templates/home.html:658
 msgid "played"
-msgstr "jugado"
+msgstr "jogado"
 
 #: templates/home.html:668
 msgid "No games played yet"
-msgstr "Todavía no se ha jugado a ningún juego"
+msgstr "Ainda não foram jogados jogos"
 
 #: templates/home.html:678
 msgid "Latest Reviews"
-msgstr "Últimas Reseñas"
+msgstr "Avaliações mais recentes"
 
 #: templates/home.html:730
 msgid "Released"
-msgstr "Lanzado"
+msgstr "Lançado"
 
 #: templates/home.html:760
 msgid "No reviews yet"
-msgstr "Todavía no hay reseñas"
+msgstr "Ainda não há avaliações"
 
 #: templates/generic/base.html:469 templates/home.html:773
 #: templates/home.html:775
 msgid "My Digicard"
-msgstr "Mi Digicard"
+msgstr "O meu Digicard"
 
 #: templates/home.html:788
 msgid "Recent Contests"
-msgstr "Concursos Recientes"
+msgstr "Concursos recentes"
 
 #: templates/home.html:818
 msgid "Recent Polls"
-msgstr "Encuestas Recientes"
+msgstr "Sondagens recentes"
 
 #: templates/home.html:860
 msgid "Copied!"
-msgstr "¡Copiado!"
+msgstr "Copiado!"
 
 #: templates/home.html:885
 msgid "Remove from friends"
-msgstr "Eliminar de amigos"
+msgstr "Remover dos amigos"
 
 #: templates/home.html:885
 msgid "Add to friends"
-msgstr "Añadir a amigos"
+msgstr "Adicionar aos amigos"
 
 #: templates/home.html:948 templates/home.html:952
 msgid "Enable theme font and music"
-msgstr "Activar fuente y música del tema"
+msgstr "Ativar o tipo de letra e a música do tema"
 
 #: templates/home.html:948 templates/home.html:952
 msgid "Disable theme font and music"
-msgstr "Desactivar fuente y música del tema"
+msgstr "Desativar o tipo de letra e a música do tema"
 
 #: templates/home.html:1013
 msgid "Achievements"
-msgstr "Logros"
+msgstr "Conquistas"
 
 #: templates/components/details_modal.html:147 templates/home.html:1015
 msgid "Close"
-msgstr "Cerrar"
+msgstr "Fechar"
 
 #: templates/login.html:4
 msgid "Login"
-msgstr "Iniciar sesión"
+msgstr "Iniciar sessão"
 
 #: templates/login.html:30
 msgid ""
@@ -496,72 +498,74 @@ msgid ""
 " a gamertag, you can use your WiiLink account to access your profile, "
 "manage your Wii consoles, and enjoy a personalized experience."
 msgstr ""
-"WiiLink Checkout es el hogar de todos tus datos de Wii. Desde el tiempo "
-"de juego hasta un gamertag, puedes usar tu cuenta de WiiLink para acceder"
-" a tu perfil, gestionar tus consolas Wii y disfrutar de una experiencia "
-"personalizada."
+"O WiiLink Checkout é o centro de todos os teus dados da Wii. Desde dados "
+"do tempo de jogo até ao nome de jogador, podes utilizar a sua conta "
+"WiiLink para acederes ao teu perfil, gerir as tuas consolas Wii e "
+"usufruir de uma experiência personalizada."
 
 #: templates/login.html:37
 msgid "Log In with your WiiLink Account"
-msgstr "Inicia sesión con tu Cuenta de WiiLink"
+msgstr "Iniciar sessão com a tua conta WiiLink"
 
 #: templates/login.html:43
 msgid "or"
-msgstr "o"
+msgstr "ou"
 
 #: templates/login.html:51
 msgid "Search WiiLink Checkout without logging in"
-msgstr "Busca en WiiLink Checkout sin iniciar sesión"
+msgstr "Pesquisar no WiiLink Checkout sem iniciar sessão"
 
 #: templates/components/page_header.html:17 templates/generic/base.html:447
 #: templates/polls.html:4 templates/polls.html:8 templates/takeout.html:62
 msgid "Polls"
-msgstr "Encuestas"
+msgstr "Sondagens"
 
 #: templates/polls.html:22
 msgid "You haven't participated in any polls yet."
-msgstr "Todavía no has participado en ninguna encuesta."
+msgstr "Ainda não participaste em nenhuma sondagem."
 
 #: templates/polls.html:23
 msgid ""
 "Polls are sent through the Everybody Votes Channel and appear here once "
 "you vote!"
 msgstr ""
-"¡Las encuestas se envían a través del Canal Opiniones y aparecen aquí "
-"cuando votes!"
+"As sondagens são enviadas através do Canal de Opiniões e aparecem aqui "
+"depois de votares!"
 
 #: templates/recommendations.html:4
 msgid "Recommendations for"
-msgstr "Recomendaciones para"
+msgstr "Recomendações para"
 
 #: templates/components/page_header.html:13 templates/generic/base.html:436
 #: templates/recommendations.html:8 templates/takeout.html:32
 msgid "Recommendations"
-msgstr "Recomendaciones"
+msgstr "Recomendações"
 
 #: templates/recommendations.html:36
 msgid "Recommend titles on the Nintendo Channel to get started!"
-msgstr "¡Recomienda títulos en el Canal Nintendo para empezar!"
+msgstr "Recomenda títulos no Canal Nintendo para começar!"
 
 #: templates/redeem.html:3 templates/redeem.html:10
 msgid "Redeem Coupon"
-msgstr "Canjear Cupón"
+msgstr "Resgatar cupão"
 
 #: templates/redeem.html:11
 msgid "Enter a coupon code to see what it contains, then redeem it."
-msgstr "Introduce un código de cupón para ver qué contiene y canjéalo."
+msgstr ""
+"Introduz um código de cupão para ver o que contém e, em seguida, "
+"resgata-o."
 
 #: templates/redeem.html:14 templates/themes.html:14
 msgid "Your balance"
-msgstr "Tu saldo"
+msgstr "O teu saldo"
 
 #: templates/redeem.html:16 templates/redeem.html:54 templates/themes.html:16
 msgid "points"
-msgstr "puntos"
+msgstr "pontos"
 
 #: templates/redeem.html:25
 msgid "Redeem this coupon?"
-msgstr "¿Canjear este cupón?"
+msgstr "Resgatar este cupão?"
 
 #: templates/redeem.html:26
 msgid "Issued by"
@@ -569,15 +573,15 @@ msgstr "Emitido por"
 
 #: templates/redeem.html:32
 msgid "Unlimited uses"
-msgstr "Usos ilimitados"
+msgstr "Utilizações ilimitadas"
 
 #: templates/redeem.html:34
 msgid "uses"
-msgstr "usos"
+msgstr "utilizações"
 
 #: templates/redeem.html:34
 msgid "use"
-msgstr "uso"
+msgstr "utilização"
 
 #: templates/redeem.html:34
 msgid "left"
@@ -585,27 +589,27 @@ msgstr "restantes"
 
 #: templates/redeem.html:55
 msgid "Added to your points balance"
-msgstr "Añadido a tu saldo de puntos"
+msgstr "Adicionado ao teu saldo de pontos"
 
 #: templates/redeem.html:118
 msgid "Yes, redeem it"
-msgstr "Sí, canjearlo"
+msgstr "Sim, resgatar"
 
 #: templates/redeem.html:121
 msgid "Don't redeem"
-msgstr "No canjear"
+msgstr "Não resgatar"
 
 #: templates/redeem.html:128
 msgid "Have a coupon code?"
-msgstr "¿Tienes un código de cupón?"
+msgstr "Tens um código de cupão?"
 
 #: templates/redeem.html:136
 msgid "Preview"
-msgstr "Vista previa"
+msgstr "Pré-visualizar"
 
 #: templates/redeem.html:144
 msgid "Your redemptions"
-msgstr "Tus canjes"
+msgstr "Os teus resgates"
 
 #: templates/redeem.html:152
 msgid "From"
@@ -617,37 +621,36 @@ msgstr "pts"
 
 #: templates/redeem.html:167
 msgid "You haven't redeemed any coupons yet."
-msgstr "Todavía no has canjeado ningún cupón."
+msgstr "Ainda não resgataste nenhum cupão."
 
 #: templates/generic/base.html:153 templates/generic/base.html:421
 #: templates/search.html:4
 msgid "Search"
-msgstr "Buscar"
+msgstr "Pesquisar"
 
 #: templates/search.html:11
-#, fuzzy
 msgid "Checkout Search"
-msgstr "Búsqueda de Checkout"
+msgstr "Pesquisa do Checkout"
 
 #: templates/search.html:12
 msgid "Search for Wii games, publishers, developers and users!"
-msgstr "Busca juegos de Wii, distribuidores, desarrolladores y usuarios!"
+msgstr "Pesquisa jogos Wii, editoras, programadores e utilizadores!"
 
 #: templates/search.html:47
 msgid "Users"
-msgstr "Usuarios"
+msgstr "Utilizadores"
 
 #: templates/search.html:54
 msgid "Title / Game ID"
-msgstr "Título / ID del Juego"
+msgstr "Título / ID do jogo"
 
 #: templates/search.html:60
 msgid "Publisher"
-msgstr "Distribuidora"
+msgstr "Editora"
 
 #: templates/search.html:66
 msgid "Developer"
-msgstr "Desarrolladora"
+msgstr "Programador"
 
 #: templates/components/pagination.html:4 templates/search.html:94
 #: templates/search.html:158
@@ -662,37 +665,39 @@ msgstr "de"
 #: templates/components/pagination.html:4 templates/search.html:94
 #: templates/search.html:158
 msgid "total"
-msgstr "en total"
+msgstr "total"
 
 #: templates/search.html:204
 msgid "No results match \"<strong>{{ search_query }}</strong>\",<br>perhaps you"
-msgstr "No hay resultados para \"<strong>{{ search_query }}</strong>\",<br>quizás"
+msgstr ""
+"Nenhum resultado corresponde a \"<strong>{{ search_query "
+"}}</strong>\",<br>talvez quisesses"
 
 #: templates/search.html:204
 msgid "meant to filter by"
-msgstr "querías filtrar por"
+msgstr "filtrar por"
 
 #: templates/social.html:46
 msgid "No one is following this Wii yet."
-msgstr "Nadie sigue esta Wii todavía."
+msgstr "Ainda ninguém segue esta Wii."
 
 #: templates/social.html:47
 msgid "When people add this Wii Number, they'll show up here."
-msgstr "Cuando alguien añada este Número de Wii, aparecerá aquí."
+msgstr "Quando as pessoas adicionarem este número Wii, aparecerão aqui."
 
 #: templates/components/page_header.html:18 templates/generic/base.html:448
 #: templates/suggestions.html:4 templates/suggestions.html:8
 #: templates/takeout.html:72
 msgid "Suggestions"
-msgstr "Sugerencias"
+msgstr "Sugestões"
 
 #: templates/suggestions.html:64
 msgid "You haven't suggested any polls just yet."
-msgstr "Todavía no has sugerido ninguna encuesta."
+msgstr "Ainda não sugeriste nenhuma sondagem."
 
 #: templates/generic/base.html:470 templates/takeout.html:3
 msgid "Takeout"
-msgstr "Exportar Datos"
+msgstr "Exportação de dados"
 
 #: templates/takeout.html:9
 msgid ""
@@ -700,13 +705,13 @@ msgid ""
 "request a data export of your data. Please be advised you are only "
 "allowed to export your data once per month."
 msgstr ""
-"En WiiLink creemos que tú tienes el control de tus datos. No dudes en "
-"solicitar una exportación de tus datos. Ten en cuenta que solo puedes "
-"exportar tus datos una vez al mes."
+"Na WiiLink, acreditamos que tens o controlo dos teus dados. Podes "
+"solicitar uma exportação dos teus dados. Tem em atenção que só podes "
+"exportar os teus dados uma vez por mês."
 
 #: templates/takeout.html:22
 msgid "Select Data to Export"
-msgstr "Selecciona los Datos a Exportar"
+msgstr "Seleciona os dados a exportar"
 
 #: templates/takeout.html:33 templates/takeout.html:43
 #: templates/takeout.html:53 templates/takeout.html:63
@@ -724,102 +729,102 @@ msgstr "Marcadores"
 #: templates/generic/base.html:438 templates/takeout.html:52
 #: templates/time_played.html:8
 msgid "Time Played"
-msgstr "Tiempo Jugado"
+msgstr "Tempo de jogo"
 
 #: templates/takeout.html:92
 msgid "Photo Prints Channel Orders"
-msgstr "Pedidos del Photo Prints Channel"
+msgstr "Encomendas do Canal de Impressões de Fotos"
 
 #: templates/takeout.html:102
 msgid "Download as ZIP"
-msgstr "Descargar como ZIP"
+msgstr "Transferir como ZIP"
 
 #: templates/takeout.html:104
 msgid ""
 "All data will be packaged into a single ZIP file with CSV files and an "
 "export summary."
 msgstr ""
-"Todos los datos se empaquetarán en un único archivo ZIP con archivos CSV "
-"y un resumen de la exportación."
+"Todos os dados serão reunidos num único ficheiro ZIP com ficheiros CSV e "
+"um resumo da exportação."
 
 #: templates/themes.html:10
 msgid "Theme Shop"
-msgstr "Tienda de Temas"
+msgstr "Loja de temas"
 
 #: templates/themes.html:11
 msgid "Unlock a look for your profile and make it yours."
-msgstr "Desbloquea un aspecto para tu perfil y hazlo tuyo."
+msgstr "Desbloqueia um visual para o teu perfil e personaliza-o."
 
 #: templates/themes.html:23
 msgid "Not enough points. You need"
-msgstr "No tienes puntos suficientes. Necesitas"
+msgstr "Pontos insuficientes. Precisas de"
 
 #: templates/themes.html:23
 msgid "more to unlock"
-msgstr "más para desbloquear"
+msgstr "mais para desbloquear"
 
 #: templates/themes.html:30
 msgid "How to Earn Points"
-msgstr "Cómo Ganar Puntos"
+msgstr "Como ganhar pontos"
 
 #: templates/themes.html:33
 msgid "Play games"
-msgstr "Juega"
+msgstr "Jogar jogos"
 
 #: templates/themes.html:33
 msgid " - earn 1 point per hour of playtime"
-msgstr " - gana 1 punto por cada hora de juego"
+msgstr " - ganha 1 ponto por hora de jogo"
 
 #: templates/themes.html:34
 msgid "Leave reviews"
-msgstr "Deja reseñas"
+msgstr "Escrever avaliações"
 
 #: templates/themes.html:34
 msgid " - 5 points per game recommendation"
-msgstr " - 5 puntos por cada recomendación de juego"
+msgstr " - 5 pontos por recomendação de jogo"
 
 #: templates/themes.html:35
 msgid "Vote in polls"
-msgstr "Vota en encuestas"
+msgstr "Votar em sondagens"
 
 #: templates/themes.html:35
 msgid " - 5 points per poll"
-msgstr " - 5 puntos por cada encuesta"
+msgstr " - 5 pontos por sondagem"
 
 #: templates/themes.html:36
 msgid "Enter contests"
-msgstr "Participa en concursos"
+msgstr "Participar em concursos"
 
 #: templates/themes.html:36
 msgid " - 10 points per submission"
-msgstr " - 10 puntos por cada envío"
+msgstr " - 10 pontos por participação"
 
 #: templates/themes.html:37
 msgid "Place in contests"
-msgstr "Queda entre los mejores en concursos"
+msgstr "Classifica-te em concursos"
 
 #: templates/themes.html:37
 #, python-format
 msgid " - 50 / 40 / 30 points for percentile 100%% / 90%% / 80%%"
-msgstr " - 50 / 40 / 30 puntos para el percentil 100%% / 90%% / 80%%"
+msgstr " - 50 / 40 / 30 pontos para os percentis 100%% / 90%% / 80%%"
 
 #: templates/themes.html:38
 msgid "Unlock achievements"
-msgstr "Desbloquea logros"
+msgstr "Desbloquear conquistas"
 
 #: templates/themes.html:38
 msgid " - 50 points per achievement"
-msgstr " - 50 puntos por cada logro"
+msgstr " - 50 pontos por conquista"
 
 #: templates/themes.html:40
 msgid "Points refresh automatically as you keep using the service."
 msgstr ""
-"Los puntos se actualizan automáticamente mientras sigues usando el "
-"servicio."
+"Os pontos são atualizados automaticamente à medida que continuas a "
+"utilizar o serviço."
 
 #: templates/themes.html:103
 msgid "Active"
-msgstr "Activo"
+msgstr "Ativo"
 
 #: templates/themes.html:105
 msgid "Unlocked"
@@ -831,11 +836,11 @@ msgstr "Bloqueado"
 
 #: templates/themes.html:112 templates/themes.html:118
 msgid "Use default"
-msgstr "Usar predeterminado"
+msgstr "Usar predefinição"
 
 #: templates/themes.html:123
 msgid "Activate"
-msgstr "Activar"
+msgstr "Ativar"
 
 #: templates/themes.html:130
 msgid "Unlock"
@@ -843,56 +848,58 @@ msgstr "Desbloquear"
 
 #: templates/themes.html:146
 msgid "Have a coupon?"
-msgstr "¿Tienes un cupón?"
+msgstr "Tens um cupão?"
 
 #: templates/themes.html:147
 msgid "Redeem it for points and themes."
-msgstr "Canjéalo por puntos y temas."
+msgstr "Resgata-o por pontos e temas."
 
 #: templates/themes.html:151
 msgid "Redeem coupon"
-msgstr "Canjear cupón"
+msgstr "Resgatar cupão"
 
 #: templates/time_played.html:4
 msgid "Time Played for"
-msgstr "Tiempo Jugado de"
+msgstr "Tempo de jogo de"
 
 #: templates/time_played.html:37
 msgid "No time played data found for this serial prefix."
-msgstr "No se encontraron datos de tiempo de juego para este prefijo de serie."
+msgstr ""
+"Não foram encontrados dados de tempo de jogo para este prefixo do número "
+"de série."
 
 #: templates/top_best_games.html:4 templates/top_best_games.html:12
 msgid "Top 30 Best Games"
-msgstr "Los 30 Mejores Juegos"
+msgstr "30 melhores jogos"
 
 #: templates/top_best_games.html:13
 msgid "Games with the highest average recommendation scores from the community"
-msgstr "Juegos con la puntuación media de recomendación más alta de la comunidad"
+msgstr "Jogos com as pontuações médias de recomendação mais elevadas da comunidade"
 
 #: templates/top_best_games.html:28
 msgid "No recommendation data available"
-msgstr "No hay datos de recomendación disponibles"
+msgstr "Não existem dados de recomendações disponíveis"
 
 #: templates/top_favorites.html:4 templates/top_favorites.html:12
 msgid "Top 30 Most Favorited Games"
-msgstr "Los 30 Juegos Más Marcados como Favoritos"
+msgstr "30 jogos com mais favoritos"
 
 #: templates/top_favorites.html:13
 msgid "Games with the most favorites across the community"
-msgstr "Juegos con más favoritos en toda la comunidad"
+msgstr "Jogos com mais favoritos na comunidade"
 
 #: templates/partials/games_grid.html:11 templates/top_favorites.html:28
 #: templates/top_most_played.html:28
 msgid "No gameplay data available"
-msgstr "No hay datos de juego disponibles"
+msgstr "Não existem dados de jogo disponíveis"
 
 #: templates/top_most_played.html:4 templates/top_most_played.html:12
 msgid "Top 30 Most Played Games"
-msgstr "Los 30 Juegos Más Jugados"
+msgstr "30 jogos mais jogados"
 
 #: templates/top_most_played.html:13
 msgid "Games with the most cumulative playtime across the community"
-msgstr "Juegos con más tiempo de juego acumulado en toda la comunidad"
+msgstr "Jogos com o maior tempo de jogo acumulado na comunidade"
 
 #: templates/components/contest_card.html:51
 msgid "0th Percentile"
@@ -900,121 +907,121 @@ msgstr "Percentil 0"
 
 #: templates/components/details_modal.html:26
 msgid "Controls"
-msgstr "Controles"
+msgstr "Controlos"
 
 #: templates/components/details_modal.html:42
 msgid "Community averages"
-msgstr "Medias de la comunidad"
+msgstr "Médias da comunidade"
 
 #: templates/components/details_modal.html:43
 msgid "Loading..."
-msgstr "Cargando..."
+msgstr "A carregar..."
 
 #: templates/components/details_modal.html:48
 msgid "All genders"
-msgstr "Todos los géneros"
+msgstr "Todos os géneros"
 
 #: templates/components/details_modal.html:49
 msgid "Boys"
-msgstr "Chicos"
+msgstr "Rapazes"
 
 #: templates/components/details_modal.html:50
 msgid "Girls"
-msgstr "Chicas"
+msgstr "Raparigas"
 
 #: templates/components/details_modal.html:52
 msgid "Min age"
-msgstr "Edad mínima"
+msgstr "Idade mín."
 
 #: templates/components/details_modal.html:54
 msgid "Max age"
-msgstr "Edad máxima"
+msgstr "Idade máx."
 
 #: templates/components/details_modal.html:60
 #: templates/components/global_game_card.html:72
 msgid "Avg Score"
-msgstr "Puntuación Media"
+msgstr "Pontuação média"
 
 #: templates/components/details_modal.html:69
 msgid "Enjoyed by"
-msgstr "Disfrutado por"
+msgstr "Apreciado por"
 
 #: templates/components/details_modal.html:84
 msgid "Gameplay is"
-msgstr "La jugabilidad es"
+msgstr "A jogabilidade é"
 
 #: templates/components/details_modal.html:98
 msgid "Best played"
-msgstr "Mejor jugado"
+msgstr "Melhor jogado"
 
 #: templates/components/details_modal.html:115
 msgid "Community Playtime"
-msgstr "Tiempo de Juego de la Comunidad"
+msgstr "Tempo de jogo da comunidade"
 
 #: templates/components/details_modal.html:118
 msgid "Total Players"
-msgstr "Jugadores Totales"
+msgstr "Total de jogadores"
 
 #: templates/components/details_modal.html:122
 #: templates/components/global_game_card.html:83
 msgid "Total Time"
-msgstr "Tiempo Total"
+msgstr "Tempo total"
 
 #: templates/components/details_modal.html:126
 #: templates/components/global_game_card.html:91
 msgid "Avg per Player"
-msgstr "Media por Jugador"
+msgstr "Média por jogador"
 
 #: templates/components/details_modal.html:132
 msgid "Community Favorites"
-msgstr "Favoritos de la Comunidad"
+msgstr "Favoritos da comunidade"
 
 #: templates/components/details_modal.html:141
 msgid "Synopsis"
-msgstr "Sinopsis"
+msgstr "Sinopse"
 
 #: templates/components/digicard_card.html:11
 msgid "Order ID"
-msgstr "ID del Pedido"
+msgstr "ID da encomenda"
 
 #: templates/components/digicard_card.html:25
 msgid "Download"
-msgstr "Descargar"
+msgstr "Transferir"
 
 #: templates/components/favorites_card.html:66
 #: templates/components/global_game_card.html:117
 #: templates/components/recommendation_card.html:111
 #: templates/components/time_played_card.html:80
 msgid "View details"
-msgstr "Ver detalles"
+msgstr "Ver detalhes"
 
 #: templates/components/global_game_card.html:76
 msgid "Reviewers"
-msgstr "Reseñadores"
+msgstr "Avaliadores"
 
 #: templates/components/global_game_card.html:87
 msgid "Players"
-msgstr "Jugadores"
+msgstr "Jogadores"
 
 #: templates/components/new_in_wiilink.html:10
 msgid "Open Contests"
-msgstr "Concursos Abiertos"
+msgstr "Concursos abertos"
 
 #: templates/components/new_in_wiilink.html:29
 msgid "open for voting"
-msgstr "abierto para votación"
+msgstr "abertos a votação"
 
 #: templates/components/new_in_wiilink.html:45
 msgid "WiiLink News"
-msgstr "Noticias de WiiLink"
+msgstr "Notícias WiiLink"
 
 #: templates/components/new_in_wiilink.html:59
 msgid "Now showing"
-msgstr "Ahora en emisión"
+msgstr "Em exibição"
 
 #: templates/components/new_in_wiilink.html:59
 msgid "episodes"
-msgstr "episodios"
+msgstr "episódios"
 
 #: templates/components/new_in_wiilink.html:76 templates/generic/base.html:432
 msgid "Nintendo Channel"
@@ -1022,7 +1029,7 @@ msgstr "Canal Nintendo"
 
 #: templates/components/page_header.html:87
 msgid "for"
-msgstr "de"
+msgstr "para"
 
 #: templates/components/poll_card.html:60
 msgid "National"
@@ -1033,39 +1040,38 @@ msgid "Worldwide"
 msgstr "Mundial"
 
 #: templates/components/poll_card.html:107
-#, fuzzy
 msgid "Predictions"
-msgstr "Recomendaciones"
+msgstr "Previsões"
 
 #: templates/components/time_played_card.html:52
 msgid "Times Played"
-msgstr "Veces Jugado"
+msgstr "Número de vezes jogado"
 
 #: templates/components/wii_popover.html:13
 msgid "Unknown Wii"
-msgstr "Wii Desconocida"
+msgstr "Wii desconhecida"
 
 #: templates/errors/error.html:8
 msgid "Error:"
-msgstr "Error:"
+msgstr "Erro:"
 
 #: templates/errors/error.html:18
 msgid "An error occurred while processing your request:"
-msgstr "Se ha producido un error al procesar tu solicitud:"
+msgstr "Ocorreu um erro ao processar o seu pedido:"
 
 #: templates/errors/error.html:23
 msgid "Please try again later or contact a developer if the issue persists."
 msgstr ""
-"Inténtalo de nuevo más tarde o contacta con un desarrollador si el "
-"problema persiste."
+"Tenta novamente mais tarde ou contacta um programador se o problema "
+"persistir."
 
 #: templates/errors/error.html:26
 msgid "Back to Home"
-msgstr "Volver al Inicio"
+msgstr "Voltar à página inicial"
 
 #: templates/errors/not_linked.html:4 templates/errors/not_linked.html:14
 msgid "Wii Not Linked"
-msgstr "Wii No Vinculada"
+msgstr "Wii não associada"
 
 #: templates/errors/not_linked.html:17
 msgid ""
@@ -1073,9 +1079,9 @@ msgid ""
 "recommendations, time played, and other stats, you'll need to link your "
 "console first."
 msgstr ""
-"Todavía no has vinculado tu consola Wii a tu cuenta. Para ver tus "
-"recomendaciones, tiempo jugado y demás estadísticas, primero tendrás que "
-"vincular tu consola."
+"Ainda não associaste a tua consola Wii à tua conta. Para veres as tuas "
+"recomendações, o tempo de jogo e outras estatísticas, terás primeiro de "
+"associar a tua consola."
 
 #: templates/errors/not_linked.html:19
 msgid ""
@@ -1084,18 +1090,18 @@ msgid ""
 "again, as there was a recent update that requires re-linking to function "
 "properly."
 msgstr ""
-"Si ya has vinculado tu Wii y sigues viendo este mensaje, descarga la "
-"última versión de la herramienta Account Linker y vuelve a vincular tu "
-"consola, ya que ha habido una actualización reciente que requiere volver "
-"a vincularla para que funcione correctamente."
+"Se já associaste a tua Wii e estás a ver esta mensagem, transfere a "
+"versão mais recente da ferramenta Account Linker e volta a associar a "
+"consola, pois houve uma atualização recente que requer uma nova "
+"associação para funcionar corretamente."
 
 #: templates/errors/not_linked.html:25
 msgid "How do I do this?"
-msgstr "¿Cómo hago esto?"
+msgstr "Como faço isto?"
 
 #: templates/errors/private_profile.html:14
 msgid "Private Profile"
-msgstr "Perfil Privado"
+msgstr "Perfil privado"
 
 #: templates/errors/private_profile.html:17
 msgid ""
@@ -1103,13 +1109,13 @@ msgid ""
 "You can't view their data unless they set it to public on their WiiLink "
 "Account Settings Page."
 msgstr ""
-"El usuario relacionado con este código de amigo ha configurado su perfil "
-"como privado. No puedes ver sus datos a menos que lo configure como "
-"público en su Página de Configuración de la Cuenta de WiiLink."
+"O utilizador associado a este código de amigo definiu o perfil como "
+"privado. Não podes ver os respetivos dados, a menos que o torne público "
+"na página de Definições da conta WiiLink."
 
 #: templates/errors/private_profile.html:22
 msgid "Go back home"
-msgstr "Volver al inicio"
+msgstr "Voltar à página inicial"
 
 #: templates/generic/base.html:140 templates/generic/base.html:189
 #: templates/generic/base.html:386
@@ -1118,55 +1124,55 @@ msgstr "Amigos"
 
 #: templates/generic/base.html:146 templates/generic/base.html:423
 msgid "Most Played"
-msgstr "Más Jugados"
+msgstr "Mais jogados"
 
 #: templates/generic/base.html:169 templates/generic/base.html:364
 msgid "You"
-msgstr "Tú"
+msgstr "Tu"
 
 #: templates/generic/base.html:169
 msgid "Log In"
-msgstr "Iniciar sesión"
+msgstr "Iniciar sessão"
 
 #: templates/generic/base.html:174
 msgid "Menu"
-msgstr "Menú"
+msgstr "Menu"
 
 #: templates/generic/base.html:179
 msgid "Settings"
-msgstr "Ajustes"
+msgstr "Definições"
 
 #: templates/generic/base.html:203
 msgid "No friends yet."
-msgstr "Todavía no hay amigos."
+msgstr "Ainda não há amigos."
 
 #: templates/generic/base.html:422
 msgid "TRENDING"
-msgstr "TENDENCIAS"
+msgstr "EM DESTAQUE"
 
 #: templates/generic/base.html:424
 msgid "Best Games"
-msgstr "Mejores Juegos"
+msgstr "Melhores jogos"
 
 #: templates/generic/base.html:425
 msgid "Top Favorites"
-msgstr "Los Más Favoritos"
+msgstr "Favoritos mais populares"
 
 #: templates/generic/base.html:435
 msgid "Discover"
-msgstr "Descubrir"
+msgstr "Descobrir"
 
 #: templates/generic/base.html:444
 msgid "Everybody Votes Channel"
-msgstr "Canal Opiniones"
+msgstr "Canal de Opiniões"
 
 #: templates/generic/base.html:453
 msgid "Check Mii Out Channel"
-msgstr "Canal Miirame"
+msgstr "Canal Check Mii Out"
 
 #: templates/generic/base.html:456
 msgid "Your Miis"
-msgstr "Tus Miis"
+msgstr "Os teus Miis"
 
 #: templates/generic/base.html:466
 msgid "Private"
@@ -1178,43 +1184,43 @@ msgstr "Temas"
 
 #: templates/generic/base.html:489
 msgid "Account Settings"
-msgstr "Configuración de la Cuenta"
+msgstr "Definições da conta"
 
 #: templates/generic/base.html:498
 msgid "Log In with WiiLink"
-msgstr "Inicia sesión con WiiLink"
+msgstr "Iniciar sessão com a WiiLink"
 
 #: templates/generic/base.html:505
 msgid "Best Experience"
-msgstr "La Mejor Experiencia"
+msgstr "Melhor experiência"
 
 #: templates/generic/base.html:508
 msgid ""
 "Sign in to access personalized recommendations, your gaming stats, and "
 "game discovery."
 msgstr ""
-"Inicia sesión para acceder a recomendaciones personalizadas, tus "
-"estadísticas de juego y descubrir nuevos juegos."
+"Inicia a sessão para acederes a recomendações personalizadas, às tuas "
+"estatísticas de jogo e à descoberta de jogos."
 
 #: templates/generic/base.html:546
 msgid "Logout"
-msgstr "Cerrar sesión"
+msgstr "Terminar sessão"
 
 #: templates/generic/base.html:574
 msgid "Select Your Mii Artisan"
-msgstr "Selecciona tu Artesano Mii"
+msgstr "Seleciona o teu Mii Artisan"
 
 #: templates/generic/base.html:575
 msgid "You have multiple artisan profiles. Which one would you like to open?"
-msgstr "Tienes varios perfiles de artesano. ¿Cuál quieres abrir?"
+msgstr "Tens vários perfis de Artisan. Qual pretendes abrir?"
 
 #: templates/generic/base.html:589
 msgid "posts"
-msgstr "publicaciones"
+msgstr "publicações"
 
 #: templates/generic/base.html:593
 msgid "likes"
-msgstr "me gusta"
+msgstr "gostos"
 
 #: templates/generic/base.html:601
 msgid "Cancel"
@@ -1222,15 +1228,15 @@ msgstr "Cancelar"
 
 #: utils/helpers.py:101
 msgid "January"
-msgstr "Enero"
+msgstr "Janeiro"
 
 #: utils/helpers.py:102
 msgid "February"
-msgstr "Febrero"
+msgstr "Fevereiro"
 
 #: utils/helpers.py:103
 msgid "March"
-msgstr "Marzo"
+msgstr "Março"
 
 #: utils/helpers.py:104
 msgid "April"
@@ -1238,11 +1244,11 @@ msgstr "Abril"
 
 #: utils/helpers.py:106
 msgid "June"
-msgstr "Junio"
+msgstr "Junho"
 
 #: utils/helpers.py:107
 msgid "July"
-msgstr "Julio"
+msgstr "Julho"
 
 #: utils/helpers.py:108
 msgid "August"
@@ -1250,20 +1256,23 @@ msgstr "Agosto"
 
 #: utils/helpers.py:109
 msgid "September"
-msgstr "Septiembre"
+msgstr "Setembro"
 
 #: utils/helpers.py:110
 msgid "October"
-msgstr "Octubre"
+msgstr "Outubro"
 
 #: utils/helpers.py:111
 msgid "November"
-msgstr "Noviembre"
+msgstr "Novembro"
 
 #: utils/helpers.py:112
 msgid "December"
-msgstr "Diciembre"
+msgstr "Dezembro"
+
+#~ msgid " - 50 / 40 / 30 points for percentile 100% / 90% / 80%"
+#~ msgstr " - 50 / 40 / 30 pontos por percentil 100% / 90% / 80%"
 
 #~ msgid "s"
-#~ msgstr "es"
+#~ msgstr ""
 
