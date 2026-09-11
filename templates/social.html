@@ -13,12 +13,12 @@ WiiLink Checkout | {{ viewed_user.username if viewed_user else '' }} {{ page_tit
             <a href="{% if base_url %}{{ base_url }}/followers{% else %}/followers{% endif %}"
                 class="inline-flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-semibold transition {% if page_title == 'Followers' %}bg-[var(--user-soft)] border-[var(--user-dark)] text-white{% else %}border-[var(--user-light)] opacity-60 hover:opacity-100 text-white{% endif %}">
                 <img src="/static/icon/users.svg" alt="" class="w-4 h-4 invert">
-                {{ follower_count }} Follower{% if follower_count != 1 %}s{% endif %}
+                {{ follower_count }} {{ _('Follower') }}{% if follower_count != 1 %}{{ _('s') }}{% endif %}
             </a>
             <a href="{% if base_url %}{{ base_url }}/following{% else %}/following{% endif %}"
                 class="inline-flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-semibold transition {% if page_title == 'Following' %}bg-[var(--user-soft)] border-[var(--user-dark)] text-white{% else %}border-[var(--user-light)] opacity-60 hover:opacity-100 text-white{% endif %}">
                 <img src="/static/icon/heart.svg" alt="" class="w-4 h-4 invert">
-                {{ following_count }} Following
+                {{ following_count }} {{ _('Following') }}
             </a>
         </div>
 
@@ -43,15 +43,10 @@ WiiLink Checkout | {{ viewed_user.username if viewed_user else '' }} {{ page_tit
         </div>
         {% else %}
         {% set empty_icon = "users" %}
-        {% if page_title == 'Followers' %}
-        {% set empty_title = "No one is following this Wii yet." %}
-        {% set empty_message = "When people add this Wii Number, they'll show up here." %}
-        {% else %}
-        {% set empty_title = "Not following anyone yet." %}
-        {% set empty_message = "Wii Numbers you add will show up here." %}
+        {% set empty_title = _("No one is following this Wii yet.") %}
+        {% set empty_message = _("When people add this Wii Number, they'll show up here.") %}
         {% endif %}
         {% include "components/empty_state.html" %}
-        {% endif %}
     </div>
 </div>
 {% endblock %}

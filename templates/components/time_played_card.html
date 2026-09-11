@@ -49,7 +49,7 @@
             </div>
             <span class="grid grid-cols-2 gap-4 mt-5">
                 <div class="relative group rounded-xl theme-card-inner p-3 flex flex-col gap-3">
-                    <p class="text-xs uppercase text-[var(--user-soft)]">Times Played</p>
+                    <p class="text-xs uppercase text-[var(--user-soft)]">{{ _('Times Played') }}</p>
                     <p class="text-lg font-semibold text-white">{{ rec.times_played }}</p>
                     {% set metric = 'times_played' %}
                     {% set fmt = 'int' %}
@@ -57,7 +57,7 @@
                     {% include "components/wii_popover.html" %}
                 </div>
                 <div class="relative group rounded-xl theme-card-inner p-3 flex flex-col gap-3">
-                    <p class="text-xs uppercase text-[var(--user-soft)]">Time Played</p>
+                    <p class="text-xs uppercase text-[var(--user-soft)]">{{ _('Time Played') }}</p>
                     <p class="text-lg font-semibold text-white">{{ rec.time_played|format_playtime }}</p>
                     {% set metric = 'time_played' %}
                     {% set fmt = 'playtime' %}
@@ -77,8 +77,7 @@
                 data-publisher="{{ rec.publisher or '' }}" data-rating-type="{{ rec.rating_type or '' }}"
                 data-rating-value="{{ rec.rating_value or '' }}" data-synopsis="{{ rec.synopsis_en or '' }}" {%- if
                 rec.input_controls %} data-input-controls='{{ rec.input_controls | tojson }}' {% endif %}
-                data-wifi-players="{{ rec.wifi_players or 0 }}" data-input-players="{{ rec.input_players or 0 }}">View
-                details</button>
+                data-wifi-players="{{ rec.wifi_players or 0 }}" data-input-players="{{ rec.input_players or 0 }}">{{ _('View details') }}</button>
         </div>
     </div>
 </div>

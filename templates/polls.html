@@ -1,11 +1,11 @@
 {% extends "generic/base.html" %}
 
 {% block title %}
-WiiLink Checkout | Polls
+WiiLink Checkout | {{ _('Polls') }}
 {% endblock %}
 
 {% block content %}
-{% set page_title = "Polls" %}
+{% set page_title = _('Polls') %}
 {% include "components/page_header.html" %}
 
 <div class="min-h-screen sm:px-6 lg:px-8 py-12">
@@ -19,8 +19,8 @@ WiiLink Checkout | Polls
         {% include "components/pagination.html" %}
         {% else %}
         {% set empty_icon = "chart-line" %}
-        {% set empty_title = "You haven't participated in any polls yet." %}
-        {% set empty_message = "Polls are sent through the Everybody Votes Channel and appear here once you vote!" %}
+        {% set empty_title = _("You haven't participated in any polls yet.") %}
+        {% set empty_message = _("Polls are sent through the Everybody Votes Channel and appear here once you vote!") %}
         {% include "components/empty_state.html" %}
         {% endif %}
     </div>

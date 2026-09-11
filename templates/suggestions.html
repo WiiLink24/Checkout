@@ -1,11 +1,11 @@
 {% extends "generic/base.html" %}
 
 {% block title %}
-WiiLink Checkout | Suggestions
+WiiLink Checkout | {{ _('Suggestions') }}
 {% endblock %}
 
 {% block content %}
-{% set page_title = "Suggestions" %}
+{% set page_title = _('Suggestions') %}
 
 {% include "components/page_header.html" %}
 
@@ -61,7 +61,7 @@ WiiLink Checkout | Suggestions
         {% include "components/pagination.html" %}
         {% else %}
         {% set empty_icon = "lightbulb" %}
-        {% set empty_title = "You haven't suggested any polls just yet." %}
+        {% set empty_title = _("You haven't suggested any polls just yet.") %}
         {% include "components/empty_state.html" %}
         {% endif %}
     </div>

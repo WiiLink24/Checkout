@@ -1,7 +1,7 @@
 {% extends "generic/base.html" %}
 
 {% block title %}
-WiiLink Checkout | Serial Not Linked
+WiiLink Checkout | {{ _('Serial Not Linked') }}
 {% endblock %}
 
 {% block content %}
@@ -14,26 +14,24 @@ WiiLink Checkout | Serial Not Linked
         <h1 class="text-3xl font-bold text-white mb-4">Serial Not Linked</h1>
 
         <p class="text-[var(--user-soft)] mb-8">
-            This user's Wii console is linked to their account, but their console serial number hasn't been properly
-            registered. To view their recommendations, time played, and other stats, they'll need to re-link their
-            console using the latest version of the Account Linker tool.
+            {{ _('This user\'s Wii console is linked to their account, but their console serial number hasn\'t been properly registered. To view their recommendations, time played, and other stats, they\'ll need to re-link their console using the latest version of the Account Linker tool.') }}
             <br><br>
-            Still, you can view their CMOC and EVC data here:
+            {{ _('Still, you can view their CMOC and EVC data here:') }}
             <div class="flex flex-col gap-3 mt-4">
                 <a href="/{{ friend_code|format_serial }}/polls"
                     class="flex items-center justify-between inline-block px-6 py-3 bg-gray-700 text-white rounded-xl font-medium hover:bg-gray-700/60 transition">
                     <img src="/static/icon/chart-line.svg" alt="Polls Icon" class="w-5 h-5 mr-2 inline invert">
-                    View Polls
+                    {{ _('View Polls') }}
                 </a>
                 <a href="/{{ friend_code|format_serial }}/suggestions"
                     class="flex items-center justify-between inline-block px-6 py-3 bg-gray-700 text-white rounded-xl font-medium hover:bg-gray-700/60 transition">
                     <img src="/static/icon/circle-question-mark.svg" alt="Lightbulb Icon" class="w-5 h-5 mr-2 inline invert">
-                    View Suggestions
+                    {{ _('View Suggestions') }}
                 </a>
                 <a href="/{{ friend_code|format_serial }}/contest_submissions"
                     class="flex items-center justify-between inline-block px-6 py-3 bg-gray-700 text-white rounded-xl font-medium hover:bg-gray-700/60 transition">
                     <img src="/static/icon/send-horizontal.svg" alt="Trophy Icon" class="w-5 h-5 mr-2 inline invert">
-                    View Contest Submissions
+                    {{ _('View Contest Submissions') }}
                 </a>
         </p>
     </div>

@@ -1,0 +1,1219 @@
+# Translations template for PROJECT.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-09-11 15:37+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: templates/calendar.html:4
+msgid "Calendar for"
+msgstr ""
+
+#: templates/calendar.html:8 templates/components/page_header.html:16
+#: templates/generic/base.html:437
+msgid "Calendar"
+msgstr ""
+
+#: templates/calendar.html:70
+msgid "No plays found"
+msgstr ""
+
+#: templates/calendar.html:71
+msgid "No games were played in this month."
+msgstr ""
+
+#: templates/calendar.html:71
+msgid "Did you play games on these dates but they aren't showing up?"
+msgstr ""
+
+#: templates/calendar.html:71
+msgid "Try deleting your Nintendo Channel save data and reopening the channel."
+msgstr ""
+
+#: templates/calendar.html:77
+msgid "Sun"
+msgstr ""
+
+#: templates/calendar.html:80
+msgid "Mon"
+msgstr ""
+
+#: templates/calendar.html:83
+msgid "Tue"
+msgstr ""
+
+#: templates/calendar.html:86
+msgid "Wed"
+msgstr ""
+
+#: templates/calendar.html:89
+msgid "Thu"
+msgstr ""
+
+#: templates/calendar.html:92
+msgid "Fri"
+msgstr ""
+
+#: templates/calendar.html:95
+msgid "Sat"
+msgstr ""
+
+#: templates/calendar.html:263
+msgid "Jan"
+msgstr ""
+
+#: templates/calendar.html:263
+msgid "Feb"
+msgstr ""
+
+#: templates/calendar.html:263
+msgid "Mar"
+msgstr ""
+
+#: templates/calendar.html:263
+msgid "Apr"
+msgstr ""
+
+#: templates/calendar.html:263 utils/helpers.py:105
+msgid "May"
+msgstr ""
+
+#: templates/calendar.html:263
+msgid "Jun"
+msgstr ""
+
+#: templates/calendar.html:264
+msgid "Jul"
+msgstr ""
+
+#: templates/calendar.html:264
+msgid "Aug"
+msgstr ""
+
+#: templates/calendar.html:264
+msgid "Sep"
+msgstr ""
+
+#: templates/calendar.html:264
+msgid "Oct"
+msgstr ""
+
+#: templates/calendar.html:264
+msgid "Nov"
+msgstr ""
+
+#: templates/calendar.html:264
+msgid "Dec"
+msgstr ""
+
+#: templates/components/page_header.html:19
+#: templates/contest_submissions.html:4 templates/contest_submissions.html:8
+#: templates/generic/base.html:460 templates/home.html:481
+#: templates/takeout.html:82
+msgid "Contest Submissions"
+msgstr ""
+
+#: templates/contest_submissions.html:23
+msgid "View"
+msgstr ""
+
+#: templates/contest_submissions.html:23
+msgid "`s Mii on the CMOC Viewer"
+msgstr ""
+
+#: templates/contest_submissions.html:30
+msgid "No contest submissions found."
+msgstr ""
+
+#: templates/coupons_admin.html:3 templates/coupons_admin.html:10
+#: templates/generic/base.html:487
+msgid "Coupon Admin"
+msgstr ""
+
+#: templates/coupons_admin.html:16
+msgid "Create Coupon"
+msgstr ""
+
+#: templates/coupons_admin.html:21
+msgid "Coupon code"
+msgstr ""
+
+#: templates/coupons_admin.html:26 templates/coupons_admin.html:72
+msgid "Issuer"
+msgstr ""
+
+#: templates/coupons_admin.html:31
+msgid "Max uses (-1 = unlimited)"
+msgstr ""
+
+#: templates/coupons_admin.html:36
+msgid "Theme reward (optional)"
+msgstr ""
+
+#: templates/coupons_admin.html:39
+msgid "None"
+msgstr ""
+
+#: templates/coupons_admin.html:46
+msgid "Points reward (optional)"
+msgstr ""
+
+#: templates/coupons_admin.html:51
+msgid "Expires at (optional)"
+msgstr ""
+
+#: templates/coupons_admin.html:57
+msgid "Create coupon"
+msgstr ""
+
+#: templates/coupons_admin.html:64
+msgid "Existing coupons"
+msgstr ""
+
+#: templates/coupons_admin.html:71
+msgid "Code"
+msgstr ""
+
+#: templates/coupons_admin.html:73
+msgid "Rewards"
+msgstr ""
+
+#: templates/coupons_admin.html:74
+msgid "Uses"
+msgstr ""
+
+#: templates/coupons_admin.html:75 templates/redeem.html:40
+msgid "Expires"
+msgstr ""
+
+#: templates/coupons_admin.html:76
+msgid "Redeemed by"
+msgstr ""
+
+#: templates/coupons_admin.html:115
+msgid "Delete"
+msgstr ""
+
+#: templates/coupons_admin.html:125
+msgid "No coupons yet."
+msgstr ""
+
+#: templates/digicard.html:3 templates/digicard.html:10
+msgid "My Digicards"
+msgstr ""
+
+#: templates/digicard.html:11
+msgid "View all generated Digicards from the Photo Prints Channel"
+msgstr ""
+
+#: templates/digicard.html:19
+msgid "Total Cards"
+msgstr ""
+
+#: templates/digicard.html:65
+msgid ""
+"You don't have any digicards yet. Create your first card on the Photo "
+"Prints Channel to get started!"
+msgstr ""
+
+#: templates/discover.html:24
+msgid "Based on your appreciation for"
+msgstr ""
+
+#: templates/discover.html:24
+msgid "games, we found a"
+msgstr ""
+
+#: templates/discover.html:24
+msgid "game that might interest you:"
+msgstr ""
+
+#: templates/discover.html:40
+msgid "by"
+msgstr ""
+
+#: templates/discover.html:53
+msgid ""
+"Not quite your style? Keep playing so we can better understand your "
+"tastes!"
+msgstr ""
+
+#: templates/discover.html:59 templates/recommendations.html:35
+msgid "No recommendations yet"
+msgstr ""
+
+#: templates/discover.html:60
+msgid ""
+"Start by rating some games in your library to get personalized "
+"suggestions!"
+msgstr ""
+
+#: templates/components/details_modal.html:135
+#: templates/components/global_game_card.html:98
+#: templates/components/page_header.html:15 templates/favorites.html:8
+#: templates/generic/base.html:439 templates/home.html:424
+#: templates/home.html:524 templates/takeout.html:42
+msgid "Favorites"
+msgstr ""
+
+#: templates/favorites.html:22
+msgid "You haven't added any favorites yet."
+msgstr ""
+
+#: templates/favorites.html:23
+msgid ""
+"Find a title you like on the Nintendo Channel, then select Add to "
+"Favorites."
+msgstr ""
+
+#: templates/home.html:4
+msgid "'s Home"
+msgstr ""
+
+#: templates/home.html:253
+msgid "How's it going,"
+msgstr ""
+
+#: templates/home.html:283
+msgid "Share"
+msgstr ""
+
+#: templates/home.html:303
+msgid "How do I add a Wii Number?"
+msgstr ""
+
+#: templates/home.html:313 templates/social.html:16
+msgid "Follower"
+msgstr ""
+
+#: templates/home.html:313 templates/social.html:16
+msgid "s"
+msgstr ""
+
+#: templates/components/page_header.html:20 templates/generic/base.html:413
+#: templates/home.html:315
+msgid "Followers"
+msgstr ""
+
+#: templates/components/page_header.html:21 templates/generic/base.html:411
+#: templates/home.html:322 templates/home.html:324 templates/social.html:21
+msgid "Following"
+msgstr ""
+
+#: templates/errors/not_linked_external.html:4 templates/home.html:344
+msgid "Serial Not Linked"
+msgstr ""
+
+#: templates/errors/not_linked_external.html:17 templates/home.html:346
+msgid ""
+"This user's Wii console is linked to their account, but their console "
+"serial number hasn't been properly registered. To view their "
+"recommendations, time played, and other stats, they'll need to re-link "
+"their console using the latest version of the Account Linker tool."
+msgstr ""
+
+#: templates/errors/not_linked_external.html:19 templates/home.html:348
+msgid "Still, you can view their CMOC and EVC data here:"
+msgstr ""
+
+#: templates/errors/not_linked_external.html:24 templates/home.html:353
+msgid "View Polls"
+msgstr ""
+
+#: templates/errors/not_linked_external.html:29 templates/home.html:359
+msgid "View Suggestions"
+msgstr ""
+
+#: templates/errors/not_linked_external.html:34 templates/home.html:365
+msgid "View Contest Submissions"
+msgstr ""
+
+#: templates/home.html:378 templates/home.html:435
+msgid "Total time played across all games on all consoles."
+msgstr ""
+
+#: templates/home.html:378 templates/home.html:435
+msgid ""
+"This metric updates once per day once you open the Nintendo Channel (you "
+"must opt into data sharing)."
+msgstr ""
+
+#: templates/home.html:386
+msgid "Total Time Played"
+msgstr ""
+
+#: templates/home.html:397
+msgid "Total reviews given across all consoles."
+msgstr ""
+
+#: templates/home.html:397
+msgid ""
+"This metric updates when you submit a review for a game on the Nintendo "
+"Channel."
+msgstr ""
+
+#: templates/home.html:405
+msgid "Reviews Given"
+msgstr ""
+
+#: templates/home.html:416
+msgid "Total games favorited across all consoles."
+msgstr ""
+
+#: templates/home.html:416
+msgid "This metric updates when you bookmark a game on the Nintendo Channel."
+msgstr ""
+
+#: templates/home.html:443
+msgid "Games Played"
+msgstr ""
+
+#: templates/home.html:462
+msgid "Polls Voted"
+msgstr ""
+
+#: templates/home.html:473
+msgid "Total contest submissions across all consoles."
+msgstr ""
+
+#: templates/home.html:473
+msgid ""
+"This metric updates when you submit a contest entry on the Check Mii Out "
+"Channel."
+msgstr ""
+
+#: templates/home.html:528 templates/home.html:608 templates/home.html:682
+#: templates/home.html:793 templates/home.html:823
+msgid "View All"
+msgstr ""
+
+#: templates/home.html:576
+msgid "No favorites yet"
+msgstr ""
+
+#: templates/home.html:598
+msgid "Recently Played"
+msgstr ""
+
+#: templates/home.html:658
+msgid "played"
+msgstr ""
+
+#: templates/home.html:668
+msgid "No games played yet"
+msgstr ""
+
+#: templates/home.html:678
+msgid "Latest Reviews"
+msgstr ""
+
+#: templates/home.html:730
+msgid "Released"
+msgstr ""
+
+#: templates/home.html:760
+msgid "No reviews yet"
+msgstr ""
+
+#: templates/generic/base.html:469 templates/home.html:773
+#: templates/home.html:775
+msgid "My Digicard"
+msgstr ""
+
+#: templates/home.html:788
+msgid "Recent Contests"
+msgstr ""
+
+#: templates/home.html:818
+msgid "Recent Polls"
+msgstr ""
+
+#: templates/home.html:860
+msgid "Copied!"
+msgstr ""
+
+#: templates/home.html:885
+msgid "Remove from friends"
+msgstr ""
+
+#: templates/home.html:885
+msgid "Add to friends"
+msgstr ""
+
+#: templates/home.html:948 templates/home.html:952
+msgid "Enable theme font and music"
+msgstr ""
+
+#: templates/home.html:948 templates/home.html:952
+msgid "Disable theme font and music"
+msgstr ""
+
+#: templates/home.html:1013
+msgid "Achievements"
+msgstr ""
+
+#: templates/components/details_modal.html:147 templates/home.html:1015
+msgid "Close"
+msgstr ""
+
+#: templates/login.html:4
+msgid "Login"
+msgstr ""
+
+#: templates/login.html:30
+msgid ""
+"WiiLink Checkout is the home for all your Wii data. From playtime data to"
+" a gamertag, you can use your WiiLink account to access your profile, "
+"manage your Wii consoles, and enjoy a personalized experience."
+msgstr ""
+
+#: templates/login.html:37
+msgid "Log In with your WiiLink Account"
+msgstr ""
+
+#: templates/login.html:43
+msgid "or"
+msgstr ""
+
+#: templates/login.html:51
+msgid "Search WiiLink Checkout without logging in"
+msgstr ""
+
+#: templates/components/page_header.html:17 templates/generic/base.html:447
+#: templates/polls.html:4 templates/polls.html:8 templates/takeout.html:62
+msgid "Polls"
+msgstr ""
+
+#: templates/polls.html:22
+msgid "You haven't participated in any polls yet."
+msgstr ""
+
+#: templates/polls.html:23
+msgid ""
+"Polls are sent through the Everybody Votes Channel and appear here once "
+"you vote!"
+msgstr ""
+
+#: templates/recommendations.html:4
+msgid "Recommendations for"
+msgstr ""
+
+#: templates/components/page_header.html:13 templates/generic/base.html:436
+#: templates/recommendations.html:8 templates/takeout.html:32
+msgid "Recommendations"
+msgstr ""
+
+#: templates/recommendations.html:36
+msgid "Recommend titles on the Nintendo Channel to get started!"
+msgstr ""
+
+#: templates/redeem.html:3 templates/redeem.html:10
+msgid "Redeem Coupon"
+msgstr ""
+
+#: templates/redeem.html:11
+msgid "Enter a coupon code to see what it contains, then redeem it."
+msgstr ""
+
+#: templates/redeem.html:14 templates/themes.html:14
+msgid "Your balance"
+msgstr ""
+
+#: templates/redeem.html:16 templates/redeem.html:54 templates/themes.html:16
+msgid "points"
+msgstr ""
+
+#: templates/redeem.html:25
+msgid "Redeem this coupon?"
+msgstr ""
+
+#: templates/redeem.html:26
+msgid "Issued by"
+msgstr ""
+
+#: templates/redeem.html:32
+msgid "Unlimited uses"
+msgstr ""
+
+#: templates/redeem.html:34
+msgid "uses"
+msgstr ""
+
+#: templates/redeem.html:34
+msgid "use"
+msgstr ""
+
+#: templates/redeem.html:34
+msgid "left"
+msgstr ""
+
+#: templates/redeem.html:55
+msgid "Added to your points balance"
+msgstr ""
+
+#: templates/redeem.html:118
+msgid "Yes, redeem it"
+msgstr ""
+
+#: templates/redeem.html:121
+msgid "Don't redeem"
+msgstr ""
+
+#: templates/redeem.html:128
+msgid "Have a coupon code?"
+msgstr ""
+
+#: templates/redeem.html:136
+msgid "Preview"
+msgstr ""
+
+#: templates/redeem.html:144
+msgid "Your redemptions"
+msgstr ""
+
+#: templates/redeem.html:152
+msgid "From"
+msgstr ""
+
+#: templates/redeem.html:158 templates/themes.html:24 templates/themes.html:98
+msgid "pts"
+msgstr ""
+
+#: templates/redeem.html:167
+msgid "You haven't redeemed any coupons yet."
+msgstr ""
+
+#: templates/generic/base.html:153 templates/generic/base.html:421
+#: templates/search.html:4
+msgid "Search"
+msgstr ""
+
+#: templates/search.html:11
+msgid "Checkout Search"
+msgstr ""
+
+#: templates/search.html:12
+msgid "Search for Wii games, publishers, developers and users!"
+msgstr ""
+
+#: templates/search.html:47
+msgid "Users"
+msgstr ""
+
+#: templates/search.html:54
+msgid "Title / Game ID"
+msgstr ""
+
+#: templates/search.html:60
+msgid "Publisher"
+msgstr ""
+
+#: templates/search.html:66
+msgid "Developer"
+msgstr ""
+
+#: templates/components/pagination.html:4 templates/search.html:94
+#: templates/search.html:158
+msgid "Page"
+msgstr ""
+
+#: templates/components/pagination.html:4 templates/search.html:94
+#: templates/search.html:158
+msgid "of"
+msgstr ""
+
+#: templates/components/pagination.html:4 templates/search.html:94
+#: templates/search.html:158
+msgid "total"
+msgstr ""
+
+#: templates/search.html:204
+msgid "No results match \"<strong>{{ search_query }}</strong>\",<br>perhaps you"
+msgstr ""
+
+#: templates/search.html:204
+msgid "meant to filter by"
+msgstr ""
+
+#: templates/social.html:46
+msgid "No one is following this Wii yet."
+msgstr ""
+
+#: templates/social.html:47
+msgid "When people add this Wii Number, they'll show up here."
+msgstr ""
+
+#: templates/components/page_header.html:18 templates/generic/base.html:448
+#: templates/suggestions.html:4 templates/suggestions.html:8
+#: templates/takeout.html:72
+msgid "Suggestions"
+msgstr ""
+
+#: templates/suggestions.html:64
+msgid "You haven't suggested any polls just yet."
+msgstr ""
+
+#: templates/generic/base.html:470 templates/takeout.html:3
+msgid "Takeout"
+msgstr ""
+
+#: templates/takeout.html:9
+msgid ""
+"At WiiLink we believe you're in control of your data. Feel free to "
+"request a data export of your data. Please be advised you are only "
+"allowed to export your data once per month."
+msgstr ""
+
+#: templates/takeout.html:22
+msgid "Select Data to Export"
+msgstr ""
+
+#: templates/takeout.html:33 templates/takeout.html:43
+#: templates/takeout.html:53 templates/takeout.html:63
+#: templates/takeout.html:73 templates/takeout.html:83
+#: templates/takeout.html:93
+msgid "entries"
+msgstr ""
+
+#: templates/takeout.html:42
+msgid "Bookmarks"
+msgstr ""
+
+#: templates/components/page_header.html:14
+#: templates/components/time_played_card.html:60
+#: templates/generic/base.html:438 templates/takeout.html:52
+#: templates/time_played.html:8
+msgid "Time Played"
+msgstr ""
+
+#: templates/takeout.html:92
+msgid "Photo Prints Channel Orders"
+msgstr ""
+
+#: templates/takeout.html:102
+msgid "Download as ZIP"
+msgstr ""
+
+#: templates/takeout.html:104
+msgid ""
+"All data will be packaged into a single ZIP file with CSV files and an "
+"export summary."
+msgstr ""
+
+#: templates/themes.html:10
+msgid "Theme Shop"
+msgstr ""
+
+#: templates/themes.html:11
+msgid "Unlock a look for your profile and make it yours."
+msgstr ""
+
+#: templates/themes.html:23
+msgid "Not enough points. You need"
+msgstr ""
+
+#: templates/themes.html:23
+msgid "more to unlock"
+msgstr ""
+
+#: templates/themes.html:30
+msgid "How to Earn Points"
+msgstr ""
+
+#: templates/themes.html:33
+msgid "Play games"
+msgstr ""
+
+#: templates/themes.html:33
+msgid " - earn 1 point per hour of playtime"
+msgstr ""
+
+#: templates/themes.html:34
+msgid "Leave reviews"
+msgstr ""
+
+#: templates/themes.html:34
+msgid " - 5 points per game recommendation"
+msgstr ""
+
+#: templates/themes.html:35
+msgid "Vote in polls"
+msgstr ""
+
+#: templates/themes.html:35
+msgid " - 5 points per poll"
+msgstr ""
+
+#: templates/themes.html:36
+msgid "Enter contests"
+msgstr ""
+
+#: templates/themes.html:36
+msgid " - 10 points per submission"
+msgstr ""
+
+#: templates/themes.html:37
+msgid "Place in contests"
+msgstr ""
+
+#: templates/themes.html:37
+#, python-format
+msgid " - 50 / 40 / 30 points for percentile 100%% / 90%% / 80%%"
+msgstr ""
+
+#: templates/themes.html:38
+msgid "Unlock achievements"
+msgstr ""
+
+#: templates/themes.html:38
+msgid " - 50 points per achievement"
+msgstr ""
+
+#: templates/themes.html:40
+msgid "Points refresh automatically as you keep using the service."
+msgstr ""
+
+#: templates/themes.html:103
+msgid "Active"
+msgstr ""
+
+#: templates/themes.html:105
+msgid "Unlocked"
+msgstr ""
+
+#: templates/themes.html:107
+msgid "Locked"
+msgstr ""
+
+#: templates/themes.html:112 templates/themes.html:118
+msgid "Use default"
+msgstr ""
+
+#: templates/themes.html:123
+msgid "Activate"
+msgstr ""
+
+#: templates/themes.html:130
+msgid "Unlock"
+msgstr ""
+
+#: templates/themes.html:146
+msgid "Have a coupon?"
+msgstr ""
+
+#: templates/themes.html:147
+msgid "Redeem it for points and themes."
+msgstr ""
+
+#: templates/themes.html:151
+msgid "Redeem coupon"
+msgstr ""
+
+#: templates/time_played.html:4
+msgid "Time Played for"
+msgstr ""
+
+#: templates/time_played.html:37
+msgid "No time played data found for this serial prefix."
+msgstr ""
+
+#: templates/top_best_games.html:4 templates/top_best_games.html:12
+msgid "Top 30 Best Games"
+msgstr ""
+
+#: templates/top_best_games.html:13
+msgid "Games with the highest average recommendation scores from the community"
+msgstr ""
+
+#: templates/top_best_games.html:28
+msgid "No recommendation data available"
+msgstr ""
+
+#: templates/top_favorites.html:4 templates/top_favorites.html:12
+msgid "Top 30 Most Favorited Games"
+msgstr ""
+
+#: templates/top_favorites.html:13
+msgid "Games with the most favorites across the community"
+msgstr ""
+
+#: templates/partials/games_grid.html:11 templates/top_favorites.html:28
+#: templates/top_most_played.html:28
+msgid "No gameplay data available"
+msgstr ""
+
+#: templates/top_most_played.html:4 templates/top_most_played.html:12
+msgid "Top 30 Most Played Games"
+msgstr ""
+
+#: templates/top_most_played.html:13
+msgid "Games with the most cumulative playtime across the community"
+msgstr ""
+
+#: templates/components/contest_card.html:51
+msgid "0th Percentile"
+msgstr ""
+
+#: templates/components/details_modal.html:26
+msgid "Controls"
+msgstr ""
+
+#: templates/components/details_modal.html:42
+msgid "Community averages"
+msgstr ""
+
+#: templates/components/details_modal.html:43
+msgid "Loading..."
+msgstr ""
+
+#: templates/components/details_modal.html:48
+msgid "All genders"
+msgstr ""
+
+#: templates/components/details_modal.html:49
+msgid "Boys"
+msgstr ""
+
+#: templates/components/details_modal.html:50
+msgid "Girls"
+msgstr ""
+
+#: templates/components/details_modal.html:52
+msgid "Min age"
+msgstr ""
+
+#: templates/components/details_modal.html:54
+msgid "Max age"
+msgstr ""
+
+#: templates/components/details_modal.html:60
+#: templates/components/global_game_card.html:72
+msgid "Avg Score"
+msgstr ""
+
+#: templates/components/details_modal.html:69
+msgid "Enjoyed by"
+msgstr ""
+
+#: templates/components/details_modal.html:84
+msgid "Gameplay is"
+msgstr ""
+
+#: templates/components/details_modal.html:98
+msgid "Best played"
+msgstr ""
+
+#: templates/components/details_modal.html:115
+msgid "Community Playtime"
+msgstr ""
+
+#: templates/components/details_modal.html:118
+msgid "Total Players"
+msgstr ""
+
+#: templates/components/details_modal.html:122
+#: templates/components/global_game_card.html:83
+msgid "Total Time"
+msgstr ""
+
+#: templates/components/details_modal.html:126
+#: templates/components/global_game_card.html:91
+msgid "Avg per Player"
+msgstr ""
+
+#: templates/components/details_modal.html:132
+msgid "Community Favorites"
+msgstr ""
+
+#: templates/components/details_modal.html:141
+msgid "Synopsis"
+msgstr ""
+
+#: templates/components/digicard_card.html:11
+msgid "Order ID"
+msgstr ""
+
+#: templates/components/digicard_card.html:25
+msgid "Download"
+msgstr ""
+
+#: templates/components/favorites_card.html:66
+#: templates/components/global_game_card.html:117
+#: templates/components/recommendation_card.html:111
+#: templates/components/time_played_card.html:80
+msgid "View details"
+msgstr ""
+
+#: templates/components/global_game_card.html:76
+msgid "Reviewers"
+msgstr ""
+
+#: templates/components/global_game_card.html:87
+msgid "Players"
+msgstr ""
+
+#: templates/components/new_in_wiilink.html:10
+msgid "Open Contests"
+msgstr ""
+
+#: templates/components/new_in_wiilink.html:29
+msgid "open for voting"
+msgstr ""
+
+#: templates/components/new_in_wiilink.html:45
+msgid "WiiLink News"
+msgstr ""
+
+#: templates/components/new_in_wiilink.html:59
+msgid "Now showing"
+msgstr ""
+
+#: templates/components/new_in_wiilink.html:59
+msgid "episodes"
+msgstr ""
+
+#: templates/components/new_in_wiilink.html:76 templates/generic/base.html:432
+msgid "Nintendo Channel"
+msgstr ""
+
+#: templates/components/page_header.html:87
+msgid "for"
+msgstr ""
+
+#: templates/components/poll_card.html:60
+msgid "National"
+msgstr ""
+
+#: templates/components/poll_card.html:62
+msgid "Worldwide"
+msgstr ""
+
+#: templates/components/poll_card.html:107
+msgid "Predictions"
+msgstr ""
+
+#: templates/components/time_played_card.html:52
+msgid "Times Played"
+msgstr ""
+
+#: templates/components/wii_popover.html:13
+msgid "Unknown Wii"
+msgstr ""
+
+#: templates/errors/error.html:8
+msgid "Error:"
+msgstr ""
+
+#: templates/errors/error.html:18
+msgid "An error occurred while processing your request:"
+msgstr ""
+
+#: templates/errors/error.html:23
+msgid "Please try again later or contact a developer if the issue persists."
+msgstr ""
+
+#: templates/errors/error.html:26
+msgid "Back to Home"
+msgstr ""
+
+#: templates/errors/not_linked.html:4 templates/errors/not_linked.html:14
+msgid "Wii Not Linked"
+msgstr ""
+
+#: templates/errors/not_linked.html:17
+msgid ""
+"You haven't linked your Wii console to your account yet. To view your "
+"recommendations, time played, and other stats, you'll need to link your "
+"console first."
+msgstr ""
+
+#: templates/errors/not_linked.html:19
+msgid ""
+"If you have linked your Wii and are seeing this message, please download "
+"the latest version of the Account Linker tool and link your console "
+"again, as there was a recent update that requires re-linking to function "
+"properly."
+msgstr ""
+
+#: templates/errors/not_linked.html:25
+msgid "How do I do this?"
+msgstr ""
+
+#: templates/errors/private_profile.html:14
+msgid "Private Profile"
+msgstr ""
+
+#: templates/errors/private_profile.html:17
+msgid ""
+"The user related to this friend code has set their profile to private. "
+"You can't view their data unless they set it to public on their WiiLink "
+"Account Settings Page."
+msgstr ""
+
+#: templates/errors/private_profile.html:22
+msgid "Go back home"
+msgstr ""
+
+#: templates/generic/base.html:140 templates/generic/base.html:189
+#: templates/generic/base.html:386
+msgid "Friends"
+msgstr ""
+
+#: templates/generic/base.html:146 templates/generic/base.html:423
+msgid "Most Played"
+msgstr ""
+
+#: templates/generic/base.html:169 templates/generic/base.html:364
+msgid "You"
+msgstr ""
+
+#: templates/generic/base.html:169
+msgid "Log In"
+msgstr ""
+
+#: templates/generic/base.html:174
+msgid "Menu"
+msgstr ""
+
+#: templates/generic/base.html:179
+msgid "Settings"
+msgstr ""
+
+#: templates/generic/base.html:203
+msgid "No friends yet."
+msgstr ""
+
+#: templates/generic/base.html:422
+msgid "TRENDING"
+msgstr ""
+
+#: templates/generic/base.html:424
+msgid "Best Games"
+msgstr ""
+
+#: templates/generic/base.html:425
+msgid "Top Favorites"
+msgstr ""
+
+#: templates/generic/base.html:435
+msgid "Discover"
+msgstr ""
+
+#: templates/generic/base.html:444
+msgid "Everybody Votes Channel"
+msgstr ""
+
+#: templates/generic/base.html:453
+msgid "Check Mii Out Channel"
+msgstr ""
+
+#: templates/generic/base.html:456
+msgid "Your Miis"
+msgstr ""
+
+#: templates/generic/base.html:466
+msgid "Private"
+msgstr ""
+
+#: templates/generic/base.html:482
+msgid "Themes"
+msgstr ""
+
+#: templates/generic/base.html:489
+msgid "Account Settings"
+msgstr ""
+
+#: templates/generic/base.html:498
+msgid "Log In with WiiLink"
+msgstr ""
+
+#: templates/generic/base.html:505
+msgid "Best Experience"
+msgstr ""
+
+#: templates/generic/base.html:508
+msgid ""
+"Sign in to access personalized recommendations, your gaming stats, and "
+"game discovery."
+msgstr ""
+
+#: templates/generic/base.html:546
+msgid "Logout"
+msgstr ""
+
+#: templates/generic/base.html:574
+msgid "Select Your Mii Artisan"
+msgstr ""
+
+#: templates/generic/base.html:575
+msgid "You have multiple artisan profiles. Which one would you like to open?"
+msgstr ""
+
+#: templates/generic/base.html:589
+msgid "posts"
+msgstr ""
+
+#: templates/generic/base.html:593
+msgid "likes"
+msgstr ""
+
+#: templates/generic/base.html:601
+msgid "Cancel"
+msgstr ""
+
+#: utils/helpers.py:101
+msgid "January"
+msgstr ""
+
+#: utils/helpers.py:102
+msgid "February"
+msgstr ""
+
+#: utils/helpers.py:103
+msgid "March"
+msgstr ""
+
+#: utils/helpers.py:104
+msgid "April"
+msgstr ""
+
+#: utils/helpers.py:106
+msgid "June"
+msgstr ""
+
+#: utils/helpers.py:107
+msgid "July"
+msgstr ""
+
+#: utils/helpers.py:108
+msgid "August"
+msgstr ""
+
+#: utils/helpers.py:109
+msgid "September"
+msgstr ""
+
+#: utils/helpers.py:110
+msgid "October"
+msgstr ""
+
+#: utils/helpers.py:111
+msgid "November"
+msgstr ""
+
+#: utils/helpers.py:112
+msgid "December"
+msgstr ""
+

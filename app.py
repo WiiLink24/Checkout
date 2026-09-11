@@ -3,7 +3,8 @@ import atexit
 import re
 from datetime import timedelta
 from apscheduler.schedulers.background import BackgroundScheduler
-from flask import Flask, has_request_context, render_template, send_file
+from flask import Flask, has_request_context, render_template, send_file, request
+from flask_babel import Babel, get_locale
 import config
 from flask_oidc import OpenIDConnect
 from flask_session import Session
@@ -50,6 +51,29 @@ app.config["SESSION_USE_SIGNER"] = True
 
 oidc = OpenIDConnect(app)
 Session(app)
+
+app.config["BABEL_DEFAULT_LOCALE"] = "en"
+app.config["BABEL_DEFAULT_TIMEZONE"] = "UTC"
+app.config["BABEL_SUPPORTED_LOCALES"] = ["en", "es"]
+app.config["BABEL_TRANSLATION_DIRECTORIES"] = os.path.join(
+    os.path.dirname(__file__), "translations"
+)
+
+
+def get_locale():
+    # 1) URL parameter ?lang=
+    lang = request.args.get("lang")
+    if lang in app.config["BABEL_SUPPORTED_LOCALES"]:
+        return lang
+    # 2) Cookie
+    lang = request.cookies.get("locale")
+    if lang in app.config["BABEL_SUPPORTED_LOCALES"]:
+        return lang
+    # 3) Browser Accept-Language
+    return request.accept_languages.best_match(app.config["BABEL_SUPPORTED_LOCALES"])
+
+
+babel = Babel(app, locale_selector=get_locale)
 
 init_cache(app)
 app.config["CACHE_TYPE"] = "SimpleCache"
