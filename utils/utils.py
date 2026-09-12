@@ -280,7 +280,8 @@ def search_authentik_users_by_name(search_query, logged_in_user=None):
 
     base_url = config.authentik_api_url.rstrip("/")
     # Use search parameter for username search
-    privacy_filter = "&attributes=%7B%22public_profile%22%3A+true%7D" if not getattr(config, "coupon_admin_group_uuid", "") in logged_in_user.get("groups") or [] else ""
+    user_groups = (logged_in_user or {}).get("groups") or []
+    privacy_filter = "&attributes=%7B%22public_profile%22%3A+true%7D" if getattr(config, "coupon_admin_group_uuid", "") not in user_groups else ""
     url = f"{base_url}/core/users/?page_size=50&search={search_query}{privacy_filter}"
     headers = {
         "Accept": "application/json",
