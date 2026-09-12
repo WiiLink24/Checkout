@@ -3,12 +3,14 @@ import atexit
 import re
 from datetime import timedelta
 from apscheduler.schedulers.background import BackgroundScheduler
-from flask import Flask, has_request_context, render_template, send_file
+from flask import Flask, has_request_context, render_template, send_file, request
+from flask_babel import Babel, get_locale
 import config
 from flask_oidc import OpenIDConnect
 from flask_session import Session
 from redis import Redis
 from utils.wiis import fetch_wii_color_from_number
+from utils.auth import get_user_profile
 
 from utils.utils import (
     format_serial,
@@ -38,7 +40,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = config.db_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SECRET_KEY"] = config.secret_key
 app.config["OIDC_CLIENT_SECRETS"] = config.oidc_client_secrets_json
-app.config["OIDC_SCOPES"] = "openid profile email offline_access achievements groups"
+app.config["OIDC_SCOPES"] = "openid profile email offline_access achievements groups locale"
 app.config["OIDC_OVERWRITE_REDIRECT_URI"] = config.oidc_redirect_uri
 app.config["SESSION_TYPE"] = "redis"
 app.config["SESSION_REDIS"] = Redis(
@@ -50,6 +52,29 @@ app.config["SESSION_USE_SIGNER"] = True
 
 oidc = OpenIDConnect(app)
 Session(app)
+
+app.config["BABEL_DEFAULT_LOCALE"] = "en"
+app.config["BABEL_DEFAULT_TIMEZONE"] = "UTC"
+app.config["BABEL_SUPPORTED_LOCALES"] = ["en", "es", "pt_PT"]
+app.config["BABEL_TRANSLATION_DIRECTORIES"] = os.path.join(
+    os.path.dirname(__file__), "translations"
+)
+
+
+def get_locale():
+    lang = request.args.get("lang")
+    if lang in app.config["BABEL_SUPPORTED_LOCALES"]:
+        return lang
+
+    user = get_user_profile()
+    user_locale = user.get("locale")
+    if user_locale in app.config["BABEL_SUPPORTED_LOCALES"]:
+        return user_locale
+
+    return app.config["BABEL_DEFAULT_LOCALE"]
+
+
+babel = Babel(app, locale_selector=get_locale)
 
 init_cache(app)
 app.config["CACHE_TYPE"] = "SimpleCache"

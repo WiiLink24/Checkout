@@ -1,19 +1,19 @@
 {% extends "generic/base.html" %}
 
-{% block title %}WiiLink Checkout | Redeem Coupon{% endblock %}
+{% block title %}WiiLink Checkout | {{ _('Redeem Coupon') }}{% endblock %}
 
 {% block content %}
 <div class="min-h-screen px-4 sm:px-6 lg:px-8 py-12">
     <div class="w-full max-w-5xl mx-auto">
         <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
             <div>
-                <h1 class="text-4xl font-bold text-white">Redeem Coupon</h1>
-                <p class="text-[var(--user-soft)] mt-2">Enter a coupon code to see what it contains, then redeem it.</p>
+                <h1 class="text-4xl font-bold text-white">{{ _('Redeem Coupon') }}</h1>
+                <p class="text-[var(--user-soft)] mt-2">{{ _('Enter a coupon code to see what it contains, then redeem it.') }}</p>
             </div>
             <div class="theme-card border rounded-xl px-5 py-3 text-right">
-                <p class="text-xs uppercase tracking-widest text-[var(--user-soft)]">Your balance</p>
+                <p class="text-xs uppercase tracking-widest text-[var(--user-soft)]">{{ _('Your balance') }}</p>
                 <p class="text-2xl font-bold text-white">{{ theme_data.points.balance|default(0) }} <span
-                        class="text-sm text-[var(--user-soft)]">points</span></p>
+                        class="text-sm text-[var(--user-soft)]">{{ _('points') }}</span></p>
             </div>
         </div>
 
@@ -22,22 +22,22 @@
             <div class="flex items-center gap-3 p-5 sm:p-6 border-b border-[var(--user-transparent)]">
                 <img src="/static/icon/badge-dollar-sign.svg" alt="Coupon" class="w-8 h-8 invert opacity-70">
                 <div class="min-w-0">
-                    <h2 class="text-xl font-bold text-white">Redeem this coupon?</h2>
-                    <p class="text-sm text-[var(--user-soft)] mt-0.5">Issued by <strong class="text-white">{{
+                    <h2 class="text-xl font-bold text-white">{{ _('Redeem this coupon?') }}</h2>
+                    <p class="text-sm text-[var(--user-soft)] mt-0.5">{{ _('Issued by') }} <strong class="text-white">{{
                             coupon_preview.issuer }}</strong></p>
                 </div>
                 <span
                     class="ml-auto theme-chip text-white px-3 py-1.5 rounded-full text-xs font-semibold flex-shrink-0">
                     {% if coupon_preview.max_uses == -1 %}
-                    Unlimited uses
+                    {{ _('Unlimited uses') }}
                     {% else %}
-                    {{ coupon_preview.uses_left }} use{{ 's' if coupon_preview.uses_left != 1 else '' }} left
+                    {{ coupon_preview.uses_left }} {{ _('uses') if coupon_preview.uses_left != 1 else _('use') }} {{ _('left') }}
                     {% endif %}
                 </span>
                 {% if coupon_preview.expires_at %}
                 <span
                     class="ml-auto theme-chip text-white px-3 py-1.5 rounded-full text-xs font-semibold flex-shrink-0">
-                    Expires {{ coupon_preview.expires_at.strftime('%b %d, %Y %H:%M UTC') }}
+                    {{ _('Expires') }} {{ coupon_preview.expires_at.strftime('%b %d, %Y %H:%M UTC') }}
                 </span>
                 {% endif %}
             </div>
@@ -51,8 +51,8 @@
                         <img src="/static/icon/badge-dollar-sign.svg" alt="" class="w-6 h-6 invert">
                     </div>
                     <div>
-                        <p class="text-lg font-bold text-white">{{ item.value }} points</p>
-                        <p class="text-sm text-[var(--user-soft)]">Added to your points balance</p>
+                        <p class="text-lg font-bold text-white">{{ item.value }} {{ _('points') }}</p>
+                        <p class="text-sm text-[var(--user-soft)]">{{ _('Added to your points balance') }}</p>
                     </div>
                 </div>
                 {% elif item.type == 'theme' and item.theme %}
@@ -115,18 +115,17 @@
                     <input type="hidden" name="action" value="coupon_redeem">
                     <input type="hidden" name="coupon_uuid" value="{{ coupon_preview.uuid }}">
                     <button type="submit"
-                        class="theme-btn bg-[var(--user-soft)] border rounded-lg px-6 py-2.5 text-sm text-white font-semibold">Yes,
-                        redeem it</button>
+                        class="theme-btn bg-[var(--user-soft)] border rounded-lg px-6 py-2.5 text-sm text-white font-semibold">{{ _('Yes, redeem it') }}</button>
                 </form>
                 <a href="{{ url_for('auth_routes.coupons_redeem') }}"
-                    class="theme-btn border rounded-lg px-6 py-2.5 text-sm text-[var(--user-soft)]">Don't redeem</a>
+                    class="theme-btn border rounded-lg px-6 py-2.5 text-sm text-[var(--user-soft)]">{{ _('Don\'t redeem') }}</a>
             </div>
         </section>
         {% else %}
         <section class="theme-card border rounded-2xl p-5 sm:p-6">
             <div class="flex items-center gap-3 mb-4">
                 <img src="/static/icon/badge-dollar-sign.svg" alt="Coupon" class="w-6 h-6 invert opacity-70">
-                <h2 class="text-xl font-bold text-white">Have a coupon code?</h2>
+                <h2 class="text-xl font-bold text-white">{{ _('Have a coupon code?') }}</h2>
             </div>
             <form method="post" class="flex flex-col sm:flex-row gap-3">
                 <input type="hidden" name="action" value="coupon_preview">
@@ -134,7 +133,7 @@
                     placeholder="Enter coupon code"
                     class="flex-1 bg-[var(--user-base)] border border-[var(--user-transparent)] text-white rounded-lg px-4 py-2.5 text-sm outline-none focus:border-[var(--user-light)]">
                 <button type="submit"
-                    class="theme-btn border rounded-lg px-5 py-2.5 text-sm text-white">Preview</button>
+                    class="theme-btn border rounded-lg px-5 py-2.5 text-sm text-white">{{ _('Preview') }}</button>
             </form>
         </section>
         {% endif %}
@@ -142,7 +141,7 @@
         <section class="theme-card border rounded-2xl overflow-hidden mt-10">
             <div class="flex items-center gap-3 p-5 sm:p-6 border-b border-[var(--user-transparent)]">
                 <img src="/static/icon/badge-check.svg" alt="History" class="w-6 h-6 invert opacity-70">
-                <h2 class="text-xl font-bold text-white">Your redemptions</h2>
+                <h2 class="text-xl font-bold text-white">{{ _('Your redemptions') }}</h2>
             </div>
             {% if redeem_history %}
             <div class="flex flex-col divide-y divide-[var(--user-transparent)]">
@@ -150,13 +149,13 @@
                 <div class="flex flex-col sm:flex-row sm:items-center gap-3 p-5">
                     <div class="min-w-0 flex-1">
                         <p class="font-semibold text-white">{{ redemption.coupon_code }}</p>
-                        <p class="text-sm text-[var(--user-soft)]">From {{ redemption.issuer }}
+                        <p class="text-sm text-[var(--user-soft)]">{{ _('From') }} {{ redemption.issuer }}
                             {% if redemption.redeemed_at %} • {{ redemption.redeemed_at.strftime('%Y-%m-%d %H:%M') }}{% endif %}</p>
                     </div>
                     <div class="flex flex-wrap gap-2">
                         {% for item in redemption.redeemables %}
                         <span class="theme-chip text-white px-2 py-1 rounded-md text-xs">
-                            {% if item.type == 'points' %}{{ item.value }} pts{% elif item.type == 'theme' %}{{ item.value }}{% else %}{{ item.type }}: {{ item.value }}{% endif %}
+                            {% if item.type == 'points' %}{{ item.value }} {{ _('pts') }}{% elif item.type == 'theme' %}{{ item.value }}{% else %}{{ item.type }}: {{ item.value }}{% endif %}
                         </span>
                         {% endfor %}
                     </div>
@@ -165,7 +164,7 @@
             </div>
             {% else %}
             <div class="p-8 text-center">
-                <p class="text-[var(--user-soft)]">You haven't redeemed any coupons yet.</p>
+                <p class="text-[var(--user-soft)]">{{ _('You haven\'t redeemed any coupons yet.') }}</p>
             </div>
             {% endif %}
         </section>

@@ -1,7 +1,7 @@
 {% extends "generic/base.html" %}
 
 {% block title %}
-WiiLink Checkout | {{ viewed_user.username }}'s Home
+WiiLink Checkout | {{ viewed_user.username }}{{ _('\'s Home') }}
 {% endblock %}
 
 {% block og_image %}
@@ -250,7 +250,7 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                             {% if not base_url %}
                             <span class="flex flex-col gap-1 text-[var(--user-soft)] text-xl">
                                 <h2>
-                                    How's it going,
+                                    {{ _('How\'s it going,') }}
                                 </h2>
                                 <h1 class="text-3xl sm:text-5xl font-bold text-white break-all">
                                     {{ viewed_user.username }}
@@ -280,7 +280,7 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                         <button id="shareProfileBtn" type="button"
                             class="hidden xl:flex items-center gap-2 px-3 py-1.5 theme-btn border rounded-lg text-[var(--user-soft)] hover:text-white transition-colors duration-200">
                             <img src="/static/icon/share.svg" alt="Share" class="w-4 h-4 invert">
-                            Share
+                            {{ _('Share') }}
                         </button>
                     </span>
                     <div class="w-full flex flex-nowrap items-center gap-2 overflow-x-auto rounded-lg scrollbar-none">
@@ -300,7 +300,7 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                             class="hidden md:flex flex-row items-center gap-2 px-3 py-1 opacity-30 rounded-md text-[var(--user-soft)] hover:opacity-100 transition-opacity duration-200 cursor-pointer border-0 text-left">
                             <img src="/static/icon/circle-question-mark.svg" alt="Add Wii Number"
                                 class="w-4 h-4 invert inline-block mr-1">
-                            How do I add a Wii Number?
+                            {{ _('How do I add a Wii Number?') }}
                         </a>
                         {% endif %}
                     </div>
@@ -310,18 +310,18 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                             class="flex justify-center md:justify-start rounded-l-xl rounded-r-md bg-[var(--user-light)] px-3 py-2 md:px-0 md:py-0 md:bg-transparent md:hover:bg-[var(--user-soft)] inline-flex items-center gap-1.5 text-white md:opacity-60 hover:opacity-100 transition-opacity duration-200">
                             <img src="/static/icon/users.svg" alt="" class="w-4 h-4 invert">
                             {% if follower_count is not none %}
-                            {{ follower_count }} Follower{% if follower_count != 1 %}s{% endif %}
+                            {{ follower_count }} {% if follower_count != 1 %}{{ _('Followers') }} {% else %}{{ _('Follower') }}{% endif %}
                             {% else %}
-                            0 Followers
+                            0 {{ _('Followers') }}
                             {% endif %}
                         </a>
                         <a href="{% if base_url %}{{ base_url }}/following{% else %}/following{% endif %}"
                             class="flex justify-center md:justify-start rounded-l-md rounded-r-xl bg-[var(--user-light)] px-3 py-2 md:px-0 md:py-0 md:bg-transparent md:hover:bg-[var(--user-soft)] inline-flex items-center gap-1.5 text-white md:opacity-60 hover:opacity-100 transition-opacity duration-200">
                             <img src="/static/icon/heart.svg" alt="" class="w-4 h-4 invert">
                             {% if following_count is not none %}
-                            {{ following_count }} Following
+                            {{ following_count }} {{ _('Following') }}
                             {% else %}
-                            0 Following
+                            0 {{ _('Following') }}
                             {% endif %}
                         </a>
                     </span>
@@ -341,35 +341,28 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                         <img src="/static/icon/triangle-alert.svg" alt="Warning Icon"
                             class="w-10 h-10 invert flex-shrink-0 mt-1">
                         <div>
-                            <h2 class="text-xl font-bold text-white mb-2">Serial Not Linked</h2>
+                            <h2 class="text-xl font-bold text-white mb-2">{{ _('Serial Not Linked') }}</h2>
                             <p class="text-[var(--user-soft)]">
-                                This user's Wii console is linked to their account, but their console serial number
-                                hasn't
-                                been
-                                properly registered. To view their recommendations, time played, and other stats,
-                                they'll
-                                need
-                                to re-link their console using the latest version of the Account Linker tool.
+                                {{ _('This user\'s Wii console is linked to their account, but their console serial number hasn\'t been properly registered. To view their recommendations, time played, and other stats, they\'ll need to re-link their console using the latest version of the Account Linker tool.') }}
                             </p>
-                            <p class="text-[var(--user-soft)] mt-3">Still, you can view their CMOC and EVC data here:
-                            </p>
+                            <p class="text-[var(--user-soft)] mt-3">{{ _('Still, you can view their CMOC and EVC data here:') }}</p>
                             <div class="flex flex-wrap gap-3 mt-4">
                                 <a href="/{{ friend_code|format_serial }}/polls"
                                     class="flex items-center gap-2 px-5 py-2.5 bg-amber-700/50 text-white rounded-xl font-medium hover:bg-amber-700/60 transition">
                                     <img src="/static/icon/chart-line.svg" alt="Polls Icon" class="w-5 h-5 invert">
-                                    View Polls
+                                    {{ _('View Polls') }}
                                 </a>
                                 <a href="/{{ friend_code|format_serial }}/suggestions"
                                     class="flex items-center gap-2 px-5 py-2.5 bg-amber-700/50 text-white rounded-xl font-medium hover:bg-amber-700/60 transition">
                                     <img src="/static/icon/circle-question-mark.svg" alt="Suggestions Icon"
                                         class="w-5 h-5 invert">
-                                    View Suggestions
+                                    {{ _('View Suggestions') }}
                                 </a>
                                 <a href="/{{ friend_code|format_serial }}/contest_submissions"
                                     class="flex items-center gap-2 px-5 py-2.5 bg-amber-700/50 text-white rounded-xl font-medium hover:bg-amber-700/60 transition">
                                     <img src="/static/icon/send-horizontal.svg" alt="Contests Icon"
                                         class="w-5 h-5 invert">
-                                    View Contest Submissions
+                                    {{ _('View Contest Submissions') }}
                                 </a>
                             </div>
                         </div>
@@ -382,7 +375,7 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                     <div class="home-reveal w-full grid grid-cols-2 md:grid-cols-3 gap-4 mb-10 z-10 relative">
                         <a href="{% if base_url %}{{ base_url }}/time_played{% else %}/time_played{% endif %}"
                             class="group relative theme-card-hover rounded-2xl p-3 flex items-center gap-3 cursor-help"
-                            title="Total time played across all games on all consoles.&#10;&#10;This metric updates once per day once you open the Nintendo Channel (you must opt into data sharing).">
+                            title="{{ _('Total time played across all games on all consoles.') }}&#10;&#10;{{ _('This metric updates once per day once you open the Nintendo Channel (you must opt into data sharing).') }}">
                             <div
                                 class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
                                 <img src="/static/icon/clock.svg" alt="" class="w-6 h-6 invert">
@@ -390,8 +383,8 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                             <div class="min-w-0">
                                 <p
                                     class="text-[var(--user-soft)] text-xs font-semibold uppercase tracking-wider mb-1 truncate">
-                                    Total Time
-                                    Played</p>
+                                    {{ _('Total Time Played') }}
+                                </p>
                                 <p class="text-xl font-bold text-white">{{
                                     user_stats.total_minutes|format_playtime }}</p>
                             </div>
@@ -401,7 +394,7 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                         </a>
                         <a href="{% if base_url %}{{ base_url }}/recommendations{% else %}/recommendations{% endif %}"
                             class="group relative theme-card-hover rounded-2xl p-3 flex items-center gap-3 cursor-help"
-                            title="Total reviews given across all consoles.&#10;&#10;This metric updates when you submit a review for a game on the Nintendo Channel.">
+                            title="{{ _('Total reviews given across all consoles.') }}&#10;&#10;{{ _('This metric updates when you submit a review for a game on the Nintendo Channel.') }}">
                             <div
                                 class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
                                 <img src="/static/icon/star.svg" alt="" class="w-6 h-6 invert">
@@ -409,8 +402,7 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                             <div class="min-w-0">
                                 <p
                                     class="text-[var(--user-soft)] text-xs font-semibold uppercase tracking-wider mb-1 truncate">
-                                    Reviews
-                                    Given
+                                    {{ _('Reviews Given') }}
                                 </p>
                                 <p class="text-xl font-bold text-white">{{
                                     user_stats.total_reviews|int }}</p>
@@ -421,7 +413,7 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                         </a>
                         <a href="{% if base_url %}{{ base_url }}/favorites{% else %}/favorites{% endif %}"
                             class="group relative theme-card-hover rounded-2xl p-3 flex items-center gap-3 cursor-help"
-                            title="Total games favorited across all consoles.&#10;&#10;This metric updates when you bookmark a game on the Nintendo Channel.">
+                            title="{{ _('Total games favorited across all consoles.') }}&#10;&#10;{{ _('This metric updates when you bookmark a game on the Nintendo Channel.') }}">
                             <div
                                 class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
                                 <img src="/static/icon/heart.svg" alt="" class="w-6 h-6 invert">
@@ -429,7 +421,7 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                             <div class="min-w-0">
                                 <p
                                     class="text-[var(--user-soft)] text-xs font-semibold uppercase tracking-wider mb-1 truncate">
-                                    Favorites
+                                    {{ _('Favorites') }}
                                 </p>
                                 <p class="text-xl font-bold text-white">{{
                                     user_counts.favorites }}</p>
@@ -440,7 +432,7 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                         </a>
                         <a href="{% if base_url %}{{ base_url }}/time_played{% else %}/time_played{% endif %}"
                             class="group relative theme-card-hover rounded-2xl p-3 flex items-center gap-3 cursor-help"
-                            title="Total games played across all consoles.&#10;&#10;This metric updates once per day once you open the Nintendo Channel (you must opt into data sharing).">
+                            title="{{ _('Total time played across all games on all consoles.') }}&#10;&#10;{{ _('This metric updates once per day once you open the Nintendo Channel (you must opt into data sharing).') }}">
                             <div
                                 class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
                                 <img src="/static/icon/gamepad.svg" alt="" class="w-6 h-6 invert">
@@ -448,8 +440,7 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                             <div class="min-w-0">
                                 <p
                                     class="text-[var(--user-soft)] text-xs font-semibold uppercase tracking-wider mb-1 truncate">
-                                    Games
-                                    Played
+                                    {{ _('Games Played') }}
                                 </p>
                                 <p class="text-xl font-bold text-white">{{
                                     user_counts.games_played }}</p>
@@ -468,8 +459,7 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                             <div class="min-w-0">
                                 <p
                                     class="text-[var(--user-soft)] text-xs font-semibold uppercase tracking-wider mb-1 truncate">
-                                    Polls
-                                    Voted
+                                    {{ _('Polls Voted') }}
                                 </p>
                                 <p class="text-xl font-bold text-white">{{
                                     user_counts.polls }}</p>
@@ -480,7 +470,7 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                         </a>
                         <a href="{% if base_url %}{{ base_url }}/contest_submissions{% else %}/contest_submissions{% endif %}"
                             class="group relative theme-card-hover rounded-2xl p-3 flex items-center gap-3 cursor-help"
-                            title="Total contest submissions across all consoles.&#10;&#10;This metric updates when you submit a contest entry on the Check Mii Out Channel.">
+                            title="{{ _('Total contest submissions across all consoles.') }}&#10;&#10;{{ _('This metric updates when you submit a contest entry on the Check Mii Out Channel.') }}">
                             <div
                                 class="w-11 h-11 rounded-xl theme-icon-tile flex items-center justify-center flex-shrink-0">
                                 <img src="/static/icon/send-horizontal.svg" alt="" class="w-6 h-6 invert">
@@ -488,8 +478,7 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                             <div class="min-w-0">
                                 <p
                                     class="text-[var(--user-soft)] text-xs font-semibold uppercase tracking-wider mb-1 truncate">
-                                    Contest
-                                    Submissions</p>
+                                    {{ _('Contest Submissions') }}</p>
                                 <p class="text-xl font-bold text-white">{{
                                     user_counts.contest_submissions }}</p>
                             </div>
@@ -532,11 +521,11 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                         <h2 style="view-transition-name: vt-title-favorites;"
                             class="text-xl sm:text-2xl font-bold text-white flex items-center gap-3">
                             <img src="/static/icon/heart.svg" alt="" class="w-6 h-6 invert opacity-70">
-                            Favorites
+                            {{ _('Favorites') }}
                         </h2>
                         <a href="{% if base_url %}{{ base_url }}/favorites{% else %}/favorites{% endif %}"
                             class="flex items-center gap-1 text-sm text-[var(--user-soft)] hover:text-white transition duration-200">
-                            View All <img src="/static/icon/chevron-right.svg" alt="Chevron Right"
+                            {{ _('View All') }} <img src="/static/icon/chevron-right.svg" alt="Chevron Right"
                                 class="w-4 h-4 invert">
                         </a>
                     </div>
@@ -584,7 +573,7 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                     </div>
                     {% else %}
                     <div class="home-empty-state">
-                        <p class="!mb-0">No favorites yet</p>
+                        <p class="!mb-0">{{ _('No favorites yet') }}</p>
                     </div>
                     {% endif %}
                 </section>
@@ -606,7 +595,7 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                                 <h2 style="view-transition-name: vt-title-time-played;"
                                     class="text-xl sm:text-2xl font-bold text-white flex items-center gap-3">
                                     <img src="/static/icon/clock.svg" alt="" class="w-6 h-6 invert opacity-70">
-                                    Recently Played
+                                    {{ _('Recently Played') }}
                                 </h2>
                                 <span class="flex items-center gap-3">
                                     <a href="{% if base_url %}{{ base_url }}/calendar{% else %}/calendar{% endif %}"
@@ -616,7 +605,7 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                                     </a>
                                     <a href="{% if base_url %}{{ base_url }}/time_played{% else %}/time_played{% endif %}"
                                         class="flex items-center gap-1 text-sm text-[var(--user-soft)] hover:text-white transition duration-200">
-                                        View All <img src="/static/icon/chevron-right.svg" alt="Chevron Right"
+                                        {{ _('View All') }} <img src="/static/icon/chevron-right.svg" alt="Chevron Right"
                                             class="w-4 h-4 invert">
                                     </a>
                                 </span>
@@ -666,7 +655,7 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                                             endfor %}{% endif %}{{ game.title_en or game.title }}
                                         </p>
                                         <p class="text-sm text-[var(--user-soft)]">{{
-                                            game.time_played|format_playtime }} played</p>
+                                            game.time_played|format_playtime }} {{ _('played') }}</p>
                                     </div>
                                     <div
                                         class="bottom-0 absolute z-20 bg-gradient-to-t from-black/70 to-transparent w-full h-40 rounded">
@@ -676,7 +665,7 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                             </div>
                             {% else %}
                             <div class="home-empty-state">
-                                <p class="!mb-0">No games played yet</p>
+                                <p class="!mb-0">{{ _('No games played yet') }}</p>
                             </div>
                             {% endif %}
                         </section>
@@ -686,11 +675,11 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                                 <h2 style="view-transition-name: vt-title-recommendations;"
                                     class="text-xl sm:text-2xl font-bold text-white flex items-center gap-3">
                                     <img src="/static/icon/star.svg" alt="" class="w-6 h-6 invert opacity-70">
-                                    Latest Reviews
+                                    {{ _('Latest Reviews') }}
                                 </h2>
                                 <a href="{% if base_url %}{{ base_url }}/recommendations{% else %}/recommendations{% endif %}"
                                     class="flex items-center gap-1 text-sm text-[var(--user-soft)] hover:text-white transition duration-200">
-                                    View All <img src="/static/icon/chevron-right.svg" alt="Chevron Right"
+                                    {{ _('View All') }} <img src="/static/icon/chevron-right.svg" alt="Chevron Right"
                                         class="w-4 h-4 invert">
                                 </a>
                             </div>
@@ -738,6 +727,7 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                                             endif %}{{ game.title_en or
                                             game.title }}
                                         </p>
+                                        <p class="text-sm text-gray-300">{{ _('Released') }} {{ game.release_date }}</p>
                                         {% set score_percent = game.recommendation_percent or 0 %}
                                         {% if score_percent >= 80 %}
                                         {% set score_color = "bg-emerald-400" %}
@@ -767,7 +757,7 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                             </div>
                             {% else %}
                             <div class="home-empty-state">
-                                <p class="!mb-0">No reviews yet</p>
+                                <p class="!mb-0">{{ _('No reviews yet') }}</p>
                             </div>
                             {% endif %}
                         </section>
@@ -780,8 +770,9 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                         <section class="home-reveal theme-card border rounded-2xl p-5 sm:p-6">
                             <h2 style="view-transition-name: vt-title-digicard;"
                                 class="text-xl sm:text-2xl font-bold text-white flex items-center gap-3 mb-6">
+                                {{ _('My Digicard') }}
                                 <img src="/static/icon/id-card.svg" alt="" class="w-6 h-6 invert opacity-70">
-                                My Digicard
+                                {{ _('My Digicard') }}
                             </h2>
                             {% include "components/digicard_card.html" with context %}
                         </section>
@@ -794,12 +785,12 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                                     class="text-xl sm:text-2xl font-bold text-white flex items-center gap-3">
                                     <img src="/static/icon/send-horizontal.svg" alt=""
                                         class="w-6 h-6 invert opacity-70">
-                                    Recent Contests
+                                    {{ _('Recent Contests') }}
                                 </h2>
                                 {% if base_url %}
                                 <a href="{{ base_url }}/contest_submissions"
                                     class="flex items-center gap-1 text-sm text-[var(--user-soft)] hover:text-white transition duration-200">
-                                    View All <img src="/static/icon/chevron-right.svg" alt="Chevron Right"
+                                    {{ _('View All') }} <img src="/static/icon/chevron-right.svg" alt="Chevron Right"
                                         class="w-4 h-4 invert">
                                 </a>
                                 {% endif %}
@@ -824,12 +815,12 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                                 <h2 style="view-transition-name: vt-title-polls;"
                                     class="text-xl sm:text-2xl font-bold text-white flex items-center gap-3">
                                     <img src="/static/icon/chart-line.svg" alt="" class="w-6 h-6 invert opacity-70">
-                                    Recent Polls
+                                    {{ _('Recent Polls') }}
                                 </h2>
                                 {% if base_url %}
                                 <a href="{{ base_url }}/polls"
                                     class="flex items-center gap-1 text-sm text-[var(--user-soft)] hover:text-white transition duration-200">
-                                    View All <img src="/static/icon/chevron-right.svg" alt="Chevron Right"
+                                    {{ _('View All') }} <img src="/static/icon/chevron-right.svg" alt="Chevron Right"
                                         class="w-4 h-4 invert">
                                 </a>
                                 {% endif %}
@@ -866,7 +857,7 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                     } else if (navigator.clipboard) {
                         navigator.clipboard.writeText(url).then(function () {
                             const original = shareProfileBtn.innerHTML;
-                            shareProfileBtn.innerHTML = 'Copied!';
+                            shareProfileBtn.innerHTML = '{{ _('Copied!') }}';
                             setTimeout(function () {
                                 shareProfileBtn.innerHTML = original;
                             }, 1800);
@@ -891,7 +882,7 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                             const isFriend = data.is_friend;
                             icon.setAttribute('fill', isFriend ? 'var(--user-soft)' : 'none');
                             friendToggleBtn.setAttribute('aria-pressed', String(isFriend));
-                            friendToggleBtn.title = isFriend ? 'Remove from friends' : 'Add to friends';
+                            friendToggleBtn.innerHTML = isFriend ? '{{ _('Remove from friends') }}' : '{{ _('Add to friends') }}';
                         } else if (data.error) {
                             console.error(data.error);
                         }
@@ -954,11 +945,11 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
                 }
                 if (themeEffectsToggle) {
                     themeEffectsToggle.setAttribute("aria-pressed", String(disabled));
-                    themeEffectsToggle.title = disabled ? "Enable theme font and music" : "Disable theme font and music";
+                    themeEffectsToggle.title = disabled ? "{{ _('Enable theme font and music') }}" : "{{ _('Disable theme font and music') }}";
                 }
                 if (mobileThemeEffectsToggle) {
                     mobileThemeEffectsToggle.setAttribute("aria-pressed", String(disabled));
-                    mobileThemeEffectsToggle.title = disabled ? "Enable theme font and music" : "Disable theme font and music";
+                    mobileThemeEffectsToggle.title = disabled ? "{{ _('Enable theme font and music') }}" : "{{ _('Disable theme font and music') }}";
                 }
             }
 
@@ -1019,9 +1010,9 @@ viewed_user.achievements.themes and viewed_user.achievements.themes.active != 'd
             class="absolute right-0 top-0 bottom-0 w-full max-w-2xl bg-[var(--user-dark)] border-l border-[var(--user-transparent)] shadow-2xl overflow-y-auto animate-slideIn">
             <div class="p-6 sm:p-8">
                 <div class="flex items-center justify-between gap-4 mb-6">
-                    <h2 class="text-2xl font-bold text-white">Achievements</h2>
+                    <h2 class="text-2xl font-bold text-white">{{ _('Achievements') }}</h2>
                     <button data-ach-close
-                        class="theme-btn border rounded-lg px-4 py-2 text-sm text-[var(--user-soft)]">Close</button>
+                        class="theme-btn border rounded-lg px-4 py-2 text-sm text-[var(--user-soft)]">{{ _('Close') }}</button>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {% for ach in all_achievements %}

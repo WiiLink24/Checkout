@@ -8,7 +8,7 @@
             </span>
         </span>
         <p class="text-xs text-[var(--user-soft)] mb-1">
-            Order ID: <code class="text-[var(--user-soft)]">{{ latest_digicard.order_id }}</code>
+            {{ _('Order ID') }}: <code class="text-[var(--user-soft)]">{{ latest_digicard.order_id }}</code>
         </p>
     </div>
 
@@ -22,7 +22,7 @@
                 onclick="downloadCard('{{ latest_digicard.order_id }}', '{{ latest_digicard.card_info.name }}', 'data:image/jpeg;base64,{{ latest_digicard.image_base64 }}')"
                 class="text-white py-3 px-6 transition-colors flex flex-col items-center gap-2">
                 <img src="/static/icon/download.svg" alt="Download Icon" class="w-10 h-10 inline invert">
-                Download
+                {{ _('Download') }}
             </button>
         </div>
     </div>

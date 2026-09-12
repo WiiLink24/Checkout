@@ -1,7 +1,7 @@
 {% extends "generic/base.html" %}
 
 {% block title %}
-WiiLink Checkout | Top 30 Most Played Games
+WiiLink Checkout | {{ _('Top 30 Most Played Games') }}
 {% endblock %}
 
 {% block content %}
@@ -9,8 +9,8 @@ WiiLink Checkout | Top 30 Most Played Games
     <div class="max-w-6xl mx-auto">
         <!-- Header -->
         <div class="mb-10">
-            <h1 class="text-4xl font-bold text-white mb-2">Top 30 Most Played Games</h1>
-            <p class="text-[var(--user-soft)]">Games with the most cumulative playtime across the community</p>
+            <h1 class="text-4xl font-bold text-white mb-2">{{ _('Top 30 Most Played Games') }}</h1>
+            <p class="text-[var(--user-soft)]">{{ _('Games with the most cumulative playtime across the community') }}</p>
         </div>
 
         {% if cached_games_html %}
@@ -25,7 +25,7 @@ WiiLink Checkout | Top 30 Most Played Games
         </div>
         {% else %}
         <div class="bg-gray-800 border border-gray-700 rounded-xl p-12 text-center">
-            <p class="text-[var(--user-soft)] text-lg">No gameplay data available</p>
+            <p class="text-[var(--user-soft)] text-lg">{{ _('No gameplay data available') }}</p>
         </div>
         {% endif %}
     </div>

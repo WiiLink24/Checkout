@@ -1,15 +1,15 @@
 {% extends "generic/base.html" %}
 
 {% block title %}
-WiiLink Checkout | {% if search_query %}{{ search_query }}{% endif %} Search
+WiiLink Checkout | {% if search_query %}{{ search_query }}{% endif %} {{ _('Search') }}
 {% endblock %}
 
 {% block content %}
 <div class="px-4 sm:px-6 lg:px-8 py-8">
     <div class="max-w-6xl mx-auto">
         <div class="mt-20 sm:mt-72 mb-8">
-            <h1 class="text-3xl font-bold text-white mb-2">Checkout Search</h1>
-            <p class="text-[var(--user-soft)]">Search for Wii games, publishers, developers and users!</p>
+            <h1 class="text-3xl font-bold text-white mb-2">{{ _('Checkout Search') }}</h1>
+            <p class="text-[var(--user-soft)]">{{ _('Search for Wii games, publishers, developers and users!') }}</p>
         </div>
 
         <style>
@@ -44,26 +44,26 @@ WiiLink Checkout | {% if search_query %}{{ search_query }}{% endif %} Search
                         class="group flex shrink-0 items-center gap-2 whitespace-nowrap px-4 py-2.5 rounded-xl transition duration-200 {% if search_type == 'users' or not search_type %}bg-[var(--user-light)] text-white{% else %}bg-[var(--user-dark)] text-[var(--user-soft)] hover:bg-[var(--user-dark)] hover:text-white{% endif %}">
                         <img src="/static/icon/users.svg" alt="Users Icon"
                             class="w-5 h-5 mr-2 inline invert {% if search_type == 'users' or not search_type %}opacity-100{% else %}opacity-50 group-hover:opacity-100{% endif %}">
-                        Users
+                        {{ _('Users') }}
                     </a>
                     <span class="border-l border-[var(--user-soft)] mx-2 h-6 self-center shrink-0"></span>
                     <a href="/search?search={{ search_query }}&type=title"
                         class="group flex shrink-0 items-center gap-2 whitespace-nowrap px-4 py-2.5 rounded-l-xl rounded-r-md transition duration-200 {% if search_type == 'title' %}bg-[var(--user-light)] text-white{% else %}bg-[var(--user-dark)] text-[var(--user-soft)] hover:bg-[var(--user-dark)] hover:text-white{% endif %}">
                         <img src="/static/icon/gamepad.svg" alt="Title Icon"
                             class="w-5 h-5 mr-2 inline invert {% if search_type == 'title' %}opacity-100{% else %}opacity-50 group-hover:opacity-100{% endif %}">
-                        Title / Game ID
+                        {{ _('Title / Game ID') }}
                     </a>
                     <a href="/search?search={{ search_query }}&type=publisher"
                         class="group flex shrink-0 items-center gap-2 whitespace-nowrap px-4 py-2.5 rounded-md transition duration-200 {% if search_type == 'publisher' %}bg-[var(--user-light)] text-white{% else %}bg-[var(--user-dark)] text-[var(--user-soft)] hover:bg-[var(--user-dark)] hover:text-white{% endif %}">
                         <img src="/static/icon/book-check.svg" alt="Publisher Icon"
                             class="w-5 h-5 mr-2 inline invert {% if search_type == 'publisher' %}opacity-100{% else %}opacity-50 group-hover:opacity-100{% endif %}">
-                        Publisher
+                        {{ _('Publisher') }}
                     </a>
                     <a href="/search?search={{ search_query }}&type=developer"
                         class="group flex shrink-0 items-center gap-2 whitespace-nowrap px-4 py-2.5 rounded-l-md rounded-r-xl transition duration-200 {% if search_type == 'developer' %}bg-[var(--user-light)] text-white{% else %}bg-[var(--user-dark)] text-[var(--user-soft)] hover:bg-[var(--user-dark)] hover:text-white{% endif %}">
                         <img src="/static/icon/code.svg" alt="Developer Icon"
                             class="w-5 h-5 mr-2 inline invert {% if search_type == 'developer' %}opacity-100{% else %}opacity-50 group-hover:opacity-100{% endif %}">
-                        Developer
+                        {{ _('Developer') }}
                     </a>
                 </div>
                 <div class="flex flex-col gap-4">
@@ -91,7 +91,7 @@ WiiLink Checkout | {% if search_query %}{{ search_query }}{% endif %} Search
         {% if total_pages and total_pages > 1 %}
         <div class="mt-8 mb-16 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
             <div class="text-sm text-[var(--user-soft)]">
-                Page <b>{{ page }}</b> of {{ total_pages }} ({{ total_count }} total)
+                {{ _('Page') }} <b>{{ page }}</b> {{ _('of') }} {{ total_pages }} ({{ total_count }} {{ _('total') }})
             </div>
             <div class="flex flex-wrap justify-center gap-2">
                 {% if page > 1 %}
@@ -155,7 +155,7 @@ WiiLink Checkout | {% if search_query %}{{ search_query }}{% endif %} Search
         {% if total_pages and total_pages > 1 %}
         <div class="mt-8 mb-16 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
             <div class="text-sm text-[var(--user-soft)]">
-                Page <b>{{ page }}</b> of {{ total_pages }} ({{ total_count }} total)
+                {{ _('Page') }} <b>{{ page }}</b> {{ _('of') }} {{ total_pages }} ({{ total_count }} {{ _('total') }})
             </div>
             <div class="flex flex-wrap justify-center gap-2">
                 {% if page > 1 %}
@@ -201,8 +201,7 @@ WiiLink Checkout | {% if search_query %}{{ search_query }}{% endif %} Search
                     {% if search_query %}
         <div class="border-2 border-dashed border-[var(--user-soft)] rounded-xl p-8 sm:p-12 text-center">
             <img src="/static/icon/circle-alert.svg" alt="No Results" class="w-12 h-12 mx-auto mb-4 opacity-80 invert">
-            <p class="text-white/80 text-lg mb-4">No results match "<strong>{{ search_query }}</strong>",<br>perhaps you
-                didn't mean to filter by <b>{{ search_type }}</b></p>
+            <p class="text-white/80 text-lg mb-4">{{ _('No results match "<strong>{{ search_query }}</strong>",<br>perhaps you') }} {{ _('meant to filter by') }} <b>{{ search_type }}</b></p>
         </div>
                     {% endif %}
         {% endif %}

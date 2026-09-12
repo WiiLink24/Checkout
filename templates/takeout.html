@@ -1,28 +1,25 @@
 {% extends "generic/base.html" %}
 
-{% block title %}WiiLink Checkout | Takeout{% endblock %}
+{% block title %}WiiLink Checkout | {{ _('Takeout') }}{% endblock %}
 
 {% block content %}
 <div class="container mx-auto px-4 py-8 max-w-4xl">
     <div class="mb-8">
         <h1 class="text-4xl font-bold text-white mb-4">Takeout</h1>
-        <p class="text-[var(--user-soft)]">At WiiLink we believe you're in control of your data. Feel free to request a data
-            export of your data. Please be advised you are only allowed to export your data once per month.</p>
+        <p class="text-[var(--user-soft)]">{{ _('At WiiLink we believe you\'re in control of your data. Feel free to request a data export of your data. Please be advised you are only allowed to export your data once per month.') }}</p>
     </div>
 
     {% if not can_export %}
     <div class="bg-red-900/30 border border-red-700 rounded-lg p-6 mb-8">
         <div>
             <h3 class="text-lg font-semibold text-red-300 mb-2">Export Limited</h3>
-            <p class="text-red-200">You can only export your data once every 30 days. Your next export will be
-                available in <strong>{{ days_until_next_export }} day{% if days_until_next_export != 1 %}s{% endif
-                    %}</strong>.</p>
+            <p class="text-red-200">You can only export your data once every 30 days. Your next export will be available in <strong>{{ days_until_next_export }} day{% if days_until_next_export != 1 %}s{% endif %}</strong>.</p>
         </div>
     </div>
     {% endif %}
 
     <div class="bg-gray-800/60 rounded-lg p-8 mb-8 {% if not can_export %}opacity-60 pointer-events-none{% endif %}">
-        <h2 class="text-2xl font-bold text-white mb-6">Select Data to Export</h2>
+        <h2 class="text-2xl font-bold text-white mb-6">{{ _('Select Data to Export') }}</h2>
 
         <form method="POST" action="{{ url_for('auth_routes.takeout_export') }}" class="space-y-4" {% if not can_export
             %}disabled{% endif %}>
@@ -32,8 +29,8 @@
                     <input type="checkbox" name="data_type" value="recommendations" class="w-5 h-5 rounded" {% if not
                         data_counts.recommendations or not can_export %}disabled{% endif %}>
                     <div class="ml-4 flex-1">
-                        <div class="font-semibold text-white">Recommendations</div>
-                        <div class="text-sm text-[var(--user-soft)]">{{ data_counts.recommendations }} entries</div>
+                        <div class="font-semibold text-white">{{ _('Recommendations') }}</div>
+                        <div class="text-sm text-[var(--user-soft)]">{{ data_counts.recommendations }} {{ _('entries') }}</div>
                     </div>
                 </label>
 
@@ -42,8 +39,8 @@
                     <input type="checkbox" name="data_type" value="favorites" class="w-5 h-5 rounded" {% if not
                         data_counts.favorites or not can_export %}disabled{% endif %}>
                     <div class="ml-4 flex-1">
-                        <div class="font-semibold text-white">Favorites (Bookmarks)</div>
-                        <div class="text-sm text-[var(--user-soft)]">{{ data_counts.favorites }} entries</div>
+                        <div class="font-semibold text-white">{{ _('Favorites') }} ({{ _('Bookmarks') }})</div>
+                        <div class="text-sm text-[var(--user-soft)]">{{ data_counts.favorites }} {{ _('entries') }}</div>
                     </div>
                 </label>
 
@@ -52,8 +49,8 @@
                     <input type="checkbox" name="data_type" value="time_played" class="w-5 h-5 rounded" {% if not
                         data_counts.time_played or not can_export %}disabled{% endif %}>
                     <div class="ml-4 flex-1">
-                        <div class="font-semibold text-white">Time Played</div>
-                        <div class="text-sm text-[var(--user-soft)]">{{ data_counts.time_played }} entries</div>
+                        <div class="font-semibold text-white">{{ _('Time Played') }}</div>
+                        <div class="text-sm text-[var(--user-soft)]">{{ data_counts.time_played }} {{ _('entries') }}</div>
                     </div>
                 </label>
 
@@ -62,8 +59,8 @@
                     <input type="checkbox" name="data_type" value="polls" class="w-5 h-5 rounded" {% if not
                         data_counts.polls or not can_export %}disabled{% endif %}>
                     <div class="ml-4 flex-1">
-                        <div class="font-semibold text-white">Polls</div>
-                        <div class="text-sm text-[var(--user-soft)]">{{ data_counts.polls }} entries</div>
+                        <div class="font-semibold text-white">{{ _('Polls') }}</div>
+                        <div class="text-sm text-[var(--user-soft)]">{{ data_counts.polls }} {{ _('entries') }}</div>
                     </div>
                 </label>
 
@@ -72,8 +69,8 @@
                     <input type="checkbox" name="data_type" value="suggestions" class="w-5 h-5 rounded" {% if not
                         data_counts.suggestions or not can_export %}disabled{% endif %}>
                     <div class="ml-4 flex-1">
-                        <div class="font-semibold text-white">Suggestions</div>
-                        <div class="text-sm text-[var(--user-soft)]">{{ data_counts.suggestions }} entries</div>
+                        <div class="font-semibold text-white">{{ _('Suggestions') }}</div>
+                        <div class="text-sm text-[var(--user-soft)]">{{ data_counts.suggestions }} {{ _('entries') }}</div>
                     </div>
                 </label>
 
@@ -82,8 +79,8 @@
                     <input type="checkbox" name="data_type" value="contest_submissions" class="w-5 h-5 rounded" {% if
                         not data_counts.contest_submissions or not can_export %}disabled{% endif %}>
                     <div class="ml-4 flex-1">
-                        <div class="font-semibold text-white">Contest Submissions</div>
-                        <div class="text-sm text-[var(--user-soft)]">{{ data_counts.contest_submissions }} entries</div>
+                        <div class="font-semibold text-white">{{ _('Contest Submissions') }}</div>
+                        <div class="text-sm text-[var(--user-soft)]">{{ data_counts.contest_submissions }} {{ _('entries') }}</div>
                     </div>
                 </label>
 
@@ -92,8 +89,8 @@
                     <input type="checkbox" name="data_type" value="cam_orders" class="w-5 h-5 rounded" {% if not
                         data_counts.cam_orders or not can_export %}disabled{% endif %}>
                     <div class="ml-4 flex-1">
-                        <div class="font-semibold text-white">Photo Prints Channel Orders</div>
-                        <div class="text-sm text-[var(--user-soft)]">{{ data_counts.cam_orders }} entries</div>
+                        <div class="font-semibold text-white">{{ _('Photo Prints Channel Orders') }}</div>
+                        <div class="text-sm text-[var(--user-soft)]">{{ data_counts.cam_orders }} {{ _('entries') }}</div>
                     </div>
                 </label>
             </div>
@@ -102,10 +99,9 @@
                 <button type="submit"
                     class="w-full px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold transition {% if not can_export %}opacity-50 cursor-not-allowed hover:bg-indigo-600{% endif %}"
                     {% if not can_export %}disabled{% endif %}>
-                    Download as ZIP
+                    {{ _('Download as ZIP') }}
                 </button>
-                <p class="text-sm text-[var(--user-soft)] mt-4">All data will be packaged into a single ZIP file with CSV files
-                    and an export summary.</p>
+                <p class="text-sm text-[var(--user-soft)] mt-4">{{ _('All data will be packaged into a single ZIP file with CSV files and an export summary.') }}</p>
             </div>
         </form>
     </div>

@@ -10,15 +10,15 @@
 </div>
 {% endif %}
 {% set nav_items = [
-{'name': 'Recommendations', 'path': '/recommendations', 'active': page_title == 'Recommendations'},
-{'name': 'Time Played', 'path': '/time_played', 'active': page_title == 'Time Played'},
-{'name': 'Favorites', 'path': '/favorites', 'active': page_title == 'Favorites'},
-{'name': 'Calendar', 'path': '/calendar', 'active': page_title == 'Calendar'},
-{'name': 'Polls', 'path': '/polls', 'active': page_title == 'Polls'},
-{'name': 'Suggestions', 'path': '/suggestions', 'active': page_title == 'Suggestions'},
-{'name': 'Contest Submissions', 'path': '/contest_submissions', 'active': page_title == 'Contest Submissions'},
-{'name': 'Followers', 'path': '/followers', 'active': page_title == 'Followers'},
-{'name': 'Following', 'path': '/following', 'active': page_title == 'Following'}
+{'name': _('Recommendations'), 'path': '/recommendations', 'active': page_title == _('Recommendations')},
+{'name': _('Time Played'), 'path': '/time_played', 'active': page_title == _('Time Played')},
+{'name': _('Favorites'), 'path': '/favorites', 'active': page_title == _('Favorites')},
+{'name': _('Calendar'), 'path': '/calendar', 'active': page_title == _('Calendar')},
+{'name': _('Polls'), 'path': '/polls', 'active': page_title == _('Polls')},
+{'name': _('Suggestions'), 'path': '/suggestions', 'active': page_title == _('Suggestions')},
+{'name': _('Contest Submissions'), 'path': '/contest_submissions', 'active': page_title == _('Contest Submissions')},
+{'name': _('Followers'), 'path': '/followers', 'active': page_title == _('Followers')},
+{'name': _('Following'), 'path': '/following', 'active': page_title == _('Following')}
 ] %}
 <div class="min-h-screen px-4 sm:px-6 lg:px-8 py-12">
     <div class="max-w-6xl mx-auto">
@@ -38,7 +38,7 @@
                     <details class="relative inline-block lg:ml-2 text-left group">
                         <summary
                             class="!text-2xl sm:!text-4xl inline-flex items-center gap-2 lg:px-3 lg:py-1 lg:border lg:border-dashed lg:border-[var(--user-transparent)] text-white/80 hover:text-white transition rounded-lg text-base font-light cursor-pointer select-none min-h-[44px]">
-                            's {{ page_title }}
+                            {{ page_title }}
                         </summary>
                         <div class="fixed left-1/2 -translate-x-1/2 mt-2 w-[calc(100vw-2rem)] max-w-sm rounded-xl border border-[var(--user-transparent)] bg-[var(--user-dark)] shadow-xl z-100 overflow-hidden sm:absolute sm:left-1/2 sm:-translate-x-1/2 sm:w-56"
                             style="z-index: 1000;">
@@ -84,7 +84,6 @@
         {% endif %}
 
         {% if is_unclaimed %}
-        <h1 class="text-4xl font-bold text-white mb-4">{{ page_title }} <span class="font-light text-gray-500">for {{
-                unclaimed_serial }}</span></h1>
+        <h1 class="text-4xl font-bold text-white mb-4">{{ page_title }} <span class="font-light text-gray-500">{{ _('for') }} {{ unclaimed_serial }}</span></h1>
         {% include "components/unclaimed_banner.html" %}
         {% endif %}

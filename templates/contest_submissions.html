@@ -1,11 +1,11 @@
 {% extends "generic/base.html" %}
 
 {% block title %}
-WiiLink Checkout | Contest Submissions
+WiiLink Checkout | {{ _('Contest Submissions') }}
 {% endblock %}
 
 {% block content %}
-{% set page_title = "Contest Submissions" %}
+{% set page_title = _('Contest Submissions') %}
 {% include "components/page_header.html" %}
 
 <div class="min-h-screen sm:px-6 lg:px-8 py-12">
@@ -20,14 +20,14 @@ WiiLink Checkout | Contest Submissions
 
         <a href="https://miicontest.wiilink.ca/artisans/{{ artisan_id.artisan_id }}" target="_blank"
             class="flex flex-row items-center justify-between gap-3 inline-block mt-6 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition">
-            View {{ viewed_user.username }}'s Mii on the CMOC Viewer
+            {{ _('View') }} {{ viewed_user.username }}{{ _('`s Mii on the CMOC Viewer') }}
             <img src="/static/icon/external-link.svg" alt="External Link" class="w-4 h-4 invert inline-block ml-1">
         </a>
 
         {% include "components/pagination.html" %}
         {% else %}
         {% set empty_icon = "send-horizontal" %}
-        {% set empty_title = "No contest submissions found." %}
+        {% set empty_title = _("No contest submissions found.") %}
         {% include "components/empty_state.html" %}
         {% endif %}
     </div>

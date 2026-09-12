@@ -5,7 +5,7 @@ WiiLink Checkout | Favorites for {{ viewed_user.username }}
 {% endblock %}
 
 {% block content %}
-{% set page_title = "Favorites" %}
+{% set page_title = _('Favorites') %}
 {% include "components/page_header.html" %}
 
 {% if games %}
@@ -19,8 +19,8 @@ WiiLink Checkout | Favorites for {{ viewed_user.username }}
 {% include "components/pagination.html" %}
 {% else %}
 {% set empty_icon = "heart" %}
-{% set empty_title = "You haven't added any favorites yet." %}
-{% set empty_message = "Find a title you like on the Nintendo Channel, then select Add to Favorites." %}
+{% set empty_title = _("You haven't added any favorites yet.") %}
+{% set empty_message = _("Find a title you like on the Nintendo Channel, then select Add to Favorites.") %}
 {% include "components/empty_state.html" %}
 {% endif %}
 </div>
