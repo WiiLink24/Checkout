@@ -40,7 +40,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = config.db_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SECRET_KEY"] = config.secret_key
 app.config["OIDC_CLIENT_SECRETS"] = config.oidc_client_secrets_json
-app.config["OIDC_SCOPES"] = "openid profile email offline_access achievements groups"
+app.config["OIDC_SCOPES"] = "openid profile email offline_access achievements groups locale"
 app.config["OIDC_OVERWRITE_REDIRECT_URI"] = config.oidc_redirect_uri
 app.config["SESSION_TYPE"] = "redis"
 app.config["SESSION_REDIS"] = Redis(
@@ -67,8 +67,7 @@ def get_locale():
         return lang
 
     user = get_user_profile()
-    user_locale = user.get("attributes", {}).get("settings", {}).get("locale")
-    print(f"User locale: {user_locale}")
+    user_locale = user.get("locale")
     if user_locale in app.config["BABEL_SUPPORTED_LOCALES"]:
         return user_locale
 
