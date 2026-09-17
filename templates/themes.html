@@ -7,37 +7,37 @@
     <div class="max-w-6xl mx-auto">
         <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
             <div>
-                <h1 class="text-4xl font-bold text-white">Theme Shop</h1>
-                <p class="text-[var(--user-soft)] mt-2">Unlock a look for your profile and make it yours.</p>
+                <h1 class="text-4xl font-bold text-white">{{ _('Theme Shop') }}</h1>
+                <p class="text-[var(--user-soft)] mt-2">{{ _('Unlock a look for your profile and make it yours.') }}</p>
             </div>
             <div class="theme-card border rounded-xl px-5 py-3 text-right">
-                <p class="text-xs uppercase tracking-widest text-[var(--user-soft)]">Your balance</p>
+                <p class="text-xs uppercase tracking-widest text-[var(--user-soft)]">{{ _('Your balance') }}</p>
                 <p class="text-2xl font-bold text-white">{{ theme_data.points.balance|default(0) }} <span
-                        class="text-sm text-[var(--user-soft)]">points</span></p>
+                        class="text-sm text-[var(--user-soft)]">{{ _('points') }}</span></p>
             </div>
         </div>
 
         {% if points_error %}
         <div class="flex items-center gap-3 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 mb-6">
             <img src="/static/icon/triangle-alert.svg" alt="Error" class="w-5 h-5 invert flex-shrink-0">
-            <p class="!mb-0 text-red-200">Not enough points. You need {{ points_error.missing }} more to unlock {{
-                points_error.theme }} ({{ points_error.price }} pts).</p>
+            <p class="!mb-0 text-red-200">{{ _('Not enough points. You need') }} {{ points_error.missing }} {{ _('more to unlock') }} {{
+                points_error.theme }} ({{ points_error.price }} {{ _('pts') }}).</p>
         </div>
         {% endif %}
 
         <section class="theme-card border rounded-2xl p-5 sm:p-6 mb-8">
             <div class="flex items-center gap-3 mb-4">
-                <h2 class="text-xl font-bold text-white">How to Earn Points</h2>
+                <h2 class="text-xl font-bold text-white">{{ _('How to Earn Points') }}</h2>
             </div>
             <ul class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-[var(--user-soft)]">
-                <li class="flex items-center gap-3"><img src="/static/icon/clock.svg" alt="" class="w-5 h-5 invert opacity-60"> <span><strong>Play games</strong> - earn 1 point per hour of playtime</span></li>
-                <li class="flex items-center gap-3"><img src="/static/icon/star.svg" alt="" class="w-5 h-5 invert opacity-60"> <span><strong>Leave reviews</strong> - 5 points per game recommendation</span></li>
-                <li class="flex items-center gap-3"><img src="/static/icon/chart-line.svg" alt="" class="w-5 h-5 invert opacity-60"> <span><strong>Vote in polls</strong> - 5 points per poll</span></li>
-                <li class="flex items-center gap-3"><img src="/static/icon/send-horizontal.svg" alt="" class="w-5 h-5 invert opacity-60"> <span><strong>Enter contests</strong> - 10 points per submission</span></li>
-                <li class="flex items-center gap-3"><img src="/static/icon/trophy.svg" alt="" class="w-5 h-5 invert opacity-60"> <span><strong>Place in contests</strong> - 50 / 40 / 30 points for percentile 100% / 90% / 80%</span></li>
-                <li class="flex items-center gap-3"><img src="/static/icon/badge-check.svg" alt="" class="w-5 h-5 invert opacity-60"> <span><strong>Unlock achievements</strong> - 50 points per achievement</span></li>
+                <li class="flex items-center gap-3"><img src="/static/icon/clock.svg" alt="" class="w-5 h-5 invert opacity-60"> <span><strong>{{ _('Play games') }}</strong>{{ _(' - earn 1 point per hour of playtime') }}</span></li>
+                <li class="flex items-center gap-3"><img src="/static/icon/star.svg" alt="" class="w-5 h-5 invert opacity-60"> <span><strong>{{ _('Leave reviews') }}</strong>{{ _(' - 5 points per game recommendation') }}</span></li>
+                <li class="flex items-center gap-3"><img src="/static/icon/chart-line.svg" alt="" class="w-5 h-5 invert opacity-60"> <span><strong>{{ _('Vote in polls') }}</strong>{{ _(' - 5 points per poll') }}</span></li>
+                <li class="flex items-center gap-3"><img src="/static/icon/send-horizontal.svg" alt="" class="w-5 h-5 invert opacity-60"> <span><strong>{{ _('Enter contests') }}</strong>{{ _(' - 10 points per submission') }}</span></li>
+                <li class="flex items-center gap-3"><img src="/static/icon/trophy.svg" alt="" class="w-5 h-5 invert opacity-60"> <span><strong>{{ _('Place in contests') }}</strong>{{ _(' - 50 / 40 / 30 points for percentile 100%% / 90%% / 80%%') }}</span></li>
+                <li class="flex items-center gap-3"><img src="/static/icon/badge-check.svg" alt="" class="w-5 h-5 invert opacity-60"> <span><strong>{{ _('Unlock achievements') }}</strong>{{ _(' - 50 points per achievement') }}</span></li>
             </ul>
-            <p class="text-xs text-white/30 mt-4">Points refresh automatically as you keep using the service.</p>
+            <p class="text-xs text-white/30 mt-4">{{ _('Points refresh automatically as you keep using the service.') }}</p>
         </section>
 
         {% for category in categories %}
@@ -95,39 +95,39 @@
                             <p class="text-sm text-[var(--user-soft)] mt-1">{{ theme.description }}</p>
                         </div>
                         {% if theme.id != 'default' and not owned %}
-                        <span class="text-sm font-semibold px-3 py-1 bg-[var(--user-base)] rounded-md text-[var(--user-soft)] whitespace-nowrap">{{ theme.price }} pts</span>
+                        <span class="text-sm font-semibold px-3 py-1 bg-[var(--user-base)] rounded-md text-[var(--user-soft)] whitespace-nowrap">{{ theme.price }} {{ _('pts') }}</span>
                         {% endif %}
                     </div>
                     <div class="mt-5 flex items-center justify-between gap-3">
                         {% if active %}
-                        <span class="flex flex-row items-center gap-3 text-sm text-emerald-300"><img src="/static/icon/badge-check.svg" alt="Active" class="w-5 h-5 invert"> Active</span>
+                        <span class="flex flex-row items-center gap-3 text-sm text-emerald-300"><img src="/static/icon/badge-check.svg" alt="Active" class="w-5 h-5 invert"> {{ _('Active') }}</span>
                         {% elif owned %}
-                        <span class="flex flex-row items-center gap-3 text-sm text-[var(--user-soft)]"><img src="/static/icon/lock-open.svg" alt="Unlocked" class="w-5 h-5 invert"> Unlocked</span>
+                        <span class="flex flex-row items-center gap-3 text-sm text-[var(--user-soft)]"><img src="/static/icon/lock-open.svg" alt="Unlocked" class="w-5 h-5 invert"> {{ _('Unlocked') }}</span>
                         {% elif not owned and not theme.id == 'default' %}
-                        <span class="flex flex-row items-center gap-3 text-sm text-[var(--user-soft)]"><img src="/static/icon/lock.svg" alt="Locked" class="w-5 h-5 invert"> Locked</span>
+                        <span class="flex flex-row items-center gap-3 text-sm text-[var(--user-soft)]"><img src="/static/icon/lock.svg" alt="Locked" class="w-5 h-5 invert"> {{ _('Locked') }}</span>
                         {% endif %}
                         {% if active and theme.id != 'default' %}
                         <form method="post"><input type="hidden" name="action" value="deactivate"><input type="hidden"
                             name="theme_id" value="default"><button
-                            class="theme-btn border rounded-lg px-4 py-2 text-sm text-white">Use default</button>
+                            class="theme-btn border rounded-lg px-4 py-2 text-sm text-white">{{ _('Use default') }}</button>
                         </form>
                         {% elif active and theme.id == 'default' %}
                         {% elif not active and theme.id == 'default' %}
                         <form method="post"><input type="hidden" name="action" value="deactivate"><input type="hidden"
                             name="theme_id" value="default"><button
-                            class="theme-btn border rounded-lg px-4 py-2 text-sm text-white">Use default</button>
+                            class="theme-btn border rounded-lg px-4 py-2 text-sm text-white">{{ _('Use default') }}</button>
                         </form>
                         {% elif owned %}
                         <form method="post"><input type="hidden" name="action" value="activate"><input type="hidden"
                                 name="theme_id" value="{{ theme.id }}"><button
-                                class="theme-btn bg-[var(--user-soft)] border rounded-lg px-4 py-2 text-sm text-white">Activate</button>
+                                class="theme-btn bg-[var(--user-soft)] border rounded-lg px-4 py-2 text-sm text-white">{{ _('Activate') }}</button>
                         </form>
                         {% else %}
                         <form method="post"
                             onsubmit="return confirm('Unlock ' + {{ theme.name|tojson }} + ' for {{ theme.price }} points?');"><input
                                 type="hidden" name="action" value="unlock"><input type="hidden"
                                 name="theme_id" value="{{ theme.id }}"><button
-                                class="theme-btn border rounded-lg px-4 py-2 text-sm text-white">Unlock</button>
+                                class="theme-btn border rounded-lg px-4 py-2 text-sm text-white">{{ _('Unlock') }}</button>
                         </form>
                         {% endif %}
                     </div>
@@ -143,12 +143,12 @@
             <div class="flex items-center gap-3">
                 <img src="/static/icon/badge-dollar-sign.svg" alt="Coupon" class="w-6 h-6 invert opacity-70">
                 <div>
-                    <h2 class="text-xl font-bold text-white">Have a coupon?</h2>
-                    <p class="text-sm text-[var(--user-soft)] mt-1">Redeem it for points and themes.</p>
+                    <h2 class="text-xl font-bold text-white">{{ _('Have a coupon?') }}</h2>
+                    <p class="text-sm text-[var(--user-soft)] mt-1">{{ _('Redeem it for points and themes.') }}</p>
                 </div>
             </div>
             <a href="{{ url_for('auth_routes.coupons_redeem') }}"
-                class="theme-btn border rounded-lg px-5 py-2.5 text-sm text-white flex-shrink-0">Redeem coupon</a>
+                class="theme-btn border rounded-lg px-5 py-2.5 text-sm text-white flex-shrink-0">{{ _('Redeem coupon') }}</a>
         </section>
     </div>
 </div>

@@ -137,20 +137,20 @@
                 <button id="mobileFriendsBtn" onclick="toggleMobileFriendsMenu(event)" aria-label="Friends"
                     class="nav-tab text-white">
                     <img src="/static/icon/users.svg" alt="Friends" class="w-6 h-6 invert" />
-                    <span class="text-[10px] text-[var(--user-soft)]">Friends</span>
+                    <span class="text-[10px] text-[var(--user-soft)]">{{ _('Friends') }}</span>
                 </button>
                 {% else %}
                 <span>
                     <a href="{{ url_for('trending.top_most_played') }}" aria-label="Most Played" class="nav-tab text-white">
                         <img src="/static/icon/star.svg" alt="Most Played" class="w-6 h-6 invert" />
-                        <span class="text-[10px] text-[var(--user-soft)]">Most Played</span>
+                        <span class="text-[10px] text-[var(--user-soft)]">{{ _('Most Played') }}</span>
                     </a>
                 </span>
                 {% endif %}
             </div>
             <a href="{{ url_for('misc_routes.search') }}" aria-label="Search" class="nav-tab justify-self-center text-white">
                 <img src="/static/icon/search.svg" alt="Search" class="w-6 h-6 invert" />
-                <span class="text-[10px] text-[var(--user-soft)]">Search</span>
+                <span class="text-[10px] text-[var(--user-soft)]">{{ _('Search') }}</span>
             </a>
             <a href="{% if user_info %}/{% else %}{{ url_for('oidc_auth.login') }}{% endif %}" aria-label="Your account"
                 class="nav-tab justify-self-center -translate-y-3 text-white">
@@ -166,17 +166,17 @@
                     <img src="/static/icon/user.svg" alt="Account" class="w-6 h-6 invert" />
                 </div>
                 {% endif %}
-                <span class="translate-y-[27px] text-[10px] text-[var(--user-soft)]">{% if user_info %}You{% else %}Log In{% endif %}</span>
+                <span class="translate-y-[27px] text-[10px] text-[var(--user-soft)]">{% if user_info %}{{ _('You') }}{% else %}{{ _('Log In') }}{% endif %}</span>
             </a>
             <button id="mobileMenuBtn" aria-label="Menu"
                 class="nav-tab justify-self-center text-white focus:outline-none">
                 <img src="/static/icon/menu.svg" alt="Menu" class="w-6 h-6 invert" />
-                <span class="text-[10px] text-[var(--user-soft)]">Menu</span>
+                <span class="text-[10px] text-[var(--user-soft)]">{{ _('Menu') }}</span>
             </button>
             <a href="https://accounts.wiilink.ca/manage" target="_blank" aria-label="Settings"
                 class="nav-tab justify-self-center text-white">
                 <img src="/static/icon/settings.svg" alt="Settings" class="w-6 h-6 invert" />
-                <span class="text-[10px] text-[var(--user-soft)]">Settings</span>
+                <span class="text-[10px] text-[var(--user-soft)]">{{ _('Settings') }}</span>
             </a>
         </div>
     </nav>
@@ -186,7 +186,7 @@
         class="fixed bottom-0 inset-x-0 max-h-3/4 flex flex-col bg-[var(--user-dark)] backdrop-blur-md rounded-t-2xl shadow-2xl p-1 z-50 pointer-events-none opacity-0 translate-y-full transition-all duration-300 border"
         style="visibility: hidden; border-color: var(--user-transparent, rgba(17, 24, 39, 0.14));">
         <div class="mx-auto mt-1 mb-2 h-1 w-10 rounded-full bg-[var(--user-soft)]"></div>
-        <h2 class="text-white text-lg font-medium px-3 mb-2">Friends</h2>
+        <h2 class="text-white text-lg font-medium px-3 mb-2">{{ _('Friends') }}</h2>
         <div class="flex-1 overflow-y-auto flex flex-col gap-1">
             {% if user_info.friends %}
             {% for friend in user_info.friends %}
@@ -200,7 +200,7 @@
             </a>
             {% endfor %}
             {% else %}
-            <p class="px-3 py-2 text-sm text-[var(--user-soft)]">No friends yet.</p>
+            <p class="px-3 py-2 text-sm text-[var(--user-soft)]">{{ _('No friends yet.') }}</p>
             {% endif %}
         </div>
         <span
@@ -361,7 +361,7 @@
                         class="w-full px-4 py-2 theme-menu-btn text-white rounded-xl transition duration-200 flex items-center justify-between">
                         <span class="flex items-center">
                             <img src="/static/icon/user.svg" alt="You" class="w-5 h-5 invert mr-2" />
-                            You
+                            {{ _('You') }}
                         </span>
                         <span id="youMenuArrow" class="transform"><img src="/static/icon/chevron-right.svg"
                                 alt="Arrow Down" class="w-4 h-4 invert" /></span>
@@ -383,7 +383,7 @@
                         class="w-full px-4 py-2 theme-menu-btn text-white rounded-xl transition duration-200 flex items-center justify-between">
                         <span class="flex items-center">
                             <img src="/static/icon/users.svg" alt="Friends" class="w-5 h-5 invert mr-2" />
-                            Friends
+                            {{ _('Friends') }}
                         </span>
                         <span class="inline-block transform"><img src="/static/icon/chevron-right.svg"
                                 alt="Arrow Down" class="w-4 h-4 invert" /></span>
@@ -408,9 +408,9 @@
                         {% endif %}
                         <span class="flex border-t border-[var(--user-transparent)] mt-1 pt-1">
                             <a href="/following"
-                                class="flex-1 px-3 py-1.5 text-xs text-[var(--user-soft)] hover:text-white transition">Following</a>
+                                class="flex-1 px-3 py-1.5 text-xs text-[var(--user-soft)] hover:text-white transition">{{ _('Following') }}</a>
                             <a href="/followers"
-                                class="flex-1 px-3 py-1.5 text-xs text-[var(--user-soft)] hover:text-white transition text-right">Followers</a>
+                                class="flex-1 px-3 py-1.5 text-xs text-[var(--user-soft)] hover:text-white transition text-right">{{ _('Followers') }}</a>
                         </span>
                     </div>
                 </div>
@@ -418,56 +418,56 @@
 
                 <span class="h-full sm:h-[calc(100%-80px)] flex flex-col justify-between">
                     <div class="flex flex-col gap-2">
-                        {{ menu_item('Search', 'misc_routes.search', 'search') }}
-                        {{ menu_section('TRENDING') }}
-                        {{ menu_item('Most Played', 'trending.top_most_played', 'trending-up') }}
-                        {{ menu_item('Best Games', 'trending.top_best_games', 'star') }}
-                        {{ menu_item('Top Favorites', 'trending.top_favorites', 'heart') }}
+                        {{ menu_item(_('Search'), 'misc_routes.search', 'search') }}
+                        {{ menu_section(_('TRENDING')) }}
+                        {{ menu_item(_('Most Played'), 'trending.top_most_played', 'trending-up') }}
+                        {{ menu_item(_('Best Games'), 'trending.top_best_games', 'star') }}
+                        {{ menu_item(_('Top Favorites'), 'trending.top_favorites', 'heart') }}
                     </div>
                     {% if g.oidc_user.logged_in %}
                     <div class="flex flex-col gap-2 mt-8">
                         {% set channels = [
                         {
                         'id': 'nintendo',
-                        'name': 'Nintendo Channel',
+                        'name': _('Nintendo Channel'),
                         'icon': 'nc',
                         'items': [
-                        {'name': 'Discover', 'route': 'auth_routes.discover', 'icon': 'lightbulb'},
-                        {'name': 'Recommendations', 'route': 'auth_routes.recommendations', 'icon': 'gamepad'},
-                        {'name': 'Calendar', 'route': 'misc_routes.calendar', 'icon': 'calendar'},
-                        {'name': 'Time Played', 'route': 'auth_routes.time_played', 'icon': 'clock'},
-                        {'name': 'Favorites', 'route': 'auth_routes.favorites', 'icon': 'star'}
+                        {'name': _('Discover'), 'route': 'auth_routes.discover', 'icon': 'lightbulb'},
+                        {'name': _('Recommendations'), 'route': 'auth_routes.recommendations', 'icon': 'gamepad'},
+                        {'name': _('Calendar'), 'route': 'misc_routes.calendar', 'icon': 'calendar'},
+                        {'name': _('Time Played'), 'route': 'auth_routes.time_played', 'icon': 'clock'},
+                        {'name': _('Favorites'), 'route': 'auth_routes.favorites', 'icon': 'star'}
                         ]
                         },
                         {
                         'id': 'votes',
-                        'name': 'Everybody Votes Channel',
+                        'name': _('Everybody Votes Channel'),
                         'icon': 'evc',
                         'items': [
-                        {'name': 'Polls', 'route': 'auth_routes.polls', 'icon': 'chart-line'},
-                        {'name': 'Suggestions', 'route': 'auth_routes.suggestions', 'icon': 'circle-question-mark'}
+                        {'name': _('Polls'), 'route': 'auth_routes.polls', 'icon': 'chart-line'},
+                        {'name': _('Suggestions'), 'route': 'auth_routes.suggestions', 'icon': 'circle-question-mark'}
                         ]
                         },
                         {
                         'id': 'mii',
-                        'name': 'Check Mii Out Channel',
+                        'name': _('Check Mii Out Channel'),
                         'icon': 'cmoc',
                         'items': [
-                        {'name': 'Your Miis', 'route': 'javascript:void(0);', 'icon': 'users', 'external': False,
+                        {'name': _('Your Miis'), 'route': 'javascript:void(0);', 'icon': 'users', 'external': False,
                         'onclick': 'openArtisanModal()' if artisan_ids|length > 1 else None, 'direct_link':
                         'https://miicontest.wiilink.ca/artisans/' + (artisan_ids[0].artisan_id|string) if
                         artisan_ids|length == 1 else None},
-                        {'name': 'Contest Submissions', 'route': 'auth_routes.contest_submissions', 'icon':
+                        {'name': _('Contest Submissions'), 'route': 'auth_routes.contest_submissions', 'icon':
                         'send-horizontal'}
                         ]
                         },
                         {
                         'id': 'private',
-                        'name': 'Private',
+                        'name': _('Private'),
                         'icon': 'lock_inv',
                         'items': [
-                        {'name': 'My Digicard', 'route': 'digicard.private_digicard', 'icon': 'id-card'},
-                        {'name': 'Takeout', 'route': 'auth_routes.takeout', 'icon': 'download'}
+                        {'name': _('My Digicard'), 'route': 'digicard.private_digicard', 'icon': 'id-card'},
+                        {'name': _('Takeout'), 'route': 'auth_routes.takeout', 'icon': 'download'}
                         ]
                         }
                         ] %}
@@ -479,14 +479,14 @@
                         <a href="{{ url_for('auth_routes.themes') }}"
                     class="block w-full px-4 py-2 theme-menu-btn text-white rounded-xl transition duration-200 flex items-center justify-between">
                     <span class="flex items-center">
-                        <img src="/static/icon/palette.svg" alt="{{ name }}" class="w-5 h-5 invert mr-2" />Themes
+                        <img src="/static/icon/palette.svg" alt="{{ name }}" class="w-5 h-5 invert mr-2" />{{ _('Themes') }}
                     </span>
                     <span class="text-xs px-2 py-1 rounded-md bg-[var(--user-dark)] text-[var(--user-soft)]">{{ user_info.achievements.points.balance if user_info.achievements and user_info.achievements.points else 0 }} pts.</span>
                 </a>
                         {% if is_coupon_admin %}
-                        {{ menu_item('Coupon Admin', 'coupons_admin.panel', 'badge-dollar-sign') }}
+                        {{ menu_item(_('Coupon Admin'), 'coupons_admin.panel', 'badge-dollar-sign') }}
                         {% endif %}
-                        {{ menu_item_external('Account Settings', 'https://accounts.wiilink.ca/manage', 'settings') }}
+                        {{ menu_item_external(_('Account Settings'), 'https://accounts.wiilink.ca/manage', 'settings') }}
                     </div>
                     {% endif %}
                     {% if not g.oidc_user.logged_in %}
@@ -495,17 +495,17 @@
                             <a href="{{ url_for('oidc_auth.login') }}"
                                 class="w-full px-4 py-2 theme-menu-btn-active hover:bg-[var(--user-dark)] text-white rounded-xl transition duration-200 flex items-center">
                                 <img src="/static/icon/key-round.svg" alt="Login" class="w-5 h-5 invert mr-2" />
-                                Log In with WiiLink
+                                {{ _('Log In with WiiLink') }}
                             </a>
                         </div>
 
                         <div class="mt-2 p-4 theme-card rounded-xl border">
                             <div class="flex items-center mb-2">
                                 <img src="/static/icon/info.svg" alt="Info" class="w-5 h-5 invert mr-2 opacity-70" />
-                                <h3 class="text-sm font-medium text-[var(--user-soft)]">Best Experience</h3>
+                                <h3 class="text-sm font-medium text-[var(--user-soft)]">{{ _('Best Experience') }}</h3>
                             </div>
                             <p class="text-sm text-[var(--user-soft)]">
-                                Sign in to access personalized recommendations, your gaming stats, and game discovery.
+                                {{ _('Sign in to access personalized recommendations, your gaming stats, and game discovery.') }}
                             </p>
                         </div>
                     </span>
@@ -543,7 +543,7 @@
                     class="hover:bg-red-600/30 p-2 rounded-xl flex items-center space-x-2 text-[var(--user-soft)] hover:text-white transition-colors group mb-6">
                     <img src="/static/icon/log-out.svg" alt="Logout"
                         class="w-5 h-5 invert group-hover:translate-x-1 transition-transform duration-200" />
-                    <span>Logout</span>
+                    <span>{{ _('Logout') }}</span>
                 </a>
                 {% endif %}
 
@@ -571,8 +571,8 @@
     <div id="artisanModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50"
         style="display: none;">
         <div class="bg-[var(--user-dark)] border border-[var(--user-transparent)] rounded-xl p-6 max-w-md w-full mx-4">
-            <h2 class="text-xl font-bold text-white mb-4">Select Your Mii Artisan</h2>
-            <p class="text-[var(--user-soft)] mb-4">You have multiple artisan profiles. Which one would you like to open?</p>
+            <h2 class="text-xl font-bold text-white mb-4">{{ _('Select Your Mii Artisan') }}</h2>
+            <p class="text-[var(--user-soft)] mb-4">{{ _('You have multiple artisan profiles. Which one would you like to open?') }}</p>
             <div class="space-y-2 mb-6">
                 {% for artisan in artisan_ids %}
                 <button onclick="navigateToArtisan('{{ artisan.artisan_id }}')"
@@ -586,11 +586,11 @@
                     <div class="flex items-center gap-4 text-sm text-[var(--user-soft)]">
                         <span class="flex items-center gap-1">
                             <img src="/static/icon/user.svg" alt="Posts" class="w-4 h-4 invert" />
-                            {{ artisan.number_of_posts }} posts
+                            {{ artisan.number_of_posts }} {{ _('posts') }}
                         </span>
                         <span class="flex items-center gap-1">
                             <img src="/static/icon/heart.svg" alt="Likes" class="w-4 h-4 invert" />
-                            {{ artisan.total_likes }} likes
+                            {{ artisan.total_likes }} {{ _('likes') }}
                         </span>
                     </div>
                 </button>
@@ -598,7 +598,7 @@
             </div>
             <button onclick="closeArtisanModal()"
                 class="w-full px-4 py-2 theme-menu-btn text-[var(--user-soft)] rounded-lg transition duration-200">
-                Cancel
+                {{ _('Cancel') }}
             </button>
         </div>
     </div>

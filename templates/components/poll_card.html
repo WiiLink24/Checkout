@@ -57,9 +57,9 @@
                             style="background: {{ fetch_wii_color_from_number(poll.wii_no) }}"></span>
                         {% endif %}
                         {% if poll.type == 'n' %}
-                        <i class="fas fa-flag mr-1"></i>National
+                        <i class="fas fa-flag mr-1"></i>{{ _('National') }}
                         {% else %}
-                        <i class="fas fa-globe-americas mr-1"></i>Worldwide
+                        <i class="fas fa-globe-americas mr-1"></i>{{ _('Worldwide') }}
                         {% endif %}
                     </span>
                     <span class="opacity-70 text-right">
@@ -104,7 +104,7 @@
                                 class="inline-block w-2.5 h-2.5 rounded-full"
                                 style="background: {{ poll.wii_color }}"></span><span class="text-xs">{{
                                 poll.wii_number|format_serial }}</span></span>{% endif %}
-                        Predictions
+                        {{ _('Predictions') }}
                     </span>
                     <span class="opacity-70 text-right">
                         {{ poll.date }}

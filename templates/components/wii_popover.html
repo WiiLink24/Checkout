@@ -10,7 +10,7 @@
             {% if w.wii_number %}
             <span class="text-[var(--user-soft)] truncate">...{{ (w.wii_number|format_serial)[-4:] }}</span>
             {% else %}
-            <span class="text-[var(--user-soft)] truncate opacity-60">Unknown Wii</span>
+            <span class="text-[var(--user-soft)] truncate opacity-60">{{ _('Unknown Wii') }}</span>
             {% endif %}
             <span class="ml-auto text-white font-semibold">
                 {% if fmt == 'playtime' %}{{ w[metric]|format_playtime }}{% else %}{{ w[metric] }}{% endif %}

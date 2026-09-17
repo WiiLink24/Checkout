@@ -3,6 +3,7 @@ import config
 from datetime import date
 
 from flask import current_app
+from flask_babel import gettext
 
 import calendar as pycalendar
 
@@ -96,11 +97,26 @@ def build_calendar_context(serial_prefixes, month_param=None, serial_to_wii=None
     )
     next_active_param = f"{later[0][0]:04d}-{later[0][1]:02d}" if later else None
 
+    translated_month_names = {
+        1: gettext("January"),
+        2: gettext("February"),
+        3: gettext("March"),
+        4: gettext("April"),
+        5: gettext("May"),
+        6: gettext("June"),
+        7: gettext("July"),
+        8: gettext("August"),
+        9: gettext("September"),
+        10: gettext("October"),
+        11: gettext("November"),
+        12: gettext("December"),
+    }
+
     return {
         "calendar_weeks": weeks,
         "active_days": active_days,
         "today": today,
-        "month_label": f"{pycalendar.month_name[month]} {year}",
+        "month_label": f"{translated_month_names[month]} {year}",
         "month_param": f"{year:04d}-{month:02d}",
         "prev_month_param": f"{prev_year:04d}-{prev_month:02d}",
         "next_month_param": f"{next_year:04d}-{next_month:02d}",

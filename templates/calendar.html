@@ -1,11 +1,11 @@
 {% extends "generic/base.html" %}
 
 {% block title %}
-WiiLink Checkout | Calendar for {{ viewed_user.username }}
+WiiLink Checkout | {{_('Calendar for')}} {{ viewed_user.username }}
 {% endblock %}
 
 {% block content %}
-{% set page_title = "Calendar" %}
+{% set page_title = _('Calendar') %}
 {% include "components/page_header.html" %}
 
 <div class="px-4 sm:px-6 lg:px-8 py-8 max-w-6xl mx-auto">
@@ -67,32 +67,32 @@ WiiLink Checkout | Calendar for {{ viewed_user.username }}
                 {% if not has_plays %}   
         <div class="flex flex-col items-center gap-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none z-10">
                 <img src="/static/icon/clock.svg" alt="" class="w-12 h-12 invert mx-auto mb-2" />
-                <p class="text-2xl font-bold text-white">No plays found</p>
-                <p class="text-sm text-[var(--user-soft)] mt-1">No games were played in this month.<br><br>Did you play games on these dates but they aren't showing up?<br>Try deleting your Nintendo Channel save data and reopening the channel.</p>
+                <p class="text-2xl font-bold text-white">{{ _('No plays found') }}</p>
+                <p class="text-sm text-[var(--user-soft)] mt-1">{{ _('No games were played in this month.') }}<br><br>{{ _('Did you play games on these dates but they aren\'t showing up?') }}<br>{{ _('Try deleting your Nintendo Channel save data and reopening the channel.') }}</p>
     </div> 
     {% endif %}
         <div class="mb-3 grid grid-cols-7 gap-px bg-[var(--user-soft)] rounded-2xl overflow-hidden {% if not has_plays %}opacity-30{% endif %}">
             <div
                 class="py-2.5 text-center text-xs uppercase tracking-wider text-[var(--user-dark)]">
-                Sun</div>
+                {{ _('Sun') }}</div>
             <div
                 class="py-2.5 text-center text-xs uppercase tracking-wider text-[var(--user-dark)]">
-                Mon</div>
+                {{ _('Mon') }}</div>
             <div
                 class="py-2.5 text-center text-xs uppercase tracking-wider text-[var(--user-dark)]">
-                Tue</div>
+                {{ _('Tue') }}</div>
             <div
                 class="py-2.5 text-center text-xs uppercase tracking-wider text-[var(--user-dark)]">
-                Wed</div>
+                {{ _('Wed') }}</div>
             <div
                 class="py-2.5 text-center text-xs uppercase tracking-wider text-[var(--user-dark)]">
-                Thu</div>
+                {{ _('Thu') }}</div>
             <div
                 class="py-2.5 text-center text-xs uppercase tracking-wider text-[var(--user-dark)]">
-                Fri</div>
+                {{ _('Fri') }}</div>
             <div
                 class="py-2.5 text-center text-xs uppercase tracking-wider text-[var(--user-dark)]">
-                Sat</div>
+                {{ _('Sat') }}</div>
         </div>
 
         <div class="grid grid-cols-7 gap-px {% if not has_plays %}opacity-30{% endif %}">
@@ -101,7 +101,7 @@ WiiLink Checkout | Calendar for {{ viewed_user.username }}
             {% if day.date %}
             <div
                 class="min-h-[7.5rem] xl:min-h-[8.5rem] xl:max-h-[8.5rem] overflow-y-auto p-1.5 m-1 rounded-lg flex flex-col gap-1 {% if day.date == today %}bg-[var(--user-light)]{% else %}bg-[var(--user-dark)]{% endif %} relative">
-                <span class="absolute w-5 h-5 aspect-square top-3 right-3 flex items-center justify-center rounded-full flex justify-end px-0.5 z-10 {% if day.date == today %}bg-[var(--user-base)]{% else %}bg-[var(--user-dark)]{% endif %}">
+                <span class="absolute w-5 h-5 aspect-square top-3 right-3 flex items-center justify-center rounded-full flex justify-center px-0.5 z-10 {% if day.date == today %}bg-[var(--user-base)]{% else %}bg-[var(--user-dark)]{% endif %}">
                     {% if day.date == today %}
                     <span
                         class="text-white text-xs font-semibold">{{
@@ -260,8 +260,8 @@ WiiLink Checkout | Calendar for {{ viewed_user.username }}
         var pickerYear = parseInt(selectedParam.split("-")[0], 10);
         var selectedYear = pickerYear;
         var selectedMonth = parseInt(selectedParam.split("-")[1], 10);
-        var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        var monthNames = ["{{ _('Jan') }}", "{{ _('Feb') }}", "{{ _('Mar') }}", "{{ _('Apr') }}", "{{ _('May') }}", "{{ _('Jun') }}",
+            "{{ _('Jul') }}", "{{ _('Aug') }}", "{{ _('Sep') }}", "{{ _('Oct') }}", "{{ _('Nov') }}", "{{ _('Dec') }}"];
 
         function renderPicker() {
             yearLabel.textContent = pickerYear;

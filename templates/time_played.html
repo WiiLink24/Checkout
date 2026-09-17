@@ -1,11 +1,11 @@
 {% extends "generic/base.html" %}
 
 {% block title %}
-WiiLink Checkout | Time Played for {{ viewed_user.username }}
+WiiLink Checkout | {{ _('Time Played for') }} {{ viewed_user.username }}
 {% endblock %}
 
 {% block content %}
-{% set page_title = "Time Played" %}
+{% set page_title = _('Time Played') %}
 {% include "components/page_header.html" %}
 
 {% if not is_unclaimed %}
@@ -34,7 +34,7 @@ WiiLink Checkout | Time Played for {{ viewed_user.username }}
 {% include "components/pagination.html" %}
 {% else %}
 {% set empty_icon = "clock" %}
-{% set empty_title = "No time played data found for this serial prefix." %}
+{% set empty_title = _("No time played data found for this serial prefix.") %}
 {% include "components/empty_state.html" %}
 {% endif %}
 </div>
