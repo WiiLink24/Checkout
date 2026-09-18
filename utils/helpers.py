@@ -23,9 +23,9 @@ def parse_int(value):
 
 
 def is_public_profile(user_profile, logged_in_user):
-    if (logged_in_user and user_profile.get("username") == logged_in_user.get(
+    if logged_in_user and user_profile.get("username") == logged_in_user.get(
         "username"
-    )):
+    ):
         return True
     # Admin users can view any profile
     if logged_in_user:

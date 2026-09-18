@@ -243,6 +243,7 @@ def get_authentik_user(user):
     response.raise_for_status()
     return response.json()
 
+
 def update_user_attributes(user, attributes):
     user_id = user.get("pk") or user.get("uuid")
     if not user_id:
@@ -281,7 +282,11 @@ def search_authentik_users_by_name(search_query, logged_in_user=None):
     base_url = config.authentik_api_url.rstrip("/")
     # Use search parameter for username search
     user_groups = (logged_in_user or {}).get("groups") or []
-    privacy_filter = "&attributes=%7B%22public_profile%22%3A+true%7D" if getattr(config, "coupon_admin_group_uuid", "") not in user_groups else ""
+    privacy_filter = (
+        "&attributes=%7B%22public_profile%22%3A+true%7D"
+        if getattr(config, "coupon_admin_group_uuid", "") not in user_groups
+        else ""
+    )
     url = f"{base_url}/core/users/?page_size=50&search={search_query}{privacy_filter}"
     headers = {
         "Accept": "application/json",
