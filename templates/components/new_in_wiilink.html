@@ -3,7 +3,7 @@
     <div class="flex flex-col md:flex-row gap-3">
         <div class="grid grid-cols-2 gap-3 md:contents">
             {% if open_contests %}
-            <a class="flex-1 justify-between p-3 min-w-0 rounded-xl theme-card-inner !bg-[var(--user-dark)] hover:scale-105 p-3 flex flex-col items-center gap-2 text-sm text-white font-semibold transition hover:bg-[var(--user-dark)]/70"
+            <a class="{% if not latest_poll %} col-span-2 md:col-span-1 {% endif %} flex-1 justify-between p-3 min-w-0 rounded-xl theme-card-inner !bg-[var(--user-dark)] hover:scale-105 p-3 flex flex-col items-center gap-2 text-sm text-white font-semibold transition hover:bg-[var(--user-dark)]/70"
                 href="https://miicontest.wiilink.ca" target="_blank" rel="noopener">
                 <span class="w-full flex items-center justify-between mb-2 gap-3">
                     <img src="/static/icon/cmoc.svg" alt="" class="h-6">
@@ -22,7 +22,7 @@
             {% endif %}
             {% if latest_poll %}
             <a href="https://evc.wiilink.ca" target="_blank" rel="noopener"
-                class="flex-1 justify-between p-3 min-w-0 rounded-xl theme-card-inner overflow-hidden !bg-[var(--user-dark)] hover:scale-105 transition flex flex-col text-sm text-white font-semibold">
+                class="{% if not open_contests %} col-span-2 md:col-span-1 {% endif %}flex-1 justify-between p-3 min-w-0 rounded-xl theme-card-inner overflow-hidden !bg-[var(--user-dark)] hover:scale-105 transition flex flex-col text-sm text-white font-semibold">
                 <span class="flex flex-col gap-0.5 mb-2">
                     <span class="flex items-center justify-between gap-3">
                         <img src="/static/icon/evc.svg" alt="" class="h-6">
