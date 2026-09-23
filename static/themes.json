@@ -201,8 +201,7 @@
                     "font": "SuperMarioBrosNES",
                     "background": "SMB1.png",
                     "bgm": "SMB1.mp3",
-                    "bg-type": 1,
-                    "hidden": true
+                    "bg-type": 1
                 },
                 {
                     "id": "super-mario-bros-2",
@@ -219,8 +218,7 @@
                     "font": "SuperMarioBrosNES",
                     "background": "SMB2.webp",
                     "bgm": "SMB2.mp3",
-                    "bg-type": 1,
-                    "hidden": true
+                    "bg-type": 1
                 },
                 {
                     "id": "super-mario-bros-3",
@@ -237,8 +235,7 @@
                     "font": "SuperMarioBrosNES",
                     "background": "SMB3.png",
                     "bgm": "SMB3.mp3",
-                    "bg-type": 1,
-                    "hidden": true
+                    "bg-type": 1
                 }
             ]
         },

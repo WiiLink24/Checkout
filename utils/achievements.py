@@ -260,6 +260,7 @@ def is_fresh(payload) -> bool:
         return False
     return datetime.now() - generated_at < timedelta(hours=_ACHIEVEMENTS_REFRESH_HOURS)
 
+
 def _build_refresh_payload(achieved_ids, metrics=None, previous=None) -> Dict:
     metrics = metrics or {}
     previous = previous or {}

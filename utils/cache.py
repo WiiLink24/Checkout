@@ -28,7 +28,7 @@ def generate_top_page_cache():
             pages = {
                 "top_most_played.html": (fetch_top_most_played(30), "most_played"),
                 "top_best_games.html": (fetch_top_best_games(30), "best_games"),
-                "top_favorites.html": (fetch_top_favorites(30), "favorites"),
+                "top_favorites.html": (fetch_top_favorites(30), "most_favorited"),
             }
 
             for cache_file, (games, score_type) in pages.items():

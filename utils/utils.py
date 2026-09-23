@@ -243,6 +243,7 @@ def get_authentik_user(user):
     response.raise_for_status()
     return response.json()
 
+
 def update_user_attributes(user, attributes):
     user_id = user.get("pk") or user.get("uuid")
     if not user_id:
