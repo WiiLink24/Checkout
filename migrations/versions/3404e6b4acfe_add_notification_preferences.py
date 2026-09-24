@@ -23,7 +23,7 @@ def upgrade():
     sa.Column('enabled', sa.Boolean(), server_default=sa.text('true'), nullable=False),
     sa.PrimaryKeyConstraint('username', 'category')
     )
-    op.drop_index(op.f('idx_push_subscriptions_username'), table_name='push_subscriptions')
+    op.drop_index(op.f('ix_push_subscriptions_username'), table_name='push_subscriptions')
     # ### end Alembic commands ###
 
 
