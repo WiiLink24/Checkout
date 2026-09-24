@@ -54,3 +54,35 @@ self.addEventListener("fetch", (event) => {
             .catch(() => caches.match(event.request))
     );
 });
+
+/* Web Push notifications. */
+self.addEventListener("push", (event) => {
+    let data = {};
+    try {
+        data = event.data.json();
+    } catch (err) {
+        data = { body: event.data ? event.data.text() : "" };
+    }
+    event.waitUntil(
+        self.registration.showNotification(data.title || "WiiLink Checkout", {
+            body: data.body || "",
+            icon: data.icon || "/static/icons/pwa-192.png",
+            badge: "/static/icons/pwa-192.png",
+            tag: data.tag || undefined,
+            data: { url: data.url || "/" },
+        })
+    );
+});
+
+self.addEventListener("notificationclick", (event) => {
+    event.notification.close();
+    const url = (event.notification.data && event.notification.data.url) || "/";
+    event.waitUntil(
+        self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
+            for (const client of clientList) {
+                if (client.url.includes(url) && "focus" in client) return client.focus();
+            }
+            return self.clients.openWindow(url);
+        })
+    );
+});

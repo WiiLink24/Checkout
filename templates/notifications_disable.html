@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Disable Notifications | WiiLink Checkout</title>
+    <link rel="stylesheet" href="/static/css/main.css" />
+    <style>
+        body {
+            background-color: var(--user-base, #111827);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center p-6">
+    <div class="max-w-md w-full bg-gray-800/80 border border-gray-700 rounded-2xl p-8 text-center">
+        <img src="/static/icon/bell.svg" alt="Notifications" class="w-12 h-12 mx-auto mb-4 invert" />
+        <h1 class="text-2xl font-bold text-white mb-2">Disable Notifications</h1>
+        <p id="status" class="text-sm text-gray-500">Working…</p>
+    </div>
+
+    <script>
+        const RETURN_URL = {{ return_url | tojson }};
+
+        async function disableNotifications() {
+            const status = document.getElementById("status");
+            try {
+                const registration = await navigator.serviceWorker.getRegistration("/sw.js");
+                const subscription = registration ? await registration.pushManager.getSubscription() : null;
+
+                if (subscription) {
+                    const response = await fetch("/notifications/unsubscribe", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ endpoint: subscription.endpoint }),
+                    });
+                    if (response.ok) await subscription.unsubscribe();
+                    status.textContent = "Notifications disabled. Redirecting…";
+                } else {
+                    status.textContent = "No subscription was found on this device. Redirecting…";
+                }
+            } catch (err) {
+                status.textContent = "Something went wrong. Redirecting…";
+            }
+            setTimeout(() => window.location.href = RETURN_URL, 800);
+        }
+
+        disableNotifications();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Enable Notifications | WiiLink Checkout</title>
+    <link rel="stylesheet" href="/static/css/main.css" />
+    <style>
+        body {
+            background-color: var(--user-base, #111827);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center p-6">
+    <div class="max-w-md w-full bg-gray-800/80 border border-gray-700 rounded-2xl p-8 text-center">
+        <img src="/static/icon/bell.svg" alt="Notifications" class="w-12 h-12 mx-auto mb-4 invert" />
+        <h1 class="text-2xl font-bold text-white mb-2">Enable Notifications</h1>
+        <p class="text-gray-400 mb-6">Get push notifications from WiiLink services on this device through WiiLink
+            Checkout. Your browser will ask for permission.</p>
+        <p id="status" class="text-sm text-gray-500 mb-6">
+            {% if status_message %}{{ status_message }}{% else %}Click the button below to get started.{% endif %}
+        </p>
+        {% if public_key %}
+        <button id="enableBtn" onclick="enableNotifications()"
+            class="w-full px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed">
+            Enable Notifications
+        </button>
+        {% endif %}
+    </div>
+
+    <script>
+        const RETURN_URL = {{ return_url | tojson }};
+        const PUBLIC_KEY = {{ public_key | tojson }};
+
+        function urlBase64ToUint8Array(base64String) {
+            const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+            const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+            const rawData = atob(base64);
+            return Uint8Array.from(rawData, (char) => char.charCodeAt(0));
+        }
+
+        async function enableNotifications() {
+            const button = document.getElementById("enableBtn");
+            const status = document.getElementById("status");
+            button.disabled = true;
+
+            try {
+                if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+                    throw new Error("Push notifications are not supported by this browser.");
+                }
+
+                status.textContent = "Requesting permission…";
+                const permission = await Notification.requestPermission();
+                if (permission !== "granted") {
+                    status.textContent = "Permission was denied. Enable notifications for this site in your browser settings and try again.";
+                    button.disabled = false;
+                    return;
+                }
+
+                status.textContent = "Subscribing…";
+                await navigator.serviceWorker.register("/sw.js");
+                const registration = await navigator.serviceWorker.ready;
+                let subscription = await registration.pushManager.getSubscription();
+                if (!subscription) {
+                    subscription = await registration.pushManager.subscribe({
+                        userVisibleOnly: true,
+                        applicationServerKey: urlBase64ToUint8Array(PUBLIC_KEY),
+                    });
+                }
+
+                const raw = subscription.toJSON();
+                const response = await fetch("/notifications/subscribe", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ endpoint: raw.endpoint, keys: raw.keys }),
+                });
+                if (!response.ok) throw new Error("The subscription could not be saved.");
+
+                status.textContent = "Notifications enabled! Redirecting…";
+                setTimeout(() => window.location.href = RETURN_URL, 800);
+            } catch (err) {
+                status.textContent = err.message || "Something went wrong.";
+                button.disabled = false;
+            }
+        }
+    </script>
+</body>
+
+</html>
