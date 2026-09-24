@@ -21,6 +21,8 @@ from channels.nc import serial_has_time_played
 
 MAX_SUBSCRIPTIONS_PER_USER = 10
 
+MAX_SUBSCRIPTIONS_PER_USER = 10
+
 misc_routes_bp = Blueprint("misc_routes", __name__, url_prefix="")
 
 
@@ -233,7 +235,6 @@ def calendar_page():
         view_base="/calendar",
         **context,
     )
-
 
 def _shared_secret_authorized():
     auth = request.headers.get("Authorization", "")
