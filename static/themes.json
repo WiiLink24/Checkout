@@ -386,7 +386,7 @@
                     "dark_rgb": "4, 116, 125",
                     "transparent": "rgba(7, 176, 192, 0.18)",
                     "font": "",
-                    "background": "NetPass_Cyan.png",
+                    "background": "netpass-cyan.png",
                     "bgm": "event.mp3",
                     "bg-type": 1
                 },
@@ -403,7 +403,7 @@
                     "dark_rgb": "17, 121, 58",
                     "transparent": "rgba(32, 174, 94, 0.18)",
                     "font": "",
-                    "background": "NetPass_Green.png",
+                    "background": "netpass-green.png",
                     "bgm": "plaza.mp3",
                     "bg-type": 1
                 },
