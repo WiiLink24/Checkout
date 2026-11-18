@@ -388,7 +388,7 @@
                     "font": "",
                     "background": "netpass-cyan.png",
                     "bgm": "event.mp3",
-                    "bg-type": 1
+                    "bg-type": 2
                 },
                 {
                     "id": "netpass-green",
@@ -405,7 +405,7 @@
                     "font": "",
                     "background": "netpass-green.png",
                     "bgm": "plaza.mp3",
-                    "bg-type": 1
+                    "bg-type": 2
                 },
                 {
                     "id": "webtv",
