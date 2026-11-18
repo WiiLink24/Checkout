@@ -259,7 +259,7 @@
                     "background": "Wii_Tennis.jpg",
                     "bgm": "Wii_Tennis.mp3",
                     "bg-type": 1,
-                    "hidden": true
+                    "hidden": false
                 },
                 {
                     "id": "wii-baseball",
@@ -277,7 +277,7 @@
                     "background": "Wii_Baseball.jpg",
                     "bgm": "Wii_Baseball.mp3",
                     "bg-type": 1,
-                    "hidden": true
+                    "hidden": false
                 },
                 {
                     "id": "wii-bowling",
@@ -295,7 +295,7 @@
                     "background": "Wii_Bowling.png",
                     "bgm": "Wii_Bowling.mp3",
                     "bg-type": 1,
-                    "hidden": true
+                    "hidden": false
                 },
                 {
                     "id": "wii-golf",
@@ -313,7 +313,7 @@
                     "background": "Wii_Golf.png",
                     "bgm": "Wii_Golf.mp3",
                     "bg-type": 1,
-                    "hidden": true
+                    "hidden": false
                 },
                 {
                     "id": "wii-boxing",
@@ -331,7 +331,98 @@
                     "background": "Wii_Boxing.png",
                     "bgm": "Wii_Boxing.mp3",
                     "bg-type": 1,
-                    "hidden": true
+                    "hidden": false
+                }
+            ]
+        },
+        {
+            "title": "Partner Themes",
+            "description": "Themes made in collaboration with our amazing partners.",
+            "themes": [
+                {
+                    "id": "sudomemo",
+                    "name": "Sudomemo",
+                    "description": "It's raining frogs n' stars, from out of the sky!",
+                    "price": 200,
+                    "base": "#86bc3b",
+                    "dark": "#2f5d2b",
+                    "light": "#a8d95f",
+                    "soft": "#eaf4da",
+                    "rgb": "134, 188, 59",
+                    "dark_rgb": "47, 93, 43",
+                    "transparent": "rgba(134, 188, 59, 0.18)",
+                    "font": "Quicksand-SemiBold",
+                    "background": "Frogs_n_Stars.png",
+                    "bgm": "Background_Music.mp3",
+                    "bg-type": 2
+                },
+                {
+                    "id": "satellaview-the-skyline",
+                    "name": "Satellaview+ - The Skyline",
+                    "description": "The famous BS-X title screen, crafted for your Checkout page!",
+                    "price": 300,
+                    "base": "#141852",
+                    "dark": "#0b0d2d",
+                    "light": "#855988",
+                    "soft": "#cbc3e3",
+                    "rgb": "20, 24, 82",
+                    "dark_rgb": "11, 13, 45",
+                    "transparent": "rgba(20, 24, 82, 0.18)",
+                    "font": "VCR_OSD_MONO_1",
+                    "background": "BS-X_City_Skyline.png",
+                    "bgm": "BS-X_Theme.mp3",
+                    "bg-type": 1
+                },
+                {
+                    "id": "netpass-cyan",
+                    "name": "NetPass Cyan",
+                    "description": "Woahhh... im cyan now! Or is it blue? eh.",
+                    "price": 300,
+                    "base": "#07b0c0",
+                    "dark": "#04747d",
+                    "light": "#07c8d8",
+                    "soft": "#c7fafe",
+                    "rgb": "7, 176, 192",
+                    "dark_rgb": "4, 116, 125",
+                    "transparent": "rgba(7, 176, 192, 0.18)",
+                    "font": "",
+                    "background": "NetPass_Cyan.png",
+                    "bgm": "event.mp3",
+                    "bg-type": 1
+                },
+                {
+                    "id": "netpass-green",
+                    "name": "NetPass Green",
+                    "description": "Wait... this is not a 3DS...",
+                    "price": 300,
+                    "base": "#20ae5e",
+                    "dark": "#11793a",
+                    "light": "#25d374",
+                    "soft": "#cffedd",
+                    "rgb": "32, 174, 94",
+                    "dark_rgb": "17, 121, 58",
+                    "transparent": "rgba(32, 174, 94, 0.18)",
+                    "font": "",
+                    "background": "NetPass_Green.png",
+                    "bgm": "plaza.mp3",
+                    "bg-type": 1
+                },
+                {
+                    "id": "webtv",
+                    "name": "WebTV",
+                    "description": "In 1996, this is what the future looked like.",
+                    "price": 105,
+                    "base": "#000000",
+                    "dark": "#191919",
+                    "light": "#29e773",
+                    "soft": "#ffba00",
+                    "rgb": "0, 0, 0",
+                    "dark_rgb": "25, 25, 25",
+                    "transparent": "rgba(0, 0, 0, 0.18)",
+                    "font": "ScienceGothic",
+                    "background": "WebTV.png",
+                    "bgm": "winklink.mp3",
+                    "bg-type": 1
                 }
             ]
         }
