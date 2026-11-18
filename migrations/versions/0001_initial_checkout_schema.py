@@ -17,7 +17,9 @@ depends_on = None
 
 def upgrade():
     bind = op.get_bind()
-    bind.execute(sa.text("""
+    bind.execute(
+        sa.text(
+            """
             CREATE TABLE IF NOT EXISTS coupons (
                 uuid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                 coupon_code TEXT NOT NULL,
@@ -50,13 +52,19 @@ def upgrade():
 
             CREATE INDEX IF NOT EXISTS idx_friends_followed
                 ON friends (followed_wii_number);
-            """))
+            """
+        )
+    )
 
 
 def downgrade():
     bind = op.get_bind()
-    bind.execute(sa.text("""
+    bind.execute(
+        sa.text(
+            """
             DROP TABLE IF EXISTS friends;
             DROP TABLE IF EXISTS coupon_redemptions;
             DROP TABLE IF EXISTS coupons;
-            """))
+            """
+        )
+    )
