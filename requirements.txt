@@ -9,5 +9,5 @@ apscheduler
 pillow
 colorgram.py
 redis
-sqlalchemy
+sqlalchemy<2.1
 alembic
